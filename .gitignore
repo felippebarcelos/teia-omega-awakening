@@ -1,0 +1,12 @@
+# Pastas de volume e conteúdo gerado em massa
+restored/
+restored_test/
+.playwright-mcp/
+
+# Logs e temporários
+*.log
+*.tmp
+
+# Cache Python
+__pycache__/
+*.pyc
