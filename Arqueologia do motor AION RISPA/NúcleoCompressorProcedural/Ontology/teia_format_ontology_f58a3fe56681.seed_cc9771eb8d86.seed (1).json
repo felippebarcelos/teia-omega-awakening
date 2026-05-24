@@ -1,0 +1,20 @@
+{
+  "version": "1.0",
+  "created_utc": "2025-09-13T19:07:19Z",
+  "file": "D:\\Teia\\TEIA_NUCLEO\\offline\\nano\\universal_core\\data\\seeds\\teia_format_ontology_f58a3fe56681.seed.json",
+  "size": 616,
+  "sha256": "cc9771eb8d861d770daf368137e9c01159f15b7a401c3cb508803c73932e8f10",
+  "mtime_utc": "2025-09-13T18:51:42Z",
+  "format": {
+    "sig": "png",
+    "by": "magic",
+    "ext": ".json",
+    "mime": "image/png"
+  },
+  "generator": {
+    "params": {},
+    "name": "none"
+  },
+  "procedural": false,
+  "notes": "No procedural generator identified; restoration not possible without payload or external source."
+}

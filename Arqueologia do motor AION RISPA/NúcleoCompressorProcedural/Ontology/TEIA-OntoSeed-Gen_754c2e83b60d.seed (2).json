@@ -1,0 +1,20 @@
+{
+  "version": "1.0",
+  "created_utc": "2025-09-13T19:07:26Z",
+  "file": "D:\\Teia\\TEIA_NUCLEO\\offline\\nano\\universal_core\\scripts\\TEIA-OntoSeed-Gen.ps1",
+  "size": 4978,
+  "sha256": "754c2e83b60d849a9414f910297ab3b1684cbb2017c868812810b1f257ed7a58",
+  "mtime_utc": "2025-09-12T21:39:25Z",
+  "format": {
+    "sig": "png",
+    "by": "magic",
+    "ext": ".ps1",
+    "mime": "image/png"
+  },
+  "generator": {
+    "params": {},
+    "name": "none"
+  },
+  "procedural": false,
+  "notes": "No procedural generator identified; restoration not possible without payload or external source."
+}

@@ -1,0 +1,20 @@
+{
+  "version": "1.0",
+  "created_utc": "2025-09-13T19:07:22Z",
+  "file": "D:\\Teia\\TEIA_NUCLEO\\offline\\nano\\universal_core\\data\\seeds\\TEIA-OntoSeed-Gen.LowRAM_e68827162455.seed.json",
+  "size": 616,
+  "sha256": "09932f9259416a0891a2dd744d1783e110a16a6ae392abaee4796b8a66d249c7",
+  "mtime_utc": "2025-09-13T18:51:43Z",
+  "format": {
+    "sig": "png",
+    "by": "magic",
+    "ext": ".json",
+    "mime": "image/png"
+  },
+  "generator": {
+    "params": {},
+    "name": "none"
+  },
+  "procedural": false,
+  "notes": "No procedural generator identified; restoration not possible without payload or external source."
+}

@@ -57,6 +57,26 @@ python benchmark_ressonancia.py
 python minerador_teia.py --modo-rapido
 ```
 
+**Curadoria Ativa (auto-aprovação ≥70% Delta-Predicao; quarentena automática <10% DP+≥1 MB; pausa manual apenas zona inédita 20–60%):**
+```powershell
+python minerador_teia.py --curadoria
+```
+
+> Lógica autónoma (DIRETIVA_DELTA_006):
+> - `auto_aprovado` — bloco minado sem interrupção, log apenas
+> - `alta_entropia` — bloco movido para `quarentena/`, registo em `TEIA_Relatorio_Sessao.json`
+> - `inedito` — pausa técnica, operador decide com [S/N]
+> - Blocos sem mapa de intuição: processados normalmente (sem classificação)
+
+**Tabela de modos de execução:**
+
+| Modo | Comando | Uso recomendado |
+|------|---------|-----------------|
+| Completo | `python minerador_teia.py` | Após reset de estado |
+| Rápido | `python minerador_teia.py --modo-rapido` | Corpus já estável, só .md/.json/.txt |
+| Curadoria Ativa | `python minerador_teia.py --curadoria` | Novos ficheiros com revisão autónoma |
+| Treino | `python minerador_teia.py --treinar` | Antes de qualquer ciclo completo |
+
 ---
 
 ## 3. Auditoria de Integridade (Prova Real)

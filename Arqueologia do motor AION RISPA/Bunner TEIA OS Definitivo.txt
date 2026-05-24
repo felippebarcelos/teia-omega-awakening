@@ -1,0 +1,245 @@
+# ============================================================
+# TEIA OS – Hyper-Fluid Boot + HYPER-FLUX IDENTITY ENGINE (v4.6-C – Delta Alinhado)
+# ============================================================
+
+$E = [char]27
+
+# Ambiente
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+$Global:ErrorActionPreference = "SilentlyContinue"
+$Host.UI.RawUI.WindowTitle = "TEIA OS | KERNEL BOOT SEQUENCE"
+
+# Paleta
+$C_Brand       = "$E[38;5;51m"
+$C_BrandSoft   = "$E[38;5;45m"
+$C_Deep        = "$E[38;5;23m"
+$C_Purple      = "$E[38;5;135m"
+$C_AccentWarm  = "$E[38;5;214m"
+$C_TextSoft    = "$E[38;5;250m"
+$C_White       = "$E[38;5;255m"
+$C_Glitch      = "$E[38;5;160m"
+$C_Grey        = "$E[38;5;236m"
+$C_GreySoft    = "$E[38;5;238m"
+$R             = "$E[0m"
+
+# Banner
+$banner = @(
+    "████████╗███████╗██╗ █████╗       ██████╗ ███████╗",
+    "╚══██╔══╝██╔════╝██║██╔══██╗     ██╔═══██╗██╔════╝",
+    "   ██║   █████╗  ██║███████║     ██║   ██║███████╗",
+    "   ██║   ██╔══╝  ██║██╔══██║     ██║   ██║╚════██║",
+    "   ██║   ███████╗██║██║  ██║     ╚██████╔╝███████║",
+    "   ╚═╝   ╚══════╝╚═╝╚═╝  ╚═╝      ╚═════╝ ╚══════╝"
+)
+
+function Hide-Cursor { Write-Host "$E[?25l" -NoNewline }
+function Show-Cursor { Write-Host "$E[?25h" -NoNewline }
+function Clear-Screen { Write-Host "$E[2J" -NoNewline }
+
+function Set-Pos {
+    param([int]$y, [int]$x)
+    if ($x -ge 0 -and $y -ge 0 -and
+        $x -lt [Console]::WindowWidth -and
+        $y -lt [Console]::WindowHeight) {
+        Write-Host "$E[${y};${x}H" -NoNewline
+    }
+}
+
+function Invoke-FractalWeb {
+    Clear-Screen
+    $W = [Console]::WindowWidth
+    $H = [Console]::WindowHeight
+    $CenterX = [math]::Round($W / 2)
+    $CenterY = [math]::Round($H / 2)
+    
+    $Nodes = @()
+    0..40 | ForEach-Object {
+        $colorPool = @($C_Deep, $C_BrandSoft, $C_GreySoft)
+        $Nodes += [PSCustomObject]@{
+            X     = $CenterX
+            Y     = $CenterY
+            DX    = (Get-Random -Min -2 -Max 3)
+            DY    = (Get-Random -Min -1 -Max 2)
+            Char  = (Get-Random ".", "·", "+", "x")
+            Color = (Get-Random -InputObject $colorPool)
+        }
+    }
+
+    for ($frame = 0; $frame -lt 20; $frame++) {
+        foreach ($n in $Nodes) {
+            if ($n.X -gt 0 -and $n.X -lt $W -and $n.Y -gt 0 -and $n.Y -lt $H) {
+                Write-Host "$E[$([int]$n.Y);$([int]$n.X)H " -NoNewline
+            }
+            $n.X += $n.DX * (1 + ($frame / 20))
+            $n.Y += $n.DY
+            if ($n.X -gt 1 -and $n.X -lt $W -and $n.Y -gt 1 -and $n.Y -lt $H) {
+                Write-Host "$E[$([int]$n.Y);$([int]$n.X)H$($n.Color)$($n.Char)$R" -NoNewline
+            }
+        }
+        Start-Sleep -Milliseconds 20
+    }
+}
+
+function Invoke-CoreImplosion {
+    $W = [Console]::WindowWidth
+    $H = [Console]::WindowHeight
+    $CX = $W / 2
+    $CY = $H / 2
+
+    for ($r = 20; $r -ge 2; $r -= 2) {
+        $Steps = 18
+        for ($i = 0; $i -lt $Steps; $i++) {
+            $Angle = ($i / $Steps) * 2 * [math]::PI
+            $X = [int]($CX + [math]::Cos($Angle) * $r * 2)
+            $Y = [int]($CY + [math]::Sin($Angle) * $r)
+
+            if ($r -eq 12 -and ([math]::Abs($Angle - [math]::PI) -lt 0.1)) {
+                $X -= 1
+            }
+
+            if ($X -gt 0 -and $X -lt $W -and $Y -gt 0 -and $Y -lt $H) {
+                $color = if ($r -gt 12) { $C_Deep } elseif ($r -gt 6) { $C_BrandSoft } else { $C_Brand }
+                Write-Host "$E[$Y;${X}H${color}o$R" -NoNewline
+            }
+        }
+        Start-Sleep -Milliseconds 30
+    }
+
+    Write-Host "$E[$([int]$CY);$([int]$CX-2)H${C_AccentWarm}█████$R" -NoNewline
+    Start-Sleep -Milliseconds 100
+}
+
+function Invoke-GlitchBanner {
+    $W = [Console]::WindowWidth
+    $BannerWidth = $banner[0].Length
+    $PadLeft = [math]::Max(0, [int](($W - $BannerWidth) / 2))
+    $StartRow = [int]([Console]::WindowHeight / 2) - 4
+    $Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%"
+
+    for ($i = 0; $i -lt 2; $i++) {
+        $Row = $StartRow
+        foreach ($line in $banner) {
+            $CorruptLine = ""
+            0..($line.Length - 1) | ForEach-Object {
+                if ((Get-Random) % 10 -gt 7) {
+                    $CorruptLine += $Chars[(Get-Random) % $Chars.Length]
+                } else {
+                    $CorruptLine += $line[$_]
+                }
+            }
+            $Color = if ($i % 2 -eq 0) { $C_Glitch } else { $C_BrandSoft }
+            Write-Host "$E[$Row;${PadLeft}H$Color$CorruptLine$R" -NoNewline
+            $Row++
+        }
+        Start-Sleep -Milliseconds 50
+    }
+
+    $Row = $StartRow
+    foreach ($line in $banner) {
+        Write-Host "$E[$Row;${PadLeft}H$C_Brand$line$R" -NoNewline
+        Start-Sleep -Milliseconds 40
+        $Row++
+    }
+}
+
+function Draw-BackgroundWeb {
+    $w = [Console]::WindowWidth
+    $h = [Console]::WindowHeight
+    $Density = 40
+    for ($i = 0; $i -lt $Density; $i++) {
+        $x = Get-Random -Min 1 -Max $w
+        $y = Get-Random -Min 1 -Max $h
+        $Sym    = Get-Random -InputObject @("·", ".", "`"", "*")
+        $Color = Get-Random -InputObject @($C_Grey, $C_GreySoft, $C_Deep)
+        Set-Pos $y $x
+        Write-Host "$Color$Sym$R" -NoNewline
+    }
+}
+
+function Draw-Pulse {
+    $cx = [int]([Console]::WindowWidth / 2)
+    $cy = [int]([Console]::WindowHeight / 2)
+    for ($r = 1; $r -lt 12; $r++) {
+        $Steps = 12 + ($r * 2)
+        for ($theta = 0; $theta -lt 360; $theta += (360 / $Steps)) {
+            $rad = $theta * [Math]::PI / 180
+            $x = [int]($cx + ([Math]::Cos($rad) * $r * 2))
+            $y = [int]($cy + ([Math]::Sin($rad) * $r))
+            Set-Pos $y $x
+            $color = if ($r -le 3) { $C_Deep } elseif ($r -le 7) { $C_Brand } elseif ($r -lt 11) { $C_BrandSoft } else { $C_AccentWarm }
+            if ($r -eq 11) { Write-Host "${C_Grey}░$R" -NoNewline }
+            else           { Write-Host "${color}•$R" -NoNewline }
+        }
+        Start-Sleep -Milliseconds 30
+    }
+}
+
+function Invoke-DecodeBanner {
+    $StartRow  = [int]([Console]::WindowHeight / 2) - 4
+    $CenterCol = [int]([Console]::WindowWidth / 2)
+    $MaxLen  = ($banner | Measure-Object -Property Length -Maximum).Maximum
+    $PadLeft = $CenterCol - [int]($MaxLen / 2)
+    if ($PadLeft -lt 0) { $PadLeft = 0 }
+
+    for ($i = 0; $i -lt $banner.Count; $i++) {
+        $Line = $banner[$i]
+        $Row  = $StartRow + $i
+
+        Set-Pos $Row $PadLeft
+        Write-Host "$C_Glitch$($Line -replace '.', '▒')$R" -NoNewline
+        Start-Sleep -Milliseconds 40
+
+        Set-Pos $Row $PadLeft
+        Write-Host "$C_Brand$Line$R" -NoNewline
+        Start-Sleep -Milliseconds 40
+    }
+}
+
+# ✅ Correção da centralização e proporção
+function Draw-HUD {
+    $Row = [Console]::WindowHeight - 4
+    $W   = [Console]::WindowWidth
+
+    $MsgWidth = 42
+    $Pad = [int](($W - $MsgWidth) / 2)
+
+    $HorizontalBar = "═" * 40
+
+    Set-Pos $Row $Pad
+    Write-Host "${C_Grey}╔$HorizontalBar╗$R"
+
+    Set-Pos ($Row + 1) $Pad
+    Write-Host (
+        "${C_Grey}║  " +
+        "${C_TextSoft}SYSTEM READY  ·  " +
+        "${C_AccentWarm}PRESS ENTER${C_TextSoft} TO LINK" +
+        "  ${C_Grey}║$R"
+    )
+
+    Set-Pos ($Row + 2) $Pad
+    Write-Host "${C_Grey}╚$HorizontalBar╝$R"
+
+    Start-Sleep -Milliseconds 400
+}
+
+# EXECUÇÃO FINAL
+try {
+    Hide-Cursor
+    Clear-Screen
+    Invoke-FractalWeb
+    Invoke-CoreImplosion
+    Invoke-GlitchBanner
+    Draw-BackgroundWeb
+    Start-Sleep -Milliseconds 100
+    Draw-Pulse
+    Invoke-DecodeBanner
+    Draw-HUD
+    Set-Pos ([Console]::WindowHeight - 2) 2
+}
+catch {
+    Write-Host "$E[0m$E[?25h"
+}
+finally {
+    Show-Cursor
+    Write-Host ""
+}

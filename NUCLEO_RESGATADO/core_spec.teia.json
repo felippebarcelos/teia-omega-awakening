@@ -1,0 +1,117 @@
+{
+  "core_id": "TEIA_Turno1_CoreContracts",
+  "version": "2025-11-14",
+  "owner": "TEIA_NUCLEO",
+  "fractal_index": {
+    "path": "core/manifests/fractal_index.json",
+    "format": "json",
+    "description": "Manifesto Delta agregando fragmentos e seeds usados pelos agentes locais",
+    "checksum": "sha256",
+    "expected_version": "Delta2.x"
+  },
+  "artifacts": {
+    "scripts": {
+      "agente": "core/scripts/agente-teia.ps1",
+      "audit_orchestrator": "core/scripts/TEIA-Audit-Orchestrator.ps1"
+    },
+    "visual": "visu/ID_visu.html",
+    "logs": {
+      "dna_events": "core/logs/dna_events.jsonl",
+      "watchdog_transcript": "core/logs/watchdog_run_full.transcript.log"
+    }
+  },
+  "state_model": {
+    "agent": {
+      "signal_path": "D:/Teia/TEIA_NUCLEO/offline/nano/agent_signal.txt",
+      "last_signal": "",
+      "heartbeat_ts": ""
+    },
+    "compression": {
+      "source_bytes": 0,
+      "seed_bytes": 0,
+      "savings_pct": 0,
+      "duration_ms": 0,
+      "status": "idle",
+      "benchmark_series": [],
+      "seed_snapshot": "{}",
+      "source_label": "-",
+      "seed_label": "-",
+      "duration_label": "-",
+      "savings_pct_label": "-"
+    },
+    "telemetry": {
+      "cpu": "",
+      "ram": "",
+      "disk": "",
+      "os": ""
+    },
+    "audit": {
+      "last_iteration": 0,
+      "last_manifest": "",
+      "tags": []
+    },
+    "fractal_sync": {
+      "entries": 0,
+      "last_hash": "",
+      "last_scan": ""
+    },
+    "logs": {
+      "tail_text": ""
+    },
+    "view_state": {}
+  },
+  "events_in": [
+    {
+      "name": "heartbeat",
+      "source": "core/scripts/agente-teia.ps1",
+      "payload": ["signal_text"],
+      "effect": "Atualiza agent.last_signal e gera Write-TeiaEvent com tipo heartbeat"
+    },
+    {
+      "name": "benchmark",
+      "source": "core/scripts/TEIA-Audit-Orchestrator.ps1",
+      "payload": ["iteration", "exec_output"],
+      "effect": "Atualiza compression.benchmark_series e audit.tags"
+    },
+    {
+      "name": "refresh_dashboard",
+      "source": "visu/ID_visu.html",
+      "payload": ["state_view_request"],
+      "effect": "Atualiza state.view_state com meta/visu_contract.json"
+    }
+  ],
+  "events_out": [
+    {
+      "name": "dna_event",
+      "channel": "core/logs/dna_events.jsonl",
+      "schema": {
+        "ts": "ISO-8601",
+        "mode": "DryRun|RunCore|TestCompression",
+        "type": "heartbeat|benchmark|compression|dashboard|error",
+        "payload": "detalhes especificos de cada evento"
+      }
+    },
+    {
+      "name": "watchdog_transcript",
+      "channel": "core/logs/watchdog_run_full.transcript.log",
+      "schema": "texto streaming"
+    }
+  ],
+  "audit_channels": [
+    {
+      "name": "dna_events",
+      "path": "core/logs/dna_events.jsonl",
+      "format": "jsonl"
+    },
+    {
+      "name": "watchdog_transcript",
+      "path": "core/logs/watchdog_run_full.transcript.log",
+      "format": "text"
+    },
+    {
+      "name": "fractal_manifest",
+      "path": "core/manifests/fractal_index.json",
+      "format": "json"
+    }
+  ]
+}

@@ -1,0 +1,530 @@
+{
+  "version": "1.0",
+  "updated_utc": "2025-09-13T19:07:15Z",
+  "notes": "Baseline ontology. Extend by appending formats; no payload definitions.",
+  "categories": {
+    "text": {
+      "mime": [
+        "text/plain",
+        "text/markdown",
+        "text/csv",
+        "text/html",
+        "text/xml",
+        "application/json",
+        "application/x-yaml",
+        "application/toml"
+      ],
+      "extensions": [
+        ".txt",
+        ".md",
+        ".csv",
+        ".html",
+        ".htm",
+        ".xml",
+        ".json",
+        ".yaml",
+        ".yml",
+        ".toml",
+        ".ini",
+        ".log"
+      ]
+    },
+    "image_raster": {
+      "mime": [
+        "image/png",
+        "image/jpeg",
+        "image/gif",
+        "image/bmp",
+        "image/webp",
+        "image/tiff",
+        "image/x-icon",
+        "image/heic",
+        "image/heif"
+      ],
+      "extensions": [
+        ".png",
+        ".jpg",
+        ".jpeg",
+        ".gif",
+        ".bmp",
+        ".webp",
+        ".tif",
+        ".tiff",
+        ".ico",
+        ".heic",
+        ".heif"
+      ]
+    },
+    "image_vector": {
+      "mime": [
+        "image/svg+xml",
+        "application/pdf"
+      ],
+      "extensions": [
+        ".svg",
+        ".pdf"
+      ]
+    },
+    "audio": {
+      "mime": [
+        "audio/wav",
+        "audio/x-wav",
+        "audio/mpeg",
+        "audio/mp4",
+        "audio/aac",
+        "audio/ogg",
+        "audio/flac",
+        "audio/opus",
+        "audio/webm"
+      ],
+      "extensions": [
+        ".wav",
+        ".mp3",
+        ".m4a",
+        ".aac",
+        ".oga",
+        ".ogg",
+        ".flac",
+        ".opus",
+        ".weba"
+      ]
+    },
+    "video": {
+      "mime": [
+        "video/mp4",
+        "video/x-msvideo",
+        "video/x-matroska",
+        "video/webm",
+        "video/quicktime",
+        "video/mpeg"
+      ],
+      "extensions": [
+        ".mp4",
+        ".avi",
+        ".mkv",
+        ".webm",
+        ".mov",
+        ".mpg",
+        ".mpeg"
+      ]
+    },
+    "archive": {
+      "mime": [
+        "application/zip",
+        "application/x-7z-compressed",
+        "application/x-rar-compressed",
+        "application/x-tar",
+        "application/gzip",
+        "application/x-bzip2",
+        "application/x-xz"
+      ],
+      "extensions": [
+        ".zip",
+        ".7z",
+        ".rar",
+        ".tar",
+        ".gz",
+        ".tgz",
+        ".bz2",
+        ".xz"
+      ]
+    },
+    "documents": {
+      "mime": [
+        "application/pdf",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "application/msword",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "application/vnd.ms-excel",
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        "application/vnd.ms-powerpoint"
+      ],
+      "extensions": [
+        ".pdf",
+        ".docx",
+        ".doc",
+        ".xlsx",
+        ".xls",
+        ".pptx",
+        ".ppt",
+        ".rtf",
+        ".odt",
+        ".ods",
+        ".odp"
+      ]
+    },
+    "executables": {
+      "mime": [
+        "application/x-dosexec",
+        "application/vnd.microsoft.portable-executable",
+        "application/x-msdownload"
+      ],
+      "extensions": [
+        ".exe",
+        ".dll",
+        ".sys",
+        ".ocx"
+      ]
+    },
+    "libraries_objects": {
+      "mime": [
+        "application/x-elf",
+        "application/x-archive",
+        "application/x-object"
+      ],
+      "extensions": [
+        ".so",
+        ".a",
+        ".o",
+        ".elf"
+      ]
+    },
+    "database": {
+      "mime": [
+        "application/x-sqlite3",
+        "application/vnd.ms-access",
+        "application/x-paradox",
+        "application/x-dbf"
+      ],
+      "extensions": [
+        ".sqlite",
+        ".db",
+        ".mdb",
+        ".accdb",
+        ".dbf"
+      ]
+    },
+    "disk_images": {
+      "mime": [
+        "application/x-iso9660-image",
+        "application/x-raw-disk-image"
+      ],
+      "extensions": [
+        ".iso",
+        ".img",
+        ".vhd",
+        ".vhdx"
+      ]
+    },
+    "fonts": {
+      "mime": [
+        "font/ttf",
+        "font/otf",
+        "application/vnd.ms-fontobject",
+        "font/woff",
+        "font/woff2"
+      ],
+      "extensions": [
+        ".ttf",
+        ".otf",
+        ".eot",
+        ".woff",
+        ".woff2"
+      ]
+    },
+    "3d": {
+      "mime": [
+        "model/obj",
+        "model/stl",
+        "model/3mf",
+        "model/gltf+json",
+        "model/gltf-binary"
+      ],
+      "extensions": [
+        ".obj",
+        ".stl",
+        ".3mf",
+        ".gltf",
+        ".glb",
+        ".fbx"
+      ]
+    },
+    "geospatial": {
+      "mime": [
+        "application/vnd.google-earth.kml+xml",
+        "application/vnd.google-earth.kmz",
+        "application/octet-stream"
+      ],
+      "extensions": [
+        ".kml",
+        ".kmz",
+        ".shp",
+        ".geojson",
+        ".tif"
+      ]
+    },
+    "web": {
+      "mime": [
+        "application/javascript",
+        "text/css"
+      ],
+      "extensions": [
+        ".js",
+        ".mjs",
+        ".css"
+      ]
+    },
+    "code": {
+      "mime": [
+        "text/x-python",
+        "text/x-c",
+        "text/x-c++",
+        "text/x-java-source",
+        "text/x-shellscript",
+        "text/x-powershell",
+        "text/x-go",
+        "text/x-rustsrc"
+      ],
+      "extensions": [
+        ".py",
+        ".c",
+        ".h",
+        ".cpp",
+        ".hpp",
+        ".cc",
+        ".java",
+        ".ps1",
+        ".psm1",
+        ".sh",
+        ".bat",
+        ".cmd",
+        ".go",
+        ".rs"
+      ]
+    },
+    "config_data": {
+      "mime": [
+        "application/x-protobuf",
+        "application/octet-stream",
+        "application/x-msgpack"
+      ],
+      "extensions": [
+        ".proto",
+        ".bin",
+        ".dat",
+        ".msgpack",
+        ".mpk"
+      ]
+    }
+  },
+  "magic_signatures": [
+    {
+      "name": "png",
+      "offset": 0,
+      "hex": "89504E470D0A1A0A",
+      "mime": "image/png",
+      "ext": [
+        ".png"
+      ]
+    },
+    {
+      "name": "jpg",
+      "offset": 0,
+      "hex": "FFD8FF",
+      "mime": "image/jpeg",
+      "ext": [
+        ".jpg",
+        ".jpeg"
+      ]
+    },
+    {
+      "name": "gif87a",
+      "offset": 0,
+      "hex": "474946383761",
+      "mime": "image/gif",
+      "ext": [
+        ".gif"
+      ]
+    },
+    {
+      "name": "gif89a",
+      "offset": 0,
+      "hex": "474946383961",
+      "mime": "image/gif",
+      "ext": [
+        ".gif"
+      ]
+    },
+    {
+      "name": "bmp",
+      "offset": 0,
+      "hex": "424D",
+      "mime": "image/bmp",
+      "ext": [
+        ".bmp"
+      ]
+    },
+    {
+      "name": "webp",
+      "offset": 0,
+      "hex": "52494646????57454250",
+      "mime": "image/webp",
+      "ext": [
+        ".webp"
+      ]
+    },
+    {
+      "name": "pdf",
+      "offset": 0,
+      "hex": "25504446",
+      "mime": "application/pdf",
+      "ext": [
+        ".pdf"
+      ]
+    },
+    {
+      "name": "zip",
+      "offset": 0,
+      "hex": "504B0304",
+      "mime": "application/zip",
+      "ext": [
+        ".zip",
+        ".jar",
+        ".docx",
+        ".xlsx",
+        ".pptx"
+      ]
+    },
+    {
+      "name": "rar",
+      "offset": 0,
+      "hex": "526172211A0700",
+      "mime": "application/x-rar-compressed",
+      "ext": [
+        ".rar"
+      ]
+    },
+    {
+      "name": "7z",
+      "offset": 0,
+      "hex": "377ABCAF271C",
+      "mime": "application/x-7z-compressed",
+      "ext": [
+        ".7z"
+      ]
+    },
+    {
+      "name": "gz",
+      "offset": 0,
+      "hex": "1F8B08",
+      "mime": "application/gzip",
+      "ext": [
+        ".gz",
+        ".tgz"
+      ]
+    },
+    {
+      "name": "xz",
+      "offset": 0,
+      "hex": "FD377A585A00",
+      "mime": "application/x-xz",
+      "ext": [
+        ".xz"
+      ]
+    },
+    {
+      "name": "wav",
+      "offset": 0,
+      "hex": "52494646????57415645",
+      "mime": "audio/wav",
+      "ext": [
+        ".wav"
+      ]
+    },
+    {
+      "name": "avi",
+      "offset": 0,
+      "hex": "52494646????41564920",
+      "mime": "video/x-msvideo",
+      "ext": [
+        ".avi"
+      ]
+    },
+    {
+      "name": "mp3_id3",
+      "offset": 0,
+      "hex": "494433",
+      "mime": "audio/mpeg",
+      "ext": [
+        ".mp3"
+      ]
+    },
+    {
+      "name": "mp3_mpeg",
+      "offset": 0,
+      "hex": "FFFB",
+      "mime": "audio/mpeg",
+      "ext": [
+        ".mp3"
+      ]
+    },
+    {
+      "name": "mp4",
+      "offset": 4,
+      "hex": "66747970",
+      "mime": "video/mp4",
+      "ext": [
+        ".mp4",
+        ".m4a",
+        ".m4v"
+      ]
+    },
+    {
+      "name": "mov",
+      "offset": 4,
+      "hex": "6674797071742020",
+      "mime": "video/quicktime",
+      "ext": [
+        ".mov"
+      ]
+    },
+    {
+      "name": "mkv",
+      "offset": 0,
+      "hex": "1A45DFA3",
+      "mime": "video/x-matroska",
+      "ext": [
+        ".mkv"
+      ]
+    },
+    {
+      "name": "ico",
+      "offset": 0,
+      "hex": "00000100",
+      "mime": "image/x-icon",
+      "ext": [
+        ".ico"
+      ]
+    },
+    {
+      "name": "exe_mz",
+      "offset": 0,
+      "hex": "4D5A",
+      "mime": "application/x-dosexec",
+      "ext": [
+        ".exe",
+        ".dll",
+        ".sys"
+      ]
+    },
+    {
+      "name": "elf",
+      "offset": 0,
+      "hex": "7F454C46",
+      "mime": "application/x-elf",
+      "ext": [
+        ".elf"
+      ]
+    },
+    {
+      "name": "sqlite",
+      "offset": 0,
+      "hex": "53514C69746520666F726D6174203300",
+      "mime": "application/x-sqlite3",
+      "ext": [
+        ".sqlite",
+        ".db"
+      ]
+    }
+  ]
+}

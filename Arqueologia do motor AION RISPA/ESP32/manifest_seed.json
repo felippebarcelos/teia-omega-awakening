@@ -1,0 +1,57 @@
+{
+  "fail_fast": true,
+  "tasks": [
+    {
+      "id": "list_root",
+      "priority": 1,
+      "action": "listdir",
+      "ctx": {
+        "path": "/"
+      }
+    },
+    {
+      "id": "pulse_ready_led",
+      "priority": 2,
+      "action": "gpio_pulse",
+      "ctx": {
+        "pin": 2,
+        "reps": 3,
+        "high_ms": 50,
+        "low_ms": 50
+      }
+    },
+    {
+      "id": "write_probe",
+      "priority": 3,
+      "action": "file_write",
+      "ctx": {
+        "path": "/probe.bin",
+        "data_hex": "48656c6c6f2d4f6e746f50726f6365647572616c"
+      }
+    },
+    {
+      "id": "hash_probe",
+      "priority": 4,
+      "action": "file_hash",
+      "ctx": {
+        "path": "/probe.bin"
+      }
+    },
+    {
+      "id": "sleep",
+      "priority": 5,
+      "action": "sleep_ms",
+      "ctx": {
+        "ms": 100
+      }
+    },
+    {
+      "id": "echo_state",
+      "priority": 6,
+      "action": "echo",
+      "ctx": {
+        "state": "done"
+      }
+    }
+  ]
+}

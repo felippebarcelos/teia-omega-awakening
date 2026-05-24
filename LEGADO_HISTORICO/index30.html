@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>TEIA — Dashboard de Auditoria Procedural</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+
+<style>
+:root{
+  --bg-main-start:#020617;
+  --bg-main-end:#0d0d2b;
+  --panel-bg:rgba(17,24,39,.75);
+  --border-panel:rgba(55,65,81,.7);
+  --text-main:#e5e7eb;
+  --accent-glow:rgba(52,211,153,.4);
+  --accent-main:#34d399;
+  --accent-secondary:#60a5fa;
+  --loader-color:#f59e0b;
+}
+*{box-sizing:border-box}
+body{
+  background: linear-gradient(180deg, var(--bg-main-start) 0%, var(--bg-main-end) 100%);
+  background-attachment:fixed;
+  font-family:'Inter',sans-serif;
+  color:var(--text-main);
+  overflow: hidden;
+  cursor: none;
+}
+
+#led-canvas{
+  position:fixed; inset:0; z-index:0; pointer-events:auto;
+}
+
+.ui{ position:relative; z-index:1; height: 100vh; overflow-y: auto; pointer-events: none; }
+.ui > div { pointer-events: auto; }
+.aurora-panel { pointer-events: auto; }
+
+
+.aurora-panel{
+  background:var(--panel-bg);
+  border:1px solid var(--border-panel);
+  position:relative; overflow:hidden;
+  border-radius:16px; box-shadow:0 8px 32px rgba(0,0,0,.4);
+  backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px);
+}
+.aurora-panel::before{
+  content:''; position:absolute; top:var(--y, 50%); left:var(--x, 50%);
+  width:200%; padding-top:200%;
+  background-image:radial-gradient(circle, var(--accent-main), transparent 35%);
+  opacity:0; transform:translate(-50%,-50%);
+  pointer-events:none; transition:opacity .5s;
+}
+.aurora-panel:hover::before {
+  opacity: 0.15;
+}
+
+.btn{
+  background:linear-gradient(135deg, var(--accent-main), var(--accent-secondary));
+  box-shadow:0 0 20px var(--accent-glow); transition:all .2s ease-in-out;
+}
+.btn:hover{ transform:translateY(-2px); box-shadow:0 0 30px var(--accent-glow); }
+.btn:disabled{ background:#374151; box-shadow:none; cursor:not-allowed; opacity:.6; }
+
+.donut-wrapper{ width:120px; height:120px; display:grid; place-items:center; position:relative; }
+.donut-svg{ transform:rotate(-90deg); grid-area:1/1; }
+.donut-bg,.donut-fg,.donut-loader{ fill:none; stroke-width:14; }
+.donut-bg{ stroke:rgba(255,255,255,.1); }
+.donut-fg{ stroke:var(--accent-main); stroke-linecap:round; transition:stroke-dashoffset .5s ease-out; }
+.donut-loader{ stroke:var(--loader-color); stroke-dasharray:314; stroke-dashoffset:314; visibility:hidden; }
+.donut-loader.active{ visibility:visible; animation:donut-spin 1.5s linear infinite; }
+@keyframes donut-spin{ 100%{ transform:rotate(360deg);} }
+.donut-text{ grid-area:1/1; position:relative; font-weight:800; line-height:1; white-space:nowrap; letter-spacing:-.01em; }
+
+.dropzone{ border:2px dashed var(--border-panel); background-color:rgba(0,0,0,.2); transition:all .2s; }
+.dropzone.dragover{ background-color:rgba(16,185,129,.1); border-color:var(--accent-main); }
+.mono{ font-family:ui-monospace, Consolas, Menlo, monospace; }
+.chart-container{ background-color:rgba(2,6,23,.5); border-radius:8px; padding:1rem; }
+</style>
+</head>
+
+<body class="p-4 sm:p-6 lg:p-8">
+
+<canvas id="led-canvas"></canvas>
+
+<div class="ui">
+  <div class="max-w-7xl mx-auto space-y-6">
+    <header class="text-center">
+      <h1 class="text-3xl font-bold tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-gray-300 via-white to-gray-300">
+        TEIA — Dashboard de Auditoria Procedural
+      </h1>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+      <div class="lg:col-span-2 space-y-6">
+        <div class="aurora-panel p-5">
+          <h2 class="text-lg font-semibold mb-3 text-center text-gray-300 relative z-10">Fator de Compressão</h2>
+          <div class="flex justify-center items-center gap-4 relative z-10">
+            <div id="op-donut" class="donut-wrapper">
+              <svg class="donut-svg" width="120" height="120" viewBox="0 0 120" aria-hidden="true">
+                <circle class="donut-bg" cx="60" cy="60" r="50"></circle>
+                <circle id="op-donut-fg" class="donut-fg" cx="60" cy="60" r="50" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100"></circle>
+                <circle id="op-donut-loader" class="donut-loader" cx="60" cy="60" r="50"></circle>
+              </svg>
+              <span id="op-donut-text" class="donut-text">—</span>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm w-full mt-4 relative z-10">
+            <span class="font-semibold text-gray-400">Original</span><span id="kpi-original" class="mono text-right">—</span>
+            <span class="font-semibold text-gray-400">Seed</span><span id="kpi-seed" class="mono text-right">—</span>
+            <span class="font-semibold text-gray-400">Tempo de Hash</span><span id="kpi-time" class="mono text-right">—</span>
+          </div>
+        </div>
+
+        <div class="aurora-panel p-4">
+          <h2 class="text-lg font-semibold mb-3 relative z-10">JSON (Seed)</h2>
+          <pre id="json-preview" class="mono text-xs bg-black bg-opacity-20 p-3 rounded-lg h-56 overflow-auto relative z-10">{}</pre>
+        </div>
+        
+        <div class="aurora-panel p-4">
+          <h2 class="text-lg font-semibold mb-3 relative z-10">Logs / Utilitários</h2>
+          <pre id="logs" class="mono text-xs bg-black bg-opacity-20 p-3 rounded-lg h-24 overflow-auto relative z-10">Dashboard inicializado...</pre>
+        </div>
+      </div>
+
+      <div class="lg:col-span-3 space-y-6">
+        <div class="aurora-panel p-4">
+          <div class="relative z-10">
+            <h2 class="text-xl font-bold mb-4">Operação</h2>
+            <div class="bg-black bg-opacity-25 p-3 mb-4 rounded-lg">
+              <h3 class="font-semibold mb-2">1. Gerar Semente</h3>
+              <div id="dropzone-generate" class="dropzone rounded-lg p-6 text-center cursor-pointer">
+                <p class="text-gray-400 text-sm">Arraste um arquivo para Gerar Semente</p>
+                <input type="file" id="file-input" class="hidden"/>
+              </div>
+              <button id="download-seed-btn" class="btn w-full mt-3 py-2 rounded-full font-bold text-sm" disabled>Baixar Semente (.teia.json)</button>
+            </div>
+            <div class="bg-black bg-opacity-25 p-3 rounded-lg">
+              <h3 class="font-semibold mb-2">2. Inspecionar Semente</h3>
+              <div id="dropzone-restore" class="dropzone rounded-lg p-6 text-center cursor-pointer">
+                <p class="text-gray-400 text-sm">Arraste `.teia.json` para Inspecionar</p>
+                <input type="file" id="seed-input-restore" class="hidden" accept=".json,.teia.json"/>
+              </div>
+               <button id="restore-seed-btn" class="btn w-full mt-3 py-2 rounded-full font-bold text-sm" disabled>Restaurar (Via Watcher)</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="analysis-container" class="aurora-panel p-4 space-y-4">
+          <div class="relative z-10">
+            <h2 class="text-xl font-bold">Auditoria & Análise</h2>
+            
+            <div class="bg-black bg-opacity-25 p-3 rounded-lg mt-4">
+              <h3 class="font-semibold mb-2">Análise de IA ✨</h3>
+              <div id="ai-analysis-content" class="space-y-3">
+                  <pre id="ai-analysis-result" class="mono text-xs bg-black bg-opacity-20 p-3 rounded-lg h-32 overflow-auto relative z-10 text-gray-400">Arraste um ficheiro para a secção "1. Gerar Semente" para ativar a análise.</pre>
+                  <button id="analyze-btn" class="btn w-full py-2 rounded-full font-bold text-sm flex items-center justify-center gap-2" disabled>
+                    <span id="analyze-btn-text">Analisar Ficheiro</span>
+                    <svg id="analyze-spinner" class="animate-spin h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                  </button>
+              </div>
+            </div>
+
+            <div class="bg-black bg-opacity-25 p-3 rounded-lg mt-4">
+              <h3 class="font-semibold mb-2">Benchmark Comparativo</h3>
+              <div class="chart-container"><canvas id="benchmarkChart"></canvas></div>
+            </div>
+             <div class="bg-black bg-opacity-25 p-3 rounded-lg mt-4">
+              <h3 class="font-semibold mb-2">Ambiente de Sistema</h3>
+              <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                <span class="font-semibold text-gray-400">CPU</span><span id="sys-cpu" class="mono text-right">—</span>
+                <span class="font-semibold text-gray-400">RAM</span><span id="sys-ram" class="mono text-right">—</span>
+                <span class="font-semibold text-gray-400">Disco</span><span id="sys-disk" class="mono text-right">—</span>
+                <span class="font-semibold text-gray-400">SO</span><span id="sys-os" class="mono text-right">—</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // --- UI LOGIC ---
+  document.querySelectorAll('.aurora-panel').forEach(p => { p.addEventListener('mousemove', e => { const r = p.getBoundingClientRect(); p.style.setProperty('--x', `${e.clientX - r.left}px`); p.style.setProperty('--y', `${e.clientY - r.top}px`); }); });
+  
+  // --- Inicialização do Gráfico (sem dados) ---
+  (function(){
+    const cs = getComputedStyle(document.documentElement);
+    const textColor = cs.getPropertyValue('--text-main').trim();
+    const aMain = cs.getPropertyValue('--accent-main').trim();
+    const aSec = cs.getPropertyValue('--accent-secondary').trim();
+    const ctx = document.getElementById('benchmarkChart').getContext('2d');
+    
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: [], // Inicia sem labels
+        datasets: [{
+          label: 'Tempo (ms)',
+          data: [], // Inicia sem dados
+          backgroundColor: aSec
+        }, {
+          label: 'Tamanho (KB)',
+          data: [], // Inicia sem dados
+          backgroundColor: aMain
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { labels: { color: textColor } },
+          datalabels: { color: textColor, anchor:'end', align:'end', font:{weight:'bold'} }
+        },
+        scales: {
+          y: { ticks: { color: textColor } },
+          x: { ticks: { color: textColor } }
+        }
+      },
+      plugins: [ChartDataLabels]
+    });
+  })();
+
+  // --- ENGINE DE ANIMAÇÃO: SÍNTESE QUÂNTICA (SIMPLIFICADA) ---
+  const canvas = document.getElementById('led-canvas');
+  const ctx = canvas.getContext('2d', { alpha: true });
+  let W = 0, H = 0, dpr = 1;
+  let pointer = { x: 0, y: 0, lastMove: Date.now() };
+  let smoothPointer = { x: 0, y: 0 };
+  let particles = [];
+  let ripples = [];
+  let isMouseDown = false;
+  const TAU = Math.PI * 2;
+  const config = { particleCount: 400, springStiffness: 0.02, damping: 0.90, pointerInfluence: 90, idleTimeout: 2000 };
+  const startup = { start: performance.now(), duration: 1400, active: true };
+
+  function resize() {
+      dpr = window.devicePixelRatio || 1;
+      W = innerWidth; H = innerHeight;
+      canvas.width = W * dpr; canvas.height = H * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      
+      particles = Array.from({ length: config.particleCount }, () => ({
+          x: Math.random() * W, y: Math.random() * H,
+          ox: Math.random() * W, oy: Math.random() * H,
+          vx: 0, vy: 0, z: Math.random() * 0.9 + 0.1,
+      }));
+
+      ripples = [];
+      for (let i = 0; i < 3; i++) {
+          ripples.push({
+              x: W/2 + (Math.random() - 0.5) * 80,
+              y: H/2 + (Math.random() - 0.5) * 80,
+              radius: 8 + i * 18,
+              alpha: 1 - i * 0.18,
+              hue: 180 + i * 18
+          });
+      }
+      for (const p of particles) {
+          const dx = p.x - W/2, dy = p.y - H/2;
+          const dist = Math.hypot(dx, dy) || 1;
+          p.vx += (dx / dist) * (0.4 * Math.random());
+          p.vy += (dy / dist) * (0.4 * Math.random());
+      }
+
+      pointer.x = W / 2; pointer.y = H / 2;
+      smoothPointer.x = W/2; smoothPointer.y = H/2;
+      isMouseDown = true;
+  }
+  resize(); window.addEventListener('resize', resize);
+
+  document.body.addEventListener('mousemove', e => {
+      pointer.x = e.clientX;
+      pointer.y = e.clientY;
+      pointer.lastMove = Date.now();
+  });
+
+  document.body.addEventListener('mousedown', e => {
+      ripples.push({ x: e.clientX, y: e.clientY, radius: 0, alpha: 1, hue: 180 });
+      isMouseDown = true;
+  });
+  
+  document.body.addEventListener('mouseup', e => {
+      isMouseDown = false;
+  });
+
+  const hsl = (h, s, l, a) => `hsla(${h % 360}, ${s * 100}%, ${l * 100}%, ${a})`;
+
+  function draw(tms) {
+      ctx.clearRect(0, 0, W, H);
+      ctx.globalCompositeOperation = 'lighter';
+      
+      let targetX = pointer.x;
+      let targetY = pointer.y;
+      let influenceMul = 1;
+
+      if (startup.active) {
+          const elapsed = tms - startup.start;
+          if (elapsed < startup.duration) {
+              targetX = W/2 + Math.cos(elapsed * 0.006) * W * 0.12;
+              targetY = H/2 + Math.sin(elapsed * 0.007) * H * 0.12;
+              influenceMul = 1 + 0.8 * (1 - Math.min(1, elapsed / startup.duration));
+              isMouseDown = true;
+          } else {
+              startup.active = false;
+              isMouseDown = false;
+          }
+      } else {
+          if (Date.now() - pointer.lastMove > config.idleTimeout) {
+              const time = tms / 5000;
+              targetX = W/2 + Math.cos(time) * W * 0.35;
+              targetY = H/2 + Math.sin(time * 1.4) * H * 0.35;
+          }
+      }
+      
+      smoothPointer.x += (targetX - smoothPointer.x) * 0.3;
+      smoothPointer.y += (targetY - smoothPointer.y) * 0.3;
+
+      particles.forEach(p => {
+          let fx = (p.ox - p.x) * config.springStiffness * p.z;
+          let fy = (p.oy - p.y) * config.springStiffness * p.z;
+          const dx_mouse = p.x - smoothPointer.x;
+          const dy_mouse = p.y - smoothPointer.y;
+          const dist_mouse_sq = dx_mouse * dx_mouse + dy_mouse * dy_mouse;
+          const curInfluence = config.pointerInfluence * influenceMul;
+
+          if (dist_mouse_sq < curInfluence * curInfluence) {
+              const dist = Math.sqrt(dist_mouse_sq);
+              const force = (1 - dist / curInfluence) * 0.5;
+              fx += (smoothPointer.x - p.x) * force * (1 - p.z);
+              fy += (smoothPointer.y - p.y) * force * (1 - p.z);
+          }
+          
+          let pulseEffect = 0;
+          for (const r of ripples) {
+              const dx_ripple = p.x - r.x;
+              const dy_ripple = p.y - r.y;
+              const dist_ripple_sq = dx_ripple * dx_ripple + dy_ripple * dy_ripple;
+              const ripple_influence_radius = r.radius + 60;
+              if (dist_ripple_sq < ripple_influence_radius * ripple_influence_radius) {
+                  const dist_ripple = Math.sqrt(dist_ripple_sq);
+                  const pulse_proximity = 1 - Math.abs(dist_ripple - r.radius) / ripple_influence_radius;
+                  pulseEffect = Math.max(pulseEffect, Math.pow(pulse_proximity, 3) * r.alpha * 0.8);
+              }
+          }
+
+          p.vx += fx; p.vy += fy;
+          p.vx *= config.damping; p.vy *= config.damping;
+          p.x += p.vx; p.y += p.vy;
+          
+          const stretch = Math.sqrt(p.vx*p.vx + p.vy*p.vy);
+          const stretchFactor = Math.min(1, stretch / 15);
+
+          if (stretch > 0.5 && isMouseDown) {
+              ctx.beginPath(); ctx.moveTo(p.ox, p.oy); ctx.lineTo(p.x, p.y);
+              ctx.strokeStyle = hsl(180 + stretchFactor * 40, 1, 0.5 + stretchFactor * 0.3, stretchFactor * 0.7);
+              ctx.lineWidth = p.z * 1.5; ctx.stroke();
+          }
+
+          let lightness = 0.6 + stretchFactor * 0.3 + pulseEffect * 0.5;
+          let alpha = 0.8 * p.z + pulseEffect * 0.2;
+          
+          ctx.fillStyle = hsl(230 + stretchFactor * -30, 1, Math.min(1, lightness), Math.min(1, alpha));
+          ctx.beginPath(); ctx.arc(p.x, p.y, p.z * 1.5, 0, TAU); ctx.fill();
+      });
+
+      for (let i = ripples.length - 1; i >= 0; i--) {
+          const r = ripples[i];
+          r.radius += 10;
+          r.alpha -= 0.025;
+          if (r.alpha <= 0) {
+              ripples.splice(i, 1);
+          } else {
+              const gradient = ctx.createRadialGradient(r.x, r.y, 0, r.x, r.y, r.radius);
+              const pulse = Math.sin(tms / 40 + r.radius / 10);
+              gradient.addColorStop(0, hsl(r.hue + pulse * 30, 1, 0.7, r.alpha * 0.5));
+              gradient.addColorStop(0.7, hsl(r.hue - pulse * 30, 1, 0.6, r.alpha * 0.2));
+              gradient.addColorStop(1, hsl(r.hue, 1, 0.5, 0));
+              ctx.beginPath();
+              ctx.arc(r.x, r.y, r.radius, 0, TAU);
+              ctx.fillStyle = gradient;
+              ctx.fill();
+          }
+      }
+
+      const cursorSize = 10;
+      const gradient = ctx.createRadialGradient(smoothPointer.x, smoothPointer.y, 0, smoothPointer.x, smoothPointer.y, cursorSize * 3);
+      gradient.addColorStop(0, hsl(180, 1, 0.8, 1));
+      gradient.addColorStop(1, hsl(195, 1, 0.6, 0));
+      ctx.fillStyle = gradient;
+      ctx.beginPath(); ctx.arc(smoothPointer.x, smoothPointer.y, cursorSize * 3, 0, TAU); ctx.fill();
+
+      ctx.globalCompositeOperation = 'source-over';
+      requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+});
+</script>
+
+
+</body>
+</html>

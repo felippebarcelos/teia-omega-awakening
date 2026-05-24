@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>AION-RISPA-NDC • Núcleo Ontoprocedural (HTML único)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root{--bg:#0b0d12;--card:#0f1220;--muted:#a7b0c0;--fg:#eef3ff;--acc:#7aa2ff;--ok:#29d398;--err:#ff6b6b;--warn:#ffd166}
+    *{box-sizing:border-box} html,body{height:100%}
+    body{margin:0;background:radial-gradient(90vw 90vh at 50% -10%,#101426 0%,#0b0d12 55%,#090b10 100%);color:var(--fg);font:14px/1.35 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu}
+    .wrap{max-width:1080px;margin:0 auto;padding:24px}
+    header{display:flex;gap:16px;align-items:center;margin:8px 0 16px}
+    .logo{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#0f1220 0%,#151a33 100%);box-shadow:0 0 0 1px #1b2142, 0 10px 30px rgba(18,25,54,.35)}
+    .title{font-weight:700;letter-spacing:.3px}
+    .subtitle{color:var(--muted);font-size:12.5px}
+    .card{background:linear-gradient(180deg,rgba(18,23,42,.75),rgba(10,12,20,.75));backdrop-filter:blur(8px);border:1px solid #1a2140;border-radius:14px;padding:16px 16px;margin:10px 0;box-shadow:0 6px 26px rgba(0,0,0,.35)}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    @media (max-width:900px){.grid{grid-template-columns:1fr}}
+    .kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+    @media (max-width:900px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    .kpi{background:rgba(16,20,36,.8);border:1px solid #1a2140;border-radius:12px;padding:12px 12px}
+    .kpi b{display:block;font-size:12px;color:var(--muted)}
+    .kpi span{font-size:13.5px}
+    .drop{display:flex;align-items:center;justify-content:center;gap:10px;height:120px;border:1.5px dashed #2a3260;border-radius:12px;background:rgba(18,23,42,.5);cursor:pointer;transition:.2s}
+    .drop:hover{border-color:var(--acc);box-shadow:0 0 0 1px rgba(122,162,255,.25)}
+    .btns{display:flex;gap:10px;flex-wrap:wrap}
+    button{appearance:none;border:1px solid #273063;background:#14192b;color:var(--fg);padding:10px 12px;border-radius:10px;cursor:pointer;font-weight:600}
+    button.acc{border-color:#3651cc;background:linear-gradient(180deg,#1a2352,#151b3b)}
+    button.ok{border-color:#1f6e58;background:linear-gradient(180deg,#123b2f,#0e2e26)}
+    button.warn{border-color:#7a5a19;background:linear-gradient(180deg,#3b2a0f,#2b1f0b)}
+    .log{font-family:ui-monospace,Consolas,Menlo,monospace;font-size:12.5px;background:#0a0d18;border:1px solid #1a2140;border-radius:10px;padding:10px;white-space:pre-wrap;max-height:220px;overflow:auto}
+    .oktag{color:var(--ok)} .errtag{color:var(--err)} .warntag{color:var(--warn)}
+    input[type="checkbox"]{transform:translateY(1px)}
+    .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    .mono{font-family:ui-monospace,Consolas,Menlo,monospace}
+    .muted{color:var(--muted)}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="logo" aria-hidden="true"></div>
+      <div>
+        <div class="title">AION-RISPA-NDC • Núcleo Ontoprocedural</div>
+        <div class="subtitle">Seed-first • HTML único • Zona Ativa vStream (UI + Motor autossuficiente)</div>
+      </div>
+    </header>
+
+    <section class="card">
+      <div class="kpis">
+        <div class="kpi"><b>Estado</b><span id="kState">Pronto</span></div>
+        <div class="kpi"><b>Arquivo</b><span id="kName" class="mono muted">—</span></div>
+        <div class="kpi"><b>Tamanho</b><span id="kSize" class="mono muted">—</span></div>
+        <div class="kpi"><b>SHA-256</b><span id="kSha" class="mono muted">—</span></div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <div class="card">
+        <div class="row" style="justify-content:space-between">
+          <div>
+            <div style="font-weight:700">Entrada</div>
+            <div class="muted">Solte um arquivo na zona abaixo ou clique para escolher</div>
+          </div>
+          <label class="row mono muted">
+            <input type="checkbox" id="embedData" checked />
+            Embutir dados na Seed (permite restauração bit-a-bit)
+          </label>
+        </div>
+        <div id="drop" class="drop" tabindex="0" role="button" aria-label="Solte ou clique para escolher arquivo">
+          <span>Soltar / Selecionar arquivo</span>
+          <input id="file" type="file" style="display:none" />
+        </div>
+        <div class="btns" style="margin-top:12px">
+          <button class="acc" id="btnSeed">Gerar Seed</button>
+          <button id="btnDownloadSeed" disabled>Baixar Seed (.teia.json)</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="font-weight:700">Restauração</div>
+        <div class="muted">Selecione uma Seed .teia.json para restaurar o arquivo original</div>
+        <div class="btns" style="margin:10px 0">
+          <input id="seedFile" type="file" accept=".json,.teia.json" />
+          <button class="ok" id="btnRestore" disabled>Restaurar arquivo</button>
+        </div>
+        <div class="row">
+          <label class="row mono muted"><input type="checkbox" id="verifyAfterRestore" checked /> Verificar SHA-256 após restauração</label>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div style="font-weight:700">Log</div>
+      <div id="log" class="log" aria-live="polite"></div>
+    </section>
+  </div>
+
+<script id="aion-rispa-ndc-core">
+(()=>{
+  const $ = sel => document.querySelector(sel);
+  const logEl = $('#log');
+  const kName = $('#kName'), kSize = $('#kSize'), kSha = $('#kSha'), kState = $('#kState');
+  const log = (msg)=>{ const now = new Date().toISOString().replace('T',' ').replace('Z',''); logEl.textContent += `[${now}] ${msg}\n`; logEl.scrollTop = logEl.scrollHeight; };
+  const fmtBytes = n=>{ const u=['B','KB','MB','GB','TB']; let i=0, x=n; while(x>=1024&&i<u.length-1){x/=1024;i++} return `${x.toFixed(x<10&&i>0?2:0)} ${u[i]}`; };
+
+  async function sha256Hex(arrBuf){ const hash = await crypto.subtle.digest('SHA-256', arrBuf); const b = new Uint8Array(hash); return [...b].map(x=>x.toString(16).padStart(2,'0')).join(''); }
+  function toBase64(arrBuf){ let bin = ''; const bytes = new Uint8Array(arrBuf); for(let i=0;i<bytes.length;i++) bin += String.fromCharCode(bytes[i]); return btoa(bin); }
+  function fromBase64(b64){ const bin = atob(b64); const bytes = new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) bytes[i] = bin.charCodeAt(i); return bytes.buffer; }
+
+  function canonicalStringify(obj){
+    const seen = new Set();
+    const sortObj = v=>{
+      if(v===null||typeof v!=='object') return v;
+      if(seen.has(v)) throw new Error('Ciclo no objeto');
+      seen.add(v);
+      if(Array.isArray(v)) return v.map(sortObj);
+      const keys = Object.keys(v).sort(); const o={}; for(const k of keys) o[k]=sortObj(v[k]); return o;
+    };
+    return JSON.stringify(sortObj(obj));
+  }
+
+  let currentFile = null, currentSeed = null, currentFileArrBuf = null;
+  const fileInput = $('#file'); const drop = $('#drop');
+
+  function bindDrop(){
+    const pick=()=>fileInput.click();
+    drop.addEventListener('click', pick);
+    drop.addEventListener('keypress', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); pick(); }});
+    ['dragenter','dragover'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault(); drop.style.borderColor='var(--acc)'}));
+    ['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault(); drop.style.borderColor='#2a3260'}));
+    drop.addEventListener('drop', e=>{ const f = e.dataTransfer?.files?.[0]; if(f) handleFile(f); });
+    fileInput.addEventListener('change', e=>{ const f = e.target.files?.[0]; if(f) handleFile(f); });
+  }
+
+  async function handleFile(f){
+    currentFile = f;
+    kName.textContent = f.name; kSize.textContent = fmtBytes(f.size); kSha.textContent = '—'; kState.textContent = 'Arquivo selecionado';
+    currentFileArrBuf = await f.arrayBuffer(); const h = await sha256Hex(currentFileArrBuf); kSha.textContent = h;
+    log(`Arquivo carregado: ${f.name} (${fmtBytes(f.size)})`);
+  }
+
+  const btnSeed = $('#btnSeed'); const btnDownloadSeed = $('#btnDownloadSeed'); const embedDataChk = $('#embedData');
+
+  btnSeed.addEventListener('click', async ()=>{
+    try{
+      if(!currentFile || !currentFileArrBuf){ log('Nenhum arquivo selecionado.'); return; }
+      kState.textContent = 'Gerando Seed...';
+      const fileHash = await sha256Hex(currentFileArrBuf);
+      const nowIso = new Date().toISOString();
+
+      const manifest = {'@context':'https://aion-rispa-ndc/ontoprocedural/v1','@type':'Seed','name':currentFile.name,'size':currentFile.size,'sha256':fileHash,'mime':currentFile.type||'application/octet-stream','createdAt':nowIso,'engine':'AION-RISPA-NDC/core-0.1','embedData':!!embedDataChk.checked};
+      const payload = {'manifest':manifest,'data': embedDataChk.checked ? toBase64(currentFileArrBuf) : null};
+
+      const canonical = canonicalStringify(payload); const seedHash = await sha256Hex(new TextEncoder().encode(canonical));
+      currentSeed = {'_type':'aion.teia.seed','_version':'0.1','_hash':seedHash,'payload':payload};
+
+      const seedStr = canonicalStringify(currentSeed);
+      const blob = new Blob([seedStr], {type:'application/json'});
+      btnDownloadSeed.onclick = ()=>{ const a=document.createElement('a'); a.download = `${currentFile.name}.teia.json`; a.href = URL.createObjectURL(blob); a.click(); setTimeout(()=>URL.revokeObjectURL(a.href), 2000); };
+      btnDownloadSeed.disabled = false; kState.textContent = 'Seed pronta';
+      log(`Seed gerada • sha256(seed)=${seedHash.slice(0,16)}… • embed=${manifest.embedData}`);
+    }catch(err){ log(`Falha ao gerar Seed: ${err.message}`); kState.textContent = 'Erro'; }
+  });
+
+  const seedFile = $('#seedFile'); const btnRestore = $('#btnRestore'); const verifyAfterRestore = $('#verifyAfterRestore');
+  let loadedSeedObj = null;
+  seedFile.addEventListener('change', async e=>{
+    const f = e.target.files?.[0]; if(!f){ btnRestore.disabled = true; return; }
+    try{
+      const txt = await f.text(); const obj = JSON.parse(txt);
+      const canonical = canonicalStringify(obj); const recomputed = await sha256Hex(new TextEncoder().encode(canonical));
+      if(obj._hash !== recomputed){ log('Aviso: hash da Seed não confere (seed._hash != sha256(canonical))'); } else { log('Seed validada: sha256(seed) OK'); }
+      loadedSeedObj = obj; btnRestore.disabled = false;
+    }catch(err){ loadedSeedObj = null; btnRestore.disabled = true; log(`Falha ao carregar Seed: ${err.message}`); }
+  });
+
+  btnRestore.addEventListener('click', async ()=>{
+    try{
+      if(!loadedSeedObj){ log('Nenhuma Seed carregada.'); return; }
+      const p = loadedSeedObj.payload || {}; if(!p.manifest){ log('Seed inválida: manifest ausente.'); return; }
+      if(p.data==null){ log('Seed sem dados embutidos. Não é possível restaurar sem fonte externa.'); return; }
+      const arrBuf = fromBase64(p.data);
+      if(verifyAfterRestore.checked){
+        const h = await sha256Hex(arrBuf);
+        if(h !== p.manifest.sha256){ log(`Falha na verificação: SHA-256 não confere (${h} != ${p.manifest.sha256})`); return; }
+        else { log('Verificação SHA-256 OK (restauração íntegra).'); }
+      }
+      const a=document.createElement('a'); a.download = p.manifest.name || 'restored.bin';
+      a.href = URL.createObjectURL(new Blob([arrBuf], {type: p.manifest.mime||'application/octet-stream'})); a.click();
+      setTimeout(()=>URL.revokeObjectURL(a.href), 2000);
+    }catch(err){ log(`Erro na restauração: ${err.message}`); }
+  });
+
+  bindDrop(); log('Núcleo carregado. Pronto para gerar Seeds e restaurar localmente.');
+})();
+</script>
+</body>
+</html>

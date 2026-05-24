@@ -3,6 +3,21 @@ restored/
 restored_test/
 .playwright-mcp/
 
+# Backups e binários grandes (excedem limite GitHub 100MB)
+TEIA_CORE_GOLDEN_MASTER_v1.zip
+*.zip
+*.M4V
+*.m4v
+*.mp4
+*.MP4
+*.avi
+*.mov
+*.mkv
+*.wmv
+
+# Configuração pessoal do Claude Code
+.claude/
+
 # Logs e temporários
 *.log
 *.tmp

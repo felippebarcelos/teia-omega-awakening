@@ -1,0 +1,217 @@
+<#
+.SYNOPSIS
+Quick analysis for compress_summary / cim_summary JSON + perf CSV.
+.Safe, robust to many CsvStats shapes (Hashtable, OrderedDictionary, PSCustomObject).
+.Usage:
+  . .\quick_analysis_fixed.ps1        # carrega a função na sessão
+  Invoke-QuickAnalysis -CimSummaryJson "$env:TEMP\cim_summary_20250907_185125.json" -vCPUPricePerHour 0.04
+#>
+
+Set-StrictMode -Version Latest
+
+function RoundTo {
+  param(
+    [Parameter(Mandatory=$true)][double]$Value,
+    [Parameter(Mandatory=$false)][int]$Digits = 6
+  )
+  return [math]::Round([double]$Value, [int]$Digits, [System.MidpointRounding]::ToEven)
+}
+
+function ToDouble {
+  param([Parameter(Mandatory=$true)][object]$v)
+  if ($null -eq $v) { return $null }
+  $s = $v.ToString().Trim()
+  if ($s -eq "") { return $null }
+  $s2 = $s -replace ',', '.'
+  $out = 0.0
+  if ([double]::TryParse($s2, [System.Globalization.NumberStyles]::Float, [System.Globalization.CultureInfo]::InvariantCulture, [ref]$out)) {
+    return $out
+  }
+  return $null
+}
+
+function Get-LatestSummaryFile {
+  param(
+    [string[]]$Patterns = @("cim_summary_*.json","compress_summary_*.json"),
+    [string]$Folder = $env:TEMP
+  )
+  $all = @()
+  foreach ($p in $Patterns) {
+    try { $found = Get-ChildItem -Path $Folder -Filter $p -File -ErrorAction SilentlyContinue } catch { $found = $null }
+    if ($found) { $all += $found }
+  }
+  if ($all.Count -eq 0) { return $null }
+  return ($all | Sort-Object LastWriteTime -Descending | Select-Object -First 1).FullName
+}
+
+function Write-Log { param($m) Write-Output ("[{0}] {1}" -f (Get-Date -Format "s"), $m) }
+
+function Invoke-QuickAnalysis {
+  [CmdletBinding()]
+  param(
+    [string]$CimSummaryJson = "",
+    [double]$vCPUPricePerHour = 0.0,
+    [int]$LogicalCores = [Environment]::ProcessorCount
+  )
+
+  try {
+    if ([string]::IsNullOrWhiteSpace($CimSummaryJson)) {
+      $CimSummaryJson = Get-LatestSummaryFile
+      if (-not $CimSummaryJson) { Write-Error "Nenhum summary JSON encontrado em $env:TEMP (padrões cim_summary_* ou compress_summary_*)."; return }
+    } else {
+      if (-not (Test-Path $CimSummaryJson)) { Write-Error "Arquivo passado não existe: $CimSummaryJson"; return }
+    }
+
+    Write-Log "Usando summary: $CimSummaryJson"
+    $raw = Get-Content -Path $CimSummaryJson -Raw | ConvertFrom-Json
+
+    $origBytes = ToDouble ($raw.OrigBytes) ; if (-not $origBytes) { $origBytes = 0 }
+    $compBytes = ToDouble ($raw.CompressedBytes) ; if (-not $compBytes) { $compBytes = 0 }
+    $elapsedSec = ToDouble ($raw.ElapsedSec) ; if (-not $elapsedSec) { $elapsedSec = 0 }
+    $mbPerSec_report = ToDouble ($raw.MB_per_sec) ; if (-not $mbPerSec_report) { $mbPerSec_report = $null }
+    $perfCsv = ($raw | Select-Object -ExpandProperty PerfCsv -ErrorAction SilentlyContinue)
+
+    # Normalizar CsvStats (pode ser OrderedDictionary, Hashtable, PSCustomObject, JSON object)
+    $csvStats = $null
+    if ($raw -and $raw.PSObject.Properties.Name -contains 'CsvStats') { $csvStats = $raw.CsvStats }
+    if (-not $csvStats) { $csvStats = @{} }
+
+    # montar lista de chaves de CsvStats de forma segura
+    $csvKeys = @()
+    if ($csvStats -is [System.Collections.IDictionary]) {
+      foreach ($k in $csvStats.Keys) { $csvKeys += [string]$k }
+    } elseif ($csvStats -ne $null) {
+      $csvKeys = $csvStats.PSObject.Properties | ForEach-Object { $_.Name }
+    }
+
+    function Get-MetricValue {
+      param($obj)
+      if ($null -eq $obj) { return $null }
+      try {
+        if ($obj -is [System.Collections.IDictionary]) {
+          if ($obj.Contains('Mean')) { return ToDouble $obj['Mean'] }
+          if ($obj.Contains('P50'))  { return ToDouble $obj['P50'] }
+          foreach ($k in $obj.Keys) {
+            $v = $obj[$k]
+            $d = ToDouble $v
+            if ($d -ne $null) { return $d }
+          }
+        } else {
+          $props = $obj.PSObject.Properties
+          if ($props.Name -contains 'Mean') { return ToDouble $obj.Mean }
+          if ($props.Name -contains 'P50')  { return ToDouble $obj.P50 }
+          foreach ($p in $props) {
+            $d = ToDouble $p.Value
+            if ($d -ne $null) { return $d }
+          }
+        }
+      } catch { return $null }
+      return $null
+    }
+
+    # heurística para cpuMean (várias chaves possíveis)
+    $cpuMean = $null
+    foreach ($k in $csvKeys) {
+      if ($k -match '(?i)cpu|processor') {
+        $node = if ($csvStats -is [System.Collections.IDictionary]) { $csvStats[$k] } else { $csvStats."$k" }
+        $cpuMean = Get-MetricValue $node
+        if ($cpuMean -ne $null) { break }
+      }
+    }
+    if ($cpuMean -eq $null) {
+      foreach ($k in $csvKeys) {
+        $node = if ($csvStats -is [System.Collections.IDictionary]) { $csvStats[$k] } else { $csvStats."$k" }
+        $cpuMean = Get-MetricValue $node
+        if ($cpuMean -ne $null) { break }
+      }
+    }
+
+    # montar relatório
+    $report = [ordered]@{
+      SummaryFile = $CimSummaryJson
+      OrigBytes = $origBytes
+      CompressedBytes = $compBytes
+      CompressionRatio = if ($origBytes -gt 0 -and $compBytes -gt 0) { RoundTo -Value (($compBytes / $origBytes)) -Digits 6 } else { $null }
+      ElapsedSec_report = if ($elapsedSec -ne $null) { RoundTo -Value $elapsedSec -Digits 6 } else { $null }
+      MB_per_sec_report = if ($elapsedSec -gt 0 -and $origBytes -gt 0) { RoundTo -Value ((($origBytes / 1MB) / $elapsedSec)) -Digits 6 } else { $mbPerSec_report }
+      PerfCsv = $perfCsv
+      CsvStats_Keys = $csvKeys
+      CsvStats_Raw = $csvStats
+      MethodA = $null
+      MethodB = $null
+      Cost = $null
+      Notes = @()
+    }
+
+    # Método A: usar cpuMean (porcentagem)
+    if ($cpuMean -ne $null -and $origBytes -gt 0 -and $elapsedSec -gt 0) {
+      $cpu_seconds_est = ($cpuMean / 100.0) * $elapsedSec * $LogicalCores
+      $gbs = $origBytes / 1GB
+      $cpu_seconds_per_gb = if ($gbs -gt 0) { $cpu_seconds_est / $gbs } else { $null }
+      $report.MethodA = [ordered]@{
+        cpu_pct_mean = RoundTo -Value $cpuMean -Digits 6
+        logical_cores = $LogicalCores
+        cpu_seconds_est = RoundTo -Value $cpu_seconds_est -Digits 6
+        cpu_seconds_per_gb = if ($cpu_seconds_per_gb -ne $null) { RoundTo -Value $cpu_seconds_per_gb -Digits 6 } else { $null }
+      }
+    } else {
+      $report.MethodA = "Impossível calcular (falta cpuMean, origBytes ou elapsedSec)."
+    }
+
+    # Método B: usar elapsedSec como proxy (1 vCPU)
+    if ($origBytes -gt 0 -and $elapsedSec -gt 0) {
+      $gbsB = $origBytes / 1GB
+      $cpu_seconds_per_gb_B = if ($gbsB -gt 0) { $elapsedSec / $gbsB } else { $null }
+      $report.MethodB = [ordered]@{
+        elapsedSec = RoundTo -Value $elapsedSec -Digits 6
+        cpu_seconds_per_gb_methodB = if ($cpu_seconds_per_gb_B -ne $null) { RoundTo -Value $cpu_seconds_per_gb_B -Digits 6 } else { $null }
+      }
+    } else {
+      $report.MethodB = "Impossível calcular (falta origBytes ou elapsedSec)."
+    }
+
+    # custo por GB (se informado)
+    if ($vCPUPricePerHour -gt 0) {
+      $pricePerSecond = $vCPUPricePerHour / 3600.0
+      $secPerGb = $null
+      if ($report.MethodA -is [System.Collections.Hashtable] -and $report.MethodA.cpu_seconds_per_gb) {
+        $secPerGb = ToDouble $report.MethodA.cpu_seconds_per_gb
+      } elseif ($report.MethodB -is [System.Collections.Hashtable] -and $report.MethodB.cpu_seconds_per_gb_methodB) {
+        $secPerGb = ToDouble $report.MethodB.cpu_seconds_per_gb_methodB
+      }
+      if ($secPerGb -ne $null) {
+        $report.Cost = [ordered]@{
+          vCPUPricePerHour = $vCPUPricePerHour
+          cost_cpu_per_gb = RoundTo -Value ($secPerGb * $pricePerSecond) -Digits 8
+          currency = "USD (assumido)"
+        }
+      } else {
+        $report.Cost = "Impossível calcular custo: secPerGb indefinido."
+      }
+    }
+
+    # notas rápidas
+    if ($raw.PSObject.Properties.Name -contains 'CompressorExecuted' -and ($raw.CompressorExecuted -match 'Compress-Archive')) {
+      $report.Notes += "Fallback Compress-Archive detectado; para benchmark de algoritmos reais use executável no PATH."
+    }
+    if ($report.CompressionRatio -ne $null -and ($report.CompressionRatio -as [double]) -lt 0.01) {
+      $report.Notes += "CompressionRatio muito baixo -> input altamente redundante; use arquivos maiores/variados para benchmark."
+    }
+    if ($cpuMean -eq $null) {
+      $report.Notes += "Não foi encontrado cpu_pct médio no CsvStats; verifique o CSV/perf counters ou rode Get-Counter manualmente."
+    }
+
+    $out = Join-Path $env:TEMP ("quick_analysis_{0}.json" -f (Get-Date -Format "yyyyMMdd_HHmmss"))
+    $report | ConvertTo-Json -Depth 12 | Out-File -FilePath $out -Encoding UTF8 -Force
+    Write-Log "Análise salva em: $out"
+    $report | Format-List
+
+    return $report
+  }
+  catch {
+    Write-Error "Erro: $($_.Exception.Message)"
+    return @{ Error = $_.ToString(); Timestamp = (Get-Date).ToString("o") }
+  }
+}
+
+# EOF. --- Não execute nada no carregamento. Dot-source este arquivo e invoque Invoke-QuickAnalysis.

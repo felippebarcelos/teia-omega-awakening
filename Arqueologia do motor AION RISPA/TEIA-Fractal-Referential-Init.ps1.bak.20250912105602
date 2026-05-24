@@ -1,0 +1,223 @@
+# TEIA-Fractal-Referential-Init.ps1
+# Inicializa o pipeline referencial (dicionário fractal + seed referencial + expansão) para o Núcleo TEIA
+# Padrão: PowerShell puro, idempotente e com logs claros.
+
+param(
+    [string]$Root = 'D:\Teia\TEIA_NUCLEO\offline\nano',
+    [int]$BlockKB = 256
+)
+
+Set-StrictMode -Version Latest
+$ErrorActionPreference = 'Stop'
+$PSDefaultParameterValues['Out-File:Encoding'] = 'utf8'
+
+function Write-Log{
+    param([string]$Msg,[string]$Level = 'INFO')
+    $ts = (Get-Date).ToString('yyyy-MM-dd HH:mm:ss.fff')
+    "$ts [$Level] $Msg"
+}
+
+function Ensure-Dir{ param([string]$Path) if(-not (Test-Path $Path)){ New-Item -ItemType Directory -Path $Path | Out-Null } }
+
+# --- Resolução de caminhos
+$RefDir = Join-Path $Root 'referential'
+$ScriptsDir = Join-Path $RefDir 'scripts'
+$DictPath = Join-Path $RefDir 'teia_dict_fractal.jsonl'
+$LogPath = Join-Path $RefDir 'referential_init.log'
+Ensure-Dir $RefDir
+Ensure-Dir $ScriptsDir
+
+# --- Persistência de log
+Write-Log "Inicializando TEIA Referencial em $Root" | Tee-Object -Append -FilePath $LogPath | Out-Null
+
+# --- Função utilitária: salvar script com conteúdo
+function Save-Script{
+    param([string]$Path,[string]$Content)
+    $dir = Split-Path -Parent $Path
+    Ensure-Dir $dir
+    Set-Content -Path $Path -Value $Content -NoNewline -Encoding UTF8
+    Write-Log "Atualizado: $Path" | Tee-Object -Append -FilePath $LogPath | Out-Null
+}
+
+# =========================
+# 1) teia_dict_gen.ps1
+# =========================
+$script_dict_gen = @"
+param(
+  [string]$Root = '$Root',
+  [string]$Out = '$DictPath',
+  [int]$BlockKB = $BlockKB,
+  [int]$MaxBlocksPerType = 256,
+  [int]$SamplePerFile = 1048576,
+  [switch]$IncludeData
+)
+Set-StrictMode -Version Latest
+$ErrorActionPreference = 'Stop'
+$PSDefaultParameterValues['Out-File:Encoding'] = 'utf8'
+
+function Write-Log{ param([string]$Msg,[string]$Level='INFO') "$((Get-Date).ToString('HH:mm:ss.fff')) [$Level] $Msg" }
+function Ensure-Dir{ param([string]$Path) if(-not (Test-Path $Path)){ New-Item -ItemType Directory -Path $Path | Out-Null } }
+
+$extGroups = @{
+  'video' = '*.mp4','*.mov','*.mkv','*.avi';
+  'img'   = '*.png','*.jpg','*.jpeg','*.gif','*.webp';
+  'zip'   = '*.zip','*.7z','*.rar';
+  'bin'   = '*.dll','*.exe','*.lib','*.sys';
+  'doc'   = '*.pdf','*.docx','*.xlsx','*.pptx','*.txt','*.json'
+}
+
+$BK = $BlockKB * 1024
+$stats = [System.Collections.Generic.Dictionary[string,int]]::new()
+$dict  = [System.Collections.Generic.Dictionary[string,hashtable]]::new()
+
+foreach($k in $extGroups.Keys){
+  $patterns = $extGroups[$k]
+  $files = foreach($p in $patterns){ Get-ChildItem -Path $Root -Recurse -ErrorAction SilentlyContinue -Include $p }
+  Write-Log "Tipo $k → $($files.Count) arquivos"
+  foreach($f in $files){
+    try{
+      $len = $f.Length
+      if($len -le 0){ continue }
+      $sample = [Math]::Min($SamplePerFile, $len)
+      $step = [Math]::Max([int]($sample / 4), $BK)
+      for($ofs=0; $ofs -lt $sample; $ofs+=$step){
+        $sz = [Math]::Min($BK, $len - $ofs)
+        if($sz -le 0){ break }
+        $fs = [System.IO.File]::Open($f.FullName,'Open','Read','Read')
+        try{
+          $fs.Position = $ofs
+          $buf = New-Object byte[] $sz
+          $read = $fs.Read($buf,0,$sz)
+        } finally { $fs.Dispose() }
+        if($read -le 0){ continue }
+        $sha = (Get-FileHash -Algorithm SHA256 -InputStream ([IO.MemoryStream]::new($buf,0,$read))).Hash.ToLower()
+        if(-not $stats.ContainsKey($sha)){ $stats[$sha]=0 }
+        $stats[$sha]++
+        if(-not $dict.ContainsKey($sha)){
+          $entry = @{ sha256=$sha; bytes=$read; kind=$k; hints=@{} }
+          $mb = [System.BitConverter]::ToString($buf[0..([Math]::Min(15,$read-1))]).Replace('-','')
+          $entry.hints.magic = $mb
+          if($IncludeData){ $entry.data_b64 = [Convert]::ToBase64String($buf,0,$read) }
+          $dict[$sha] = $entry
+        }
+      }
+    }catch{ Write-Log "WARN: $($_.Exception.Message) em $($f.FullName)" 'WARN' }
+  }
+}
+
+# Seleciona os mais frequentes
+$top = $stats.GetEnumerator() | Sort-Object Value -Descending | Select-Object -First ($MaxBlocksPerType * $extGroups.Keys.Count)
+$topSet = [System.Collections.Generic.HashSet[string]]::new()
+foreach($t in $top){ $null = $topSet.Add($t.Key) }
+
+# Emite JSONL
+$dir = Split-Path -Parent $Out; if($dir){ if(-not (Test-Path $dir)){ New-Item -ItemType Directory -Path $dir | Out-Null } }
+if(Test-Path $Out){ Remove-Item $Out -Force }
+foreach($k in $dict.Keys){ if($topSet.Contains($k)){ ($dict[$k] | ConvertTo-Json -Compress) | Add-Content -Encoding UTF8 $Out } }
+Write-Log "Dicionário salvo: $Out (linhas=$((Get-Content $Out -TotalCount 1000000).Count))"
+"@
+
+Save-Script -Path (Join-Path $ScriptsDir 'teia_dict_gen.ps1') -Content $script_dict_gen
+
+# =========================
+# 2) teia_seed_ref.ps1
+# =========================
+$script_seed_ref = @"
+param(
+  [string]$InputPath,
+  [string]$DictPath = '$DictPath',
+  [string]$OutSeed = '',
+  [int]$BlockKB = $BlockKB
+)
+Set-StrictMode -Version Latest
+$ErrorActionPreference = 'Stop'
+$PSDefaultParameterValues['Out-File:Encoding'] = 'utf8'
+if(-not (Test-Path $InputPath)){ throw "Arquivo não encontrado: $InputPath" }
+$BK = $BlockKB * 1024
+
+# Carrega dicionário em memória (sha256 -> data_b64 opcional)
+$map = [System.Collections.Generic.Dictionary[string,hashtable]]::new()
+if(Test-Path $DictPath){ Get-Content $DictPath | ForEach-Object{ $o = $_ | ConvertFrom-Json; $map[$o.sha256] = $o } }
+
+$fi = Get-Item $InputPath
+$origSha = (Get-FileHash -Algorithm SHA256 -Path $InputPath).Hash.ToLower()
+if([string]::IsNullOrWhiteSpace($OutSeed)){ $OutSeed = "$($fi.FullName).seed.json" }
+
+$segments = @()
+$fs = [System.IO.File]::OpenRead($InputPath)
+try{
+  $buf = New-Object byte[] $BK
+  while($true){
+    $read = $fs.Read($buf,0,$BK)
+    if($read -le 0){ break }
+    $sha = (Get-FileHash -Algorithm SHA256 -InputStream ([IO.MemoryStream]::new($buf,0,$read))).Hash.ToLower()
+    if($map.ContainsKey($sha) -and $map[$sha].data_b64){
+      $segments += @{ t='ref'; sha=$sha }
+    }else{
+      $segments += @{ t='inline'; sha=$sha; b64=[Convert]::ToBase64String($buf,0,$read) }
+    }
+  }
+} finally { $fs.Dispose() }
+
+$seed = @{ manifest=@{ file=$fi.Name; size=$fi.Length; sha256=$origSha; blockKB=$BlockKB }; segments=$segments; dict_path=$DictPath }
+$seed | ConvertTo-Json -Compress | Set-Content -Encoding UTF8 $OutSeed
+Write-Output "Seed gerada: $OutSeed"
+"@
+
+Save-Script -Path (Join-Path $ScriptsDir 'teia_seed_ref.ps1') -Content $script_seed_ref
+
+# =========================
+# 3) teia_expand_ref.ps1
+# =========================
+$script_expand_ref = @"
+param(
+  [string]$SeedPath,
+  [string]$DictPath = '$DictPath',
+  [string]$OutFile = ''
+)
+Set-StrictMode -Version Latest
+$ErrorActionPreference = 'Stop'
+$PSDefaultParameterValues['Out-File:Encoding'] = 'utf8'
+if(-not (Test-Path $SeedPath)){ throw "Seed não encontrada: $SeedPath" }
+
+$seed = Get-Content $SeedPath -Raw | ConvertFrom-Json
+$man  = $seed.manifest
+if([string]::IsNullOrWhiteSpace($OutFile)){ $OutFile = (Join-Path (Split-Path $SeedPath -Parent) $man.file) }
+
+# Carrega dicionário
+$map = [System.Collections.Generic.Dictionary[string,hashtable]]::new()
+if(Test-Path $DictPath){ Get-Content $DictPath | ForEach-Object{ $o = $_ | ConvertFrom-Json; $map[$o.sha256] = $o } }
+
+$dir = Split-Path -Parent $OutFile; if($dir -and -not (Test-Path $dir)){ New-Item -ItemType Directory -Path $dir | Out-Null }
+$fs = [System.IO.File]::Open($OutFile,'Create','Write','Write')
+try{
+  foreach($seg in $seed.segments){
+    if($seg.t -eq 'ref'){
+      if(-not ($map.ContainsKey($seg.sha) -and $map[$seg.sha].data_b64)){
+        throw "Bloco referenciado não encontrado no dicionário: $($seg.sha)"
+      }
+      $bytes = [Convert]::FromBase64String($map[$seg.sha].data_b64)
+      $fs.Write($bytes,0,$bytes.Length)
+    } elseif($seg.t -eq 'inline'){
+      $bytes = [Convert]::FromBase64String($seg.b64)
+      $fs.Write($bytes,0,$bytes.Length)
+    } else {
+      throw "Segmento desconhecido: $($seg.t)"
+    }
+  }
+} finally { $fs.Dispose() }
+
+# Verificação SHA256
+$sha = (Get-FileHash -Algorithm SHA256 -Path $OutFile).Hash.ToLower()
+$ok = $sha -eq $man.sha256
+$report = @{ out=$OutFile; declared_sha=$man.sha256; restored_sha=$sha; ok=$ok }
+$report | ConvertTo-Json -Compress | Write-Output
+if(-not $ok){ throw "SHA256 divergente" }
+"@
+
+Save-Script -Path (Join-Path $ScriptsDir 'teia_expand_ref.ps1') -Content $script_expand_ref
+
+# Finalização
+Write-Log "Scripts prontos em $ScriptsDir" | Tee-Object -Append -FilePath $LogPath | Out-Null
+Write-Output (Write-Log "✔ Setup referencial concluído.")
+Write-Output (Write-Log "Próximos: 1) Gerar dicionário 2) Criar seed 3) Expandir/validar.")

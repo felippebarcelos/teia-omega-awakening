@@ -1,0 +1,765 @@
+{
+  "timestamp": "2026-05-07T14:06:23.520752",
+  "hardware_ram_gb": 16,
+  "target_gb": 40.0,
+  "chunk_mb": 512.0,
+  "python_version": "3.14.0 (tags/v3.14.0:ebf955d, Oct  7 2025, 10:15:03) [MSC v.1944 64 bit (AMD64)]",
+  "phases": [
+    {
+      "fase": 1,
+      "veredicto": "ALOCOU COM PAGING em 19.8s (pagefile extenso)",
+      "resultado_raw": "SUCESSO_PAGING",
+      "baseline_rss_mb": 13.5,
+      "peak_rss_mb": 12124.6,
+      "delta_ram_mb": 12111.1,
+      "elapsed_alloc_s": 19.79,
+      "elapsed_total_s": 22.38
+    },
+    {
+      "fase": 2,
+      "target_gb": 40.0,
+      "chunk_mb": 512.0,
+      "num_chunks": 80,
+      "elapsed_s": 101.11,
+      "throughput_gbs": 0.396,
+      "baseline_rss_mb": 7.9,
+      "peak_rss_mb": 520.2,
+      "delta_ram_mb": 512.3,
+      "invariante_ram_ok": true,
+      "veredicto_ram": "APROVADO — pico 520.2 MB < 1024 MB (1 GB)",
+      "sha256_acumulado": "945bbe68c9ff2fb05319294accfde8eb2978637ed02927b93df0d8289cec7b2b",
+      "chunks": [
+        {
+          "chunk_num": 1,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.1,
+          "rss_apos_hash_mb": 520.1,
+          "rss_apos_free_mb": 8.1,
+          "pico_ciclo_mb": 520.1,
+          "chunk_elapsed_ms": 1336.6
+        },
+        {
+          "chunk_num": 2,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.1,
+          "rss_apos_hash_mb": 520.1,
+          "rss_apos_free_mb": 8.1,
+          "pico_ciclo_mb": 520.1,
+          "chunk_elapsed_ms": 1263.2
+        },
+        {
+          "chunk_num": 3,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1283.9
+        },
+        {
+          "chunk_num": 4,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1266.9
+        },
+        {
+          "chunk_num": 5,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1272.4
+        },
+        {
+          "chunk_num": 6,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1267.6
+        },
+        {
+          "chunk_num": 7,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1253.3
+        },
+        {
+          "chunk_num": 8,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1260.8
+        },
+        {
+          "chunk_num": 9,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1287.9
+        },
+        {
+          "chunk_num": 10,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1281.7
+        },
+        {
+          "chunk_num": 11,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1338.2
+        },
+        {
+          "chunk_num": 12,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1338.7
+        },
+        {
+          "chunk_num": 13,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1284.7
+        },
+        {
+          "chunk_num": 14,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1289.5
+        },
+        {
+          "chunk_num": 15,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1254.9
+        },
+        {
+          "chunk_num": 16,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1248.5
+        },
+        {
+          "chunk_num": 17,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1244.6
+        },
+        {
+          "chunk_num": 18,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1277.5
+        },
+        {
+          "chunk_num": 19,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1242.7
+        },
+        {
+          "chunk_num": 20,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1245.0
+        },
+        {
+          "chunk_num": 21,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1259.7
+        },
+        {
+          "chunk_num": 22,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1250.4
+        },
+        {
+          "chunk_num": 23,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1243.1
+        },
+        {
+          "chunk_num": 24,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1251.3
+        },
+        {
+          "chunk_num": 25,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1248.2
+        },
+        {
+          "chunk_num": 26,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1248.8
+        },
+        {
+          "chunk_num": 27,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1256.4
+        },
+        {
+          "chunk_num": 28,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1244.4
+        },
+        {
+          "chunk_num": 29,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1247.2
+        },
+        {
+          "chunk_num": 30,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1256.4
+        },
+        {
+          "chunk_num": 31,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1258.2
+        },
+        {
+          "chunk_num": 32,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1261.3
+        },
+        {
+          "chunk_num": 33,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1273.5
+        },
+        {
+          "chunk_num": 34,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1261.7
+        },
+        {
+          "chunk_num": 35,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1281.1
+        },
+        {
+          "chunk_num": 36,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1283.7
+        },
+        {
+          "chunk_num": 37,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1292.1
+        },
+        {
+          "chunk_num": 38,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1267.2
+        },
+        {
+          "chunk_num": 39,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1256.7
+        },
+        {
+          "chunk_num": 40,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1264.8
+        },
+        {
+          "chunk_num": 41,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1251.4
+        },
+        {
+          "chunk_num": 42,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1251.5
+        },
+        {
+          "chunk_num": 43,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1251.5
+        },
+        {
+          "chunk_num": 44,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1255.0
+        },
+        {
+          "chunk_num": 45,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1258.2
+        },
+        {
+          "chunk_num": 46,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1255.0
+        },
+        {
+          "chunk_num": 47,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1254.6
+        },
+        {
+          "chunk_num": 48,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1260.8
+        },
+        {
+          "chunk_num": 49,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1271.8
+        },
+        {
+          "chunk_num": 50,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1254.2
+        },
+        {
+          "chunk_num": 51,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1262.1
+        },
+        {
+          "chunk_num": 52,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1257.7
+        },
+        {
+          "chunk_num": 53,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1266.1
+        },
+        {
+          "chunk_num": 54,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1256.5
+        },
+        {
+          "chunk_num": 55,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1253.8
+        },
+        {
+          "chunk_num": 56,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1254.9
+        },
+        {
+          "chunk_num": 57,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1270.2
+        },
+        {
+          "chunk_num": 58,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1287.3
+        },
+        {
+          "chunk_num": 59,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1279.0
+        },
+        {
+          "chunk_num": 60,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1280.7
+        },
+        {
+          "chunk_num": 61,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1269.0
+        },
+        {
+          "chunk_num": 62,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1242.9
+        },
+        {
+          "chunk_num": 63,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1285.0
+        },
+        {
+          "chunk_num": 64,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1252.9
+        },
+        {
+          "chunk_num": 65,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1250.7
+        },
+        {
+          "chunk_num": 66,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1250.2
+        },
+        {
+          "chunk_num": 67,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1253.7
+        },
+        {
+          "chunk_num": 68,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1255.7
+        },
+        {
+          "chunk_num": 69,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1257.3
+        },
+        {
+          "chunk_num": 70,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1256.5
+        },
+        {
+          "chunk_num": 71,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1259.6
+        },
+        {
+          "chunk_num": 72,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1242.7
+        },
+        {
+          "chunk_num": 73,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1271.3
+        },
+        {
+          "chunk_num": 74,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1256.5
+        },
+        {
+          "chunk_num": 75,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1251.1
+        },
+        {
+          "chunk_num": 76,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1254.1
+        },
+        {
+          "chunk_num": 77,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1259.4
+        },
+        {
+          "chunk_num": 78,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1253.0
+        },
+        {
+          "chunk_num": 79,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1250.6
+        },
+        {
+          "chunk_num": 80,
+          "size_mb": 512.0,
+          "rss_apos_alloc_mb": 520.2,
+          "rss_apos_hash_mb": 520.2,
+          "rss_apos_free_mb": 8.2,
+          "pico_ciclo_mb": 520.2,
+          "chunk_elapsed_ms": 1253.3
+        }
+      ]
+    }
+  ],
+  "veredicto_final": {
+    "fase1_colapso": false,
+    "fase1_resultado_raw": "SUCESSO_PAGING",
+    "fase2_ram_invariante_ok": true,
+    "fase2_peak_mb": 520.2,
+    "delta_pico_fases_mb": 11604.4,
+    "throughput_gbs": 0.396,
+    "sha256_40gb": "945bbe68c9ff2fb05319294accfde8eb2978637ed02927b93df0d8289cec7b2b",
+    "prova_validada": false
+  }
+}

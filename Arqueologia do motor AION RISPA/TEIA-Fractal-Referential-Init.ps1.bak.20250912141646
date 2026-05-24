@@ -1,0 +1,8 @@
+# Pequeno init shim para garantir diretórios e relatório
+$Root = 'D:\Teia\TEIA_NUCLEO\offline\nano'
+$RefDir = 'D:\Teia\TEIA_NUCLEO\offline\nano\referential'
+$ScriptsDir = 'D:\Teia\TEIA_NUCLEO\offline\nano\referential\scripts'
+$DictPath = 'D:\Teia\TEIA_NUCLEO\offline\nano\referential\teia_dict_fractal.jsonl'
+if(-not (Test-Path $RefDir)){ New-Item -ItemType Directory -Path $RefDir | Out-Null }
+if(-not (Test-Path $ScriptsDir)){ New-Item -ItemType Directory -Path $ScriptsDir | Out-Null }
+""TEIA referential initialized. Scripts in $ScriptsDir and dict path $DictPath.""

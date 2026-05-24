@@ -1,0 +1,85 @@
+✅ CHECKLIST DE TAXONOMIA – DASHBOARD UNIVERSAL DE COMPRESSÃO PROCEDURAL
+
+Organizado por categorias essenciais de validação.
+
+📁 1. Taxonomia do Arquivo de Entrada
+Critério	Descrição	Status
+Nome e extensão do arquivo	Ex: video_teste.m4v	⬜
+Tipo de mídia	Vídeo, Áudio, Imagem, Texto, Binário	⬜
+Codec de vídeo	Ex: H.264, H.265, VP9	⬜
+Codec de áudio (se aplicável)	Ex: AAC, MP3	⬜
+Resolução	Ex: 1920x1080	⬜
+FPS	Ex: 30fps	⬜
+Bitrate	Ex: 3.2 Mbps	⬜
+Duração total	Ex: 00:02:15	⬜
+Entropia estimada	Alta, Média, Baixa (via análise)	⬜
+Presença de metadata	Subtitles, chapters, GPS, etc.	⬜
+Arquivo público para revalidação?	Link ou checksum público	⬜
+⚙️ 2. Taxonomia do Método de Compressão
+Critério	Descrição	Status
+Nome do método	Ex: "Seed-First v1.0"	⬜
+Tipo de compressão	Lossy, Lossless, Híbrida	⬜
+Base do algoritmo	Determinístico, Probabilístico	⬜
+Técnicas envolvidas	Ex: Procedural Synthesis, Predictive Modeling	⬜
+Seed contém o quê?	Vetores? Deltas? Instruções?	⬜
+Tamanho fixo ou variável?	⬜	
+Requisitos mínimos para restauração	RAM, CPU, Disco	⬜
+Licença do método	Ex: MIT, GPL, Proprietário	⬜
+Tempo médio de compressão e restauração	Para fins comparativos	⬜
+🧪 3. Taxonomia de Validação Experimental
+Critério	Descrição	Status
+Ambiente de teste documentado	CPU, RAM, SO, Disco, GPU	⬜
+Tipo de benchmark	Cold start, Hot start, Stress test	⬜
+N° de execuções por experimento	Ex: 30 execuções	⬜
+Média e desvio padrão dos tempos	Ex: 16.1s ± 0.2s	⬜
+Validação byte-a-byte	Checksum final 100% idêntico	⬜
+Erro de reconstrução (se houver)	% ou tipo de distorção	⬜
+Ferramentas usadas na análise	Ex: ffmpeg, sha256sum, fio	⬜
+Log de falhas	Exceções durante restauração?	⬜
+🔄 4. Taxonomia de Comparabilidade
+Critério	Descrição	Status
+Benchmark contra compressão tradicional	gzip, lzma, zstd, ffmpeg	⬜
+Benchmark contra codecs visuais	x264, ProRes, etc.	⬜
+Benchmark procedural vs. baseline	Tempo + qualidade	⬜
+Tabela comparativa direta (MB, tempo, IOPS)	Ex: Seed-First vs Gzip	⬜
+Teste com arquivos de diferentes entropias	Alto, médio e baixo	⬜
+🧰 5. Taxonomia Técnica do Sistema
+Critério	Descrição	Status
+CPU modelo e geração	Ex: Intel i7-12700KF	⬜
+RAM disponível e usada	Ex: 16 GB DDR4, uso médio 3.2 GB	⬜
+Tipo e interface de disco	Ex: NVMe PCIe 4.0 x4	⬜
+SO e versão	Ex: Windows 11 22H2	⬜
+Kernel / Scheduler	Se aplicável (Linux/Unix)	⬜
+Monitoramento térmico?	Temperatura em tempo real	⬜
+🌍 6. Taxonomia de Universalização
+Critério	Descrição	Status
+Arquivos e seeds publicamente disponíveis	Repositório, hash ou DOI	⬜
+Licença de uso dos dados originais	Livre, CC, comercial?	⬜
+Permissão de reuso do método	Código aberto, comercial?	⬜
+Documentação técnica em inglês	Sim ou vergonha mundial	⬜
+Dados formatados em JSON/XML para reprocessamento	Machine-readable	⬜
+Versão semântica do método	Ex: Seed-First v1.2.3	⬜
+📊 7. Visualização e Transparência
+Critério	Descrição	Status
+Download do relatório completo	Em PDF, JSON, CSV	⬜
+Modo de “comparar runs” lado a lado	Interface interativa	⬜
+Dashboard multilíngue	Inglês/PT no mínimo	⬜
+Código-fonte da interface/documentação	Repositório Git?	⬜
+Logs de execução visíveis	Outputs, erros, métricas cruas	⬜
+📌 Sugestão de Layout no Dashboard
+
+Estruture em abas ou painéis, como:
+
+Arquivo → Metadados e estrutura
+
+Compressão → Técnica e detalhes do seed
+
+Benchmark → Tempos, IOPS, erros
+
+Comparativo → Gráficos com gzip, ffmpeg, etc.
+
+Ambiente → Hardware + SO + logs
+
+Reprodutibilidade → Hashes, links, reuso
+
+Exportar → JSON, PDF, CSV com relatório final

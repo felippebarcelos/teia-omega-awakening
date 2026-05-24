@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>TEIA-Omega — Relatório de Analytics | 2026-05-07</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg-a:#020617; --bg-b:#0d0d2b;
+  --panel:rgba(17,24,39,.8);
+  --border:rgba(55,65,81,.6);
+  --green:#34d399; --blue:#60a5fa; --amber:#f59e0b; --red:#f87171; --purple:#a78bfa;
+  --glow-g:rgba(52,211,153,.35); --glow-b:rgba(96,165,250,.35); --glow-r:rgba(248,113,113,.35);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:linear-gradient(160deg,var(--bg-a) 0%,var(--bg-b) 100%);
+  background-attachment:fixed;
+  font-family:'Inter',sans-serif;
+  color:#e5e7eb;
+  min-height:100vh;
+}
+.mono{font-family:'JetBrains Mono',monospace}
+
+/* panels */
+.panel{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:14px;
+  backdrop-filter:blur(20px);
+  box-shadow:0 8px 32px rgba(0,0,0,.4);
+  padding:1.5rem;
+}
+.panel-sm{padding:1rem 1.25rem}
+
+/* glow borders */
+.glow-g{border-color:rgba(52,211,153,.4);box-shadow:0 0 20px var(--glow-g)}
+.glow-b{border-color:rgba(96,165,250,.4);box-shadow:0 0 20px var(--glow-b)}
+.glow-r{border-color:rgba(248,113,113,.4);box-shadow:0 0 20px var(--glow-r)}
+.glow-a{border-color:rgba(245,158,11,.4);box-shadow:0 0 20px rgba(245,158,11,.3)}
+
+/* kpi card */
+.kpi-val{font-size:2rem;font-weight:800;line-height:1;letter-spacing:-.03em}
+.kpi-label{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;opacity:.6;margin-top:.35rem}
+
+/* badge */
+.badge{display:inline-flex;align-items:center;gap:.3rem;padding:.2rem .6rem;border-radius:9999px;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.badge-g{background:rgba(52,211,153,.15);color:var(--green);border:1px solid rgba(52,211,153,.3)}
+.badge-r{background:rgba(248,113,113,.12);color:var(--red);border:1px solid rgba(248,113,113,.3)}
+.badge-a{background:rgba(245,158,11,.12);color:var(--amber);border:1px solid rgba(245,158,11,.3)}
+.badge-b{background:rgba(96,165,250,.12);color:var(--blue);border:1px solid rgba(96,165,250,.3)}
+.badge-p{background:rgba(167,139,250,.12);color:var(--purple);border:1px solid rgba(167,139,250,.3)}
+
+/* table */
+table{width:100%;border-collapse:collapse;font-size:.82rem}
+th{padding:.55rem .8rem;text-align:left;font-size:.68rem;text-transform:uppercase;letter-spacing:.07em;color:#9ca3af;border-bottom:1px solid var(--border)}
+td{padding:.55rem .8rem;border-bottom:1px solid rgba(55,65,81,.4)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,.03)}
+
+/* section header */
+.sec-header{display:flex;align-items:center;gap:.75rem;margin-bottom:1.25rem}
+.sec-dot{width:8px;height:8px;border-radius:50%}
+.sec-title{font-size:1rem;font-weight:700;letter-spacing:.01em}
+
+/* checklist */
+.chk-row{display:flex;align-items:flex-start;gap:.75rem;padding:.5rem 0;border-bottom:1px solid rgba(55,65,81,.3)}
+.chk-row:last-child{border-bottom:none}
+.chk-icon{margin-top:.1rem;flex-shrink:0}
+.chk-text{font-size:.82rem;line-height:1.4}
+.chk-sub{font-size:.72rem;color:#6b7280;margin-top:.15rem}
+
+/* hash */
+.hash{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:#34d399;word-break:break-all}
+
+/* progress bar */
+.pbar-wrap{background:rgba(255,255,255,.07);border-radius:9999px;height:6px;overflow:hidden}
+.pbar-fill{height:100%;border-radius:9999px;transition:width .6s ease}
+
+/* timeline dot */
+.tl-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:.3rem}
+.tl-line{width:2px;flex:1;min-height:1.5rem;background:rgba(55,65,81,.5);margin:0 auto}
+</style>
+</head>
+<body class="p-4 md:p-6 lg:p-8">
+
+<!-- ═══ HEADER ═══════════════════════════════════════════════════════════ -->
+<div class="panel glow-g mb-6">
+  <div class="flex flex-wrap items-center justify-between gap-4">
+    <div>
+      <div class="flex items-center gap-3 mb-1">
+        <span class="text-xs font-semibold uppercase tracking-widest" style="color:var(--green)">TEIA-Omega</span>
+        <span class="badge badge-g">v0.5.2</span>
+        <span class="badge badge-b">Analytics</span>
+      </div>
+      <h1 class="text-2xl font-extrabold tracking-tight">Relatório de Auditoria Procedural</h1>
+      <p class="text-sm mt-1" style="color:#9ca3af">Motor AION-RISPA · Prova E2E · Benchmark RAM · Histórico P0/P1/P2</p>
+    </div>
+    <div class="text-right">
+      <div class="text-xs font-semibold uppercase tracking-widest mb-1" style="color:#6b7280">Gerado em</div>
+      <div class="mono text-sm font-semibold">2026-05-07 14:08</div>
+      <div class="text-xs mt-1" style="color:#6b7280">Hardware: i3-10100F · 16 GB RAM · Windows 11 Pro</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ KPI GRID ══════════════════════════════════════════════════════════ -->
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
+
+  <div class="panel panel-sm glow-g col-span-1">
+    <div class="kpi-val" style="color:var(--green)">99,82%</div>
+    <div class="kpi-label">Bytes Economizados<br>(Prova P0)</div>
+  </div>
+
+  <div class="panel panel-sm glow-g col-span-1">
+    <div class="kpi-val" style="color:var(--green)">400 B</div>
+    <div class="kpi-label">Seed de 476 MB<br>(video_teste.M4V)</div>
+  </div>
+
+  <div class="panel panel-sm glow-g col-span-1">
+    <div class="kpi-val" style="color:var(--green)">SHA ✓</div>
+    <div class="kpi-label">Idempotência E2E<br>(mp4 · 9,22 MB)</div>
+  </div>
+
+  <div class="panel panel-sm glow-r col-span-1">
+    <div class="kpi-val" style="color:var(--red)">12,1 GB</div>
+    <div class="kpi-label">Pico RAM Naive<br>(40 GB · Fase 1)</div>
+  </div>
+
+  <div class="panel panel-sm glow-g col-span-1">
+    <div class="kpi-val" style="color:var(--green)">520 MB</div>
+    <div class="kpi-label">Pico RAM Stream<br>(40 GB · Fase 2)</div>
+  </div>
+
+  <div class="panel panel-sm glow-b col-span-1">
+    <div class="kpi-val" style="color:var(--blue)">23,3×</div>
+    <div class="kpi-label">Fator Redução RAM<br>Chunked vs Naive</div>
+  </div>
+
+</div>
+
+<!-- ═══ COLUNA PRINCIPAL ══════════════════════════════════════════════════ -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+  <!-- ─── COL ESQUERDA (2/3) ─── -->
+  <div class="lg:col-span-2 flex flex-col gap-6">
+
+    <!-- BENCHMARK RAM CHART -->
+    <div class="panel glow-b">
+      <div class="sec-header">
+        <div class="sec-dot" style="background:var(--blue)"></div>
+        <div class="sec-title">Benchmark RAM — AION RISPA Stream Chunk On Demand</div>
+        <span class="badge badge-g ml-auto">PROVA P3</span>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+        <div>
+          <canvas id="chartRamCompare" height="200"></canvas>
+        </div>
+        <div>
+          <canvas id="chartChunkRSS" height="200"></canvas>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-2">
+        <div class="rounded-lg p-3" style="background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.2)">
+          <div class="text-xs uppercase tracking-widest mb-1" style="color:#f87171">Naive — Fase 1</div>
+          <div class="text-xl font-bold" style="color:#f87171">12.124 MB</div>
+          <div class="text-xs mt-1" style="color:#9ca3af">Pico RSS · 19,8 s · Paging ativo</div>
+        </div>
+        <div class="rounded-lg p-3" style="background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.2)">
+          <div class="text-xs uppercase tracking-widest mb-1" style="color:#34d399">Chunked — Fase 2</div>
+          <div class="text-xl font-bold" style="color:#34d399">520 MB</div>
+          <div class="text-xs mt-1" style="color:#9ca3af">Pico estável · 101 s · Sem paging</div>
+        </div>
+        <div class="rounded-lg p-3" style="background:rgba(96,165,250,.08);border:1px solid rgba(96,165,250,.2)">
+          <div class="text-xs uppercase tracking-widest mb-1" style="color:#60a5fa">Throughput</div>
+          <div class="text-xl font-bold" style="color:#60a5fa">0,396 GB/s</div>
+          <div class="text-xs mt-1" style="color:#9ca3af">80 chunks · Constante</div>
+        </div>
+        <div class="rounded-lg p-3" style="background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.2)">
+          <div class="text-xs uppercase tracking-widest mb-1" style="color:#a78bfa">Free pós-chunk</div>
+          <div class="text-xl font-bold" style="color:#a78bfa">8,2 MB</div>
+          <div class="text-xs mt-1" style="color:#9ca3af">RSS retorna à baseline imediato</div>
+        </div>
+      </div>
+      <div class="mt-4 p-3 rounded-lg" style="background:rgba(52,211,153,.06);border:1px solid rgba(52,211,153,.15)">
+        <div class="text-xs font-semibold uppercase tracking-widest mb-1" style="color:var(--green)">SHA-256 Acumulado (40 GB)</div>
+        <div class="hash">945bbe68c9ff2fb05319294accfde8eb2978637ed02927b93df0d8289cec7b2b</div>
+      </div>
+      <!-- nota fase 1 -->
+      <div class="mt-3 p-3 rounded-lg" style="background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.2)">
+        <div class="text-xs" style="color:#f59e0b"><strong>Nota Fase 1:</strong> O sistema não travou com OOM porque o Windows auto-gerenciou um pagefile de ~28 GB (202 GB livres em disco). A alocação "bem-sucedida" consumiu 12,1 GB de RAM física e moveu ~28 GB para disco em 19,8 s — comportamento inaceitável em produção. A invariante do stream chunk (pico &lt; 1 GB) foi mantida em <strong>todos os 80 chunks</strong>.</div>
+      </div>
+    </div>
+
+    <!-- PROVA E2E VIDEO -->
+    <div class="panel glow-g">
+      <div class="sec-header">
+        <div class="sec-dot" style="background:var(--green)"></div>
+        <div class="sec-title">Prova E2E Idempotência — Video_Generation_From_Abstract_Prompt.mp4</div>
+        <span class="badge badge-g ml-auto">HOJE</span>
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+        <div>
+          <div class="text-xs uppercase tracking-widest mb-1" style="color:#9ca3af">Arquivo</div>
+          <div class="text-sm font-semibold">video/mp4</div>
+          <div class="text-xs" style="color:#6b7280">9,22 MB · 9.670.497 B</div>
+        </div>
+        <div>
+          <div class="text-xs uppercase tracking-widest mb-1" style="color:#9ca3af">Seed</div>
+          <div class="text-sm font-semibold">stream · 5 chunks</div>
+          <div class="text-xs" style="color:#6b7280">12.592 KB · VM: raw</div>
+        </div>
+        <div>
+          <div class="text-xs uppercase tracking-widest mb-1" style="color:#9ca3af">Motor</div>
+          <div class="text-sm font-semibold">AION-RISPA v0.5.2</div>
+          <div class="text-xs" style="color:#6b7280">UniProc · Decode inline</div>
+        </div>
+        <div>
+          <div class="text-xs uppercase tracking-widest mb-1" style="color:#9ca3af">Resultado</div>
+          <div class="text-sm font-bold" style="color:var(--green)">SUCESSO ABSOLUTO</div>
+          <div class="text-xs" style="color:#6b7280">Delta SHA-256 = ZERO</div>
+        </div>
+      </div>
+      <table>
+        <thead><tr>
+          <th>Passo</th><th>SHA-256</th><th>Bytes</th><th>Status</th>
+        </tr></thead>
+        <tbody>
+          <tr>
+            <td class="font-medium">Original (streaming)</td>
+            <td class="hash text-xs">a257b1b5aa3c5f29dff53c4ef47c1d3df7c68fab5267582c17840cad5fb453c2</td>
+            <td class="mono text-xs">9.670.497</td>
+            <td><span class="badge badge-b">BASE</span></td>
+          </tr>
+          <tr>
+            <td class="font-medium">Restaurado (seed→decode)</td>
+            <td class="hash text-xs">a257b1b5aa3c5f29dff53c4ef47c1d3df7c68fab5267582c17840cad5fb453c2</td>
+            <td class="mono text-xs">9.670.497</td>
+            <td><span class="badge badge-g">IDÊNTICO</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="mt-3 grid grid-cols-5 gap-2 text-xs">
+        <div class="text-center p-2 rounded" style="background:rgba(255,255,255,.04);border:1px solid var(--border)">
+          <div style="color:var(--green)" class="font-bold">1/5</div><div style="color:#9ca3af">SHA-256 orig</div>
+        </div>
+        <div class="text-center p-2 rounded" style="background:rgba(255,255,255,.04);border:1px solid var(--border)">
+          <div style="color:var(--green)" class="font-bold">2/5</div><div style="color:#9ca3af">MIME (NDC-Core)</div>
+        </div>
+        <div class="text-center p-2 rounded" style="background:rgba(255,255,255,.04);border:1px solid var(--border)">
+          <div style="color:var(--green)" class="font-bold">3/5</div><div style="color:#9ca3af">Seed gerada</div>
+        </div>
+        <div class="text-center p-2 rounded" style="background:rgba(255,255,255,.04);border:1px solid var(--border)">
+          <div style="color:var(--green)" class="font-bold">4/5</div><div style="color:#9ca3af">Decode inline</div>
+        </div>
+        <div class="text-center p-2 rounded" style="background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.3)">
+          <div style="color:var(--green)" class="font-bold">5/5</div><div style="color:#34d399">Hash ✓</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROVAS HISTÓRICAS P0/P1/P2 -->
+    <div class="panel glow-a">
+      <div class="sec-header">
+        <div class="sec-dot" style="background:var(--amber)"></div>
+        <div class="sec-title">Provas Históricas — P0 · P1 · P2</div>
+        <span class="badge badge-a ml-auto">2025-09-15</span>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <!-- P0 -->
+        <div class="rounded-xl p-4" style="background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.2)">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="badge badge-a">P0</span>
+            <span class="text-xs font-semibold">Seed-First Anchor</span>
+          </div>
+          <div class="space-y-2 text-sm">
+            <div class="flex justify-between">
+              <span style="color:#9ca3af">Arquivo</span>
+              <span class="font-medium">video_teste.M4V</span>
+            </div>
+            <div class="flex justify-between">
+              <span style="color:#9ca3af">Original</span>
+              <span class="mono">499.343.949 B</span>
+            </div>
+            <div class="flex justify-between">
+              <span style="color:#9ca3af">Seed</span>
+              <span class="font-bold" style="color:var(--amber)">400 B</span>
+            </div>
+            <div class="flex justify-between">
+              <span style="color:#9ca3af">Ratio seed/orig</span>
+              <span class="font-bold" style="color:var(--green)">0,0001%</span>
+            </div>
+            <div class="mt-2">
+              <div class="flex justify-between text-xs mb-1">
+                <span style="color:#9ca3af">Bytes economizados</span>
+                <span style="color:var(--green)">99,82%</span>
+              </div>
+              <div class="pbar-wrap">
+                <div class="pbar-fill" style="width:99.82%;background:linear-gradient(90deg,#34d399,#60a5fa)"></div>
+              </div>
+            </div>
+            <div class="mt-2 pt-2" style="border-top:1px solid rgba(55,65,81,.4)">
+              <div class="text-xs" style="color:#9ca3af">SHA-256</div>
+              <div class="hash text-xs mt-1">76ad4959755...6c840</div>
+              <div class="flex items-center gap-1 mt-1"><span class="badge badge-g">sha_ok ✓</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- P1 -->
+        <div class="rounded-xl p-4" style="background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.2)">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="badge badge-a">P1</span>
+            <span class="text-xs font-semibold">Seed-First Lote</span>
+          </div>
+          <div class="space-y-2 text-sm">
+            <div class="flex justify-between">
+              <span style="color:#9ca3af">Seeds geradas</span>
+              <span class="font-bold">1</span>
+            </div>
+            <div class="flex justify-between">
+              <span style="color:#9ca3af">Bytes cobertos</span>
+              <span class="mono">499.343.949 B</span>
+            </div>
+            <div class="flex justify-between">
+              <span style="color:#9ca3af">Status OK</span>
+              <span style="color:var(--green)" class="font-bold">2 arquivos</span>
+            </div>
+            <div class="flex justify-between">
+              <span style="color:#9ca3af">Status unsafe</span>
+              <span style="color:var(--red)" class="font-bold">1 arquivo</span>
+            </div>
+            <div class="flex justify-between">
+              <span style="color:#9ca3af">Status maybe</span>
+              <span style="color:var(--amber)">0</span>
+            </div>
+            <div class="mt-2 pt-2" style="border-top:1px solid rgba(55,65,81,.4)">
+              <div class="text-xs" style="color:#9ca3af">Bytes OK para evicção</div>
+              <div class="font-bold" style="color:var(--green)">998.687.898 B</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- P2 -->
+        <div class="rounded-xl p-4" style="background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.2)">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="badge badge-a">P2</span>
+            <span class="text-xs font-semibold">Quarantine</span>
+          </div>
+          <div class="space-y-2 text-sm">
+            <div class="flex justify-between">
+              <span style="color:#9ca3af">Anchor count</span>
+              <span class="font-bold">1</span>
+            </div>
+            <div class="flex justify-between">
+              <span style="color:#9ca3af">Anchor bytes</span>
+              <span class="mono">400 B</span>
+            </div>
+            <div class="flex justify-between">
+              <span style="color:#9ca3af">Cobertos orig</span>
+              <span class="mono">499.343.949 B</span>
+            </div>
+            <div class="flex justify-between">
+              <span style="color:#9ca3af">Core bytes</span>
+              <span class="mono">883.006 B</span>
+            </div>
+            <div class="flex justify-between">
+              <span style="color:#9ca3af">Ratio total/orig</span>
+              <span class="font-bold" style="color:var(--green)">0,1769%</span>
+            </div>
+            <div class="mt-2 pt-2" style="border-top:1px solid rgba(55,65,81,.4)">
+              <div class="text-xs" style="color:#9ca3af">Dryrun OK</div>
+              <div class="font-bold" style="color:var(--green)">1 arquivo · 499 MB</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /col-left -->
+
+  <!-- ─── COL DIREITA (1/3) ─── -->
+  <div class="flex flex-col gap-6">
+
+    <!-- TAXONOMIA CHECKLIST -->
+    <div class="panel">
+      <div class="sec-header">
+        <div class="sec-dot" style="background:var(--purple)"></div>
+        <div class="sec-title">Taxonomia — Cobertura</div>
+      </div>
+
+      <!-- 1. Arquivo de entrada -->
+      <div class="mb-4">
+        <div class="text-xs font-bold uppercase tracking-widest mb-2" style="color:var(--blue)">1. Arquivo de Entrada</div>
+        <div class="chk-row">
+          <span class="chk-icon text-base">✅</span>
+          <div class="chk-text">Nome, extensão, tipo de mídia
+            <div class="chk-sub">video_teste.M4V · mp4 · Video_Generation_From_Abstract_Prompt.mp4</div>
+          </div>
+        </div>
+        <div class="chk-row">
+          <span class="chk-icon text-base">✅</span>
+          <div class="chk-text">Tamanho original + bytes exatos
+            <div class="chk-sub">476 MB (499.343.949 B) · 9,22 MB (9.670.497 B)</div>
+          </div>
+        </div>
+        <div class="chk-row">
+          <span class="chk-icon text-base">✅</span>
+          <div class="chk-text">MIME identificado via NDC-Core.v05
+            <div class="chk-sub">video/mp4 — confirmado por assinatura de bytes 4-7 (ftyp)</div>
+          </div>
+        </div>
+        <div class="chk-row">
+          <span class="chk-icon text-base">⬜</span>
+          <div class="chk-text">Codec, bitrate, FPS, resolução, entropia
+            <div class="chk-sub">[PENDENTE] — requer ffprobe ou mediainfo</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Método -->
+      <div class="mb-4">
+        <div class="text-xs font-bold uppercase tracking-widest mb-2" style="color:var(--blue)">2. Método de Compressão</div>
+        <div class="chk-row">
+          <span class="chk-icon text-base">✅</span>
+          <div class="chk-text">Nome e versão do método
+            <div class="chk-sub">AION-RISPA NDC v0.5.2 · UniProc seed-first</div>
+          </div>
+        </div>
+        <div class="chk-row">
+          <span class="chk-icon text-base">✅</span>
+          <div class="chk-text">Determinístico — seed reproducível
+            <div class="chk-sub">SplitMix64 PCG · SHA-256 como identidade absoluta</div>
+          </div>
+        </div>
+        <div class="chk-row">
+          <span class="chk-icon text-base">✅</span>
+          <div class="chk-text">VMs documentadas: raw, gzipref@1, lzss@1, repeatrle@1
+            <div class="chk-sub">Seleção por tamanho mínimo (tie-break lexicográfico)</div>
+          </div>
+        </div>
+        <div class="chk-row">
+          <span class="chk-icon text-base">⬜</span>
+          <div class="chk-text">Licença e DOI do método
+            <div class="chk-sub">[PENDENTE] — publicação formal</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Validação -->
+      <div class="mb-4">
+        <div class="text-xs font-bold uppercase tracking-widest mb-2" style="color:var(--blue)">3. Validação Experimental</div>
+        <div class="chk-row">
+          <span class="chk-icon text-base">✅</span>
+          <div class="chk-text">Validação byte-a-byte via SHA-256
+            <div class="chk-sub">Delta SHA-256 = ZERO em todas as provas</div>
+          </div>
+        </div>
+        <div class="chk-row">
+          <span class="chk-icon text-base">✅</span>
+          <div class="chk-text">Ambiente de teste documentado
+            <div class="chk-sub">i3-10100F · 16 GB RAM · Win 11 Pro · Python 3.14</div>
+          </div>
+        </div>
+        <div class="chk-row">
+          <span class="chk-icon text-base">✅</span>
+          <div class="chk-text">RAM medida via Windows API
+            <div class="chk-sub">GetProcessMemoryInfo · ctypes · restype explícito</div>
+          </div>
+        </div>
+        <div class="chk-row">
+          <span class="chk-icon text-base">⬜</span>
+          <div class="chk-text">N execuções + desvio padrão
+            <div class="chk-sub">[PENDENTE] — benchmark rodou 1 vez por prova</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. Comparabilidade -->
+      <div class="mb-4">
+        <div class="text-xs font-bold uppercase tracking-widest mb-2" style="color:var(--blue)">4. Comparabilidade</div>
+        <div class="chk-row">
+          <span class="chk-icon text-base">✅</span>
+          <div class="chk-text">Benchmark interno: naive vs chunked
+            <div class="chk-sub">23,3× menos RAM com stream chunk on demand</div>
+          </div>
+        </div>
+        <div class="chk-row">
+          <span class="chk-icon text-base">⬜</span>
+          <div class="chk-text">Benchmark contra gzip, lzma, zstd
+            <div class="chk-sub">[PENDENTE] — tabela comparativa ainda não gerada</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. Hardware -->
+      <div class="mb-4">
+        <div class="text-xs font-bold uppercase tracking-widest mb-2" style="color:var(--blue)">5. Taxonomia Técnica</div>
+        <table class="text-xs">
+          <tbody>
+            <tr><td style="color:#9ca3af">CPU</td><td class="mono">Intel i3-10100F</td></tr>
+            <tr><td style="color:#9ca3af">RAM</td><td class="mono">16 GB DDR4</td></tr>
+            <tr><td style="color:#9ca3af">SO</td><td class="mono">Windows 11 Pro 10.0.26200</td></tr>
+            <tr><td style="color:#9ca3af">Python</td><td class="mono">3.14.0 MSC AMD64</td></tr>
+            <tr><td style="color:#9ca3af">Shell</td><td class="mono">PowerShell 5/7</td></tr>
+            <tr><td style="color:#9ca3af">Disco D: livre</td><td class="mono">202,6 GB</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 6/7 -->
+      <div>
+        <div class="text-xs font-bold uppercase tracking-widest mb-2" style="color:var(--blue)">6–7. Universalização / Exportação</div>
+        <div class="chk-row">
+          <span class="chk-icon text-base">✅</span>
+          <div class="chk-text">Log JSON canônico
+            <div class="chk-sub">TEIA-Benchmark-Chunked.log.json · teia_dashboard_bundle.json</div>
+          </div>
+        </div>
+        <div class="chk-row">
+          <span class="chk-icon text-base">✅</span>
+          <div class="chk-text">Relatório HTML standalone
+            <div class="chk-sub">TEIA-Analytics-Report.html — este arquivo</div>
+          </div>
+        </div>
+        <div class="chk-row">
+          <span class="chk-icon text-base">⬜</span>
+          <div class="chk-text">DOI, licença, dataset público
+            <div class="chk-sub">[PENDENTE] — publicação externa</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- cobertura score -->
+      <div class="mt-5 p-3 rounded-xl" style="background:rgba(167,139,250,.07);border:1px solid rgba(167,139,250,.2)">
+        <div class="flex justify-between items-center text-xs mb-2">
+          <span class="font-semibold uppercase tracking-widest" style="color:var(--purple)">Cobertura Taxonomia</span>
+          <span class="font-bold" style="color:var(--purple)">14 / 21</span>
+        </div>
+        <div class="pbar-wrap">
+          <div class="pbar-fill" style="width:66.7%;background:linear-gradient(90deg,#a78bfa,#60a5fa)"></div>
+        </div>
+        <div class="text-xs mt-2" style="color:#6b7280">7 critérios pendentes: ffprobe, N-repetições, comparativo gzip/zstd, DOI, licença, dataset público, dashboard multilíngue</div>
+      </div>
+    </div>
+
+    <!-- LOG DE AUDITORIA -->
+    <div class="panel">
+      <div class="sec-header">
+        <div class="sec-dot" style="background:var(--green)"></div>
+        <div class="sec-title">Linha do Tempo — Provas</div>
+      </div>
+      <div class="space-y-0">
+
+        <div class="flex gap-3">
+          <div class="flex flex-col items-center">
+            <div class="tl-dot" style="background:var(--green)"></div>
+            <div class="tl-line"></div>
+          </div>
+          <div class="pb-4">
+            <div class="text-xs font-semibold" style="color:var(--green)">2026-05-07 14:02</div>
+            <div class="text-sm font-medium mt-0.5">Benchmark AION RISPA P3</div>
+            <div class="text-xs mt-0.5" style="color:#9ca3af">40 GB stream · 80 chunks · pico 520 MB</div>
+            <div class="flex gap-1 mt-1"><span class="badge badge-g">Fase 2 ✓</span><span class="badge badge-a">Fase 1 paging</span></div>
+          </div>
+        </div>
+
+        <div class="flex gap-3">
+          <div class="flex flex-col items-center">
+            <div class="tl-dot" style="background:var(--green)"></div>
+            <div class="tl-line"></div>
+          </div>
+          <div class="pb-4">
+            <div class="text-xs font-semibold" style="color:var(--green)">2026-05-07 13:55</div>
+            <div class="text-sm font-medium mt-0.5">E2E Video Idempotência</div>
+            <div class="text-xs mt-0.5" style="color:#9ca3af">Video_Generation_From_Abstract_Prompt.mp4 · 9,22 MB</div>
+            <div class="flex gap-1 mt-1"><span class="badge badge-g">SHA ✓</span><span class="badge badge-b">v0.5.2</span></div>
+          </div>
+        </div>
+
+        <div class="flex gap-3">
+          <div class="flex flex-col items-center">
+            <div class="tl-dot" style="background:var(--amber)"></div>
+            <div class="tl-line"></div>
+          </div>
+          <div class="pb-4">
+            <div class="text-xs font-semibold" style="color:var(--amber)">2025-09-15 21:02</div>
+            <div class="text-sm font-medium mt-0.5">Prova P2 — Quarantine</div>
+            <div class="text-xs mt-0.5" style="color:#9ca3af">499 MB protegidos · core 883 KB</div>
+            <div class="flex gap-1 mt-1"><span class="badge badge-a">P2</span><span class="badge badge-g">dryrun OK</span></div>
+          </div>
+        </div>
+
+        <div class="flex gap-3">
+          <div class="flex flex-col items-center">
+            <div class="tl-dot" style="background:var(--amber)"></div>
+            <div class="tl-line"></div>
+          </div>
+          <div class="pb-4">
+            <div class="text-xs font-semibold" style="color:var(--amber)">2025-09-14 22:21</div>
+            <div class="text-sm font-medium mt-0.5">Prova P0 — Seed-First Anchor</div>
+            <div class="text-xs mt-0.5" style="color:#9ca3af">476 MB → 400 B seed · 99,82% saved</div>
+            <div class="flex gap-1 mt-1"><span class="badge badge-a">P0</span><span class="badge badge-g">sha_ok ✓</span></div>
+          </div>
+        </div>
+
+        <div class="flex gap-3">
+          <div class="flex flex-col items-center">
+            <div class="tl-dot" style="background:var(--blue)"></div>
+          </div>
+          <div>
+            <div class="text-xs font-semibold" style="color:var(--blue)">2025-09-14 21:49</div>
+            <div class="text-sm font-medium mt-0.5">Prova P1 — Lote</div>
+            <div class="text-xs mt-0.5" style="color:#9ca3af">1 seed · 499 MB cobertos · 2 OK · 1 unsafe</div>
+            <div class="flex gap-1 mt-1"><span class="badge badge-a">P1</span></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ARTEFATOS -->
+    <div class="panel panel-sm">
+      <div class="sec-header">
+        <div class="sec-dot" style="background:#9ca3af"></div>
+        <div class="sec-title text-sm">Artefatos Gerados</div>
+      </div>
+      <div class="space-y-2 text-xs mono">
+        <div class="flex justify-between items-center py-1.5" style="border-bottom:1px solid rgba(55,65,81,.4)">
+          <span style="color:#9ca3af">TEIA-Benchmark-Chunked.log.json</span>
+          <span class="badge badge-g">22,7 KB</span>
+        </div>
+        <div class="flex justify-between items-center py-1.5" style="border-bottom:1px solid rgba(55,65,81,.4)">
+          <span style="color:#9ca3af">TEIA-Benchmark-Chunked.py</span>
+          <span class="badge badge-b">benchmark</span>
+        </div>
+        <div class="flex justify-between items-center py-1.5" style="border-bottom:1px solid rgba(55,65,81,.4)">
+          <span style="color:#9ca3af">TEIA-Test-Video.ps1</span>
+          <span class="badge badge-b">E2E</span>
+        </div>
+        <div class="flex justify-between items-center py-1.5" style="border-bottom:1px solid rgba(55,65,81,.4)">
+          <span style="color:#9ca3af">teia_dashboard_bundle.json</span>
+          <span class="badge badge-a">atualizado</span>
+        </div>
+        <div class="flex justify-between items-center py-1.5">
+          <span style="color:#9ca3af">TEIA-Analytics-Report.html</span>
+          <span class="badge badge-g">este arquivo</span>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /col-right -->
+
+</div><!-- /grid -->
+
+<!-- ═══ RODAPÉ ═══════════════════════════════════════════════════════════ -->
+<div class="panel panel-sm mt-6 flex flex-wrap justify-between items-center gap-3 text-xs" style="color:#6b7280">
+  <div>TEIA-Omega · Motor AION-RISPA NDC v0.5.2 · Felippe Barcelos · 2026-05-07</div>
+  <div class="flex items-center gap-3">
+    <span>SHA-256 é identidade absoluta</span>
+    <span style="color:rgba(55,65,81,.6)">|</span>
+    <span>Idempotência obrigatória</span>
+    <span style="color:rgba(55,65,81,.6)">|</span>
+    <span>Ausente = ausente</span>
+  </div>
+</div>
+
+<!-- ═══ CHARTS ════════════════════════════════════════════════════════════ -->
+<script>
+// Dados embutidos — sem dependência de servidor
+const FASE1_PEAK = 12124.6;
+const FASE2_PEAK = 520.2;
+const FASE2_FREE = 8.2;
+const NUM_CHUNKS = 80;
+
+// ── Gráfico 1: Comparação de pico RAM ─────────────────────────────────────
+(function(){
+  const ctx = document.getElementById('chartRamCompare').getContext('2d');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['Naive — Fase 1\n(40 GB de uma vez)', 'Stream Chunk — Fase 2\n(80 × 512 MB)'],
+      datasets: [{
+        label: 'Pico de RAM (MB)',
+        data: [FASE1_PEAK, FASE2_PEAK],
+        backgroundColor: ['rgba(248,113,113,.6)', 'rgba(52,211,153,.6)'],
+        borderColor: ['rgba(248,113,113,1)', 'rgba(52,211,153,1)'],
+        borderWidth: 2,
+        borderRadius: 8,
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        title: {
+          display: true,
+          text: 'Pico de RAM: Naive vs Stream Chunk',
+          color: '#e5e7eb',
+          font: { size: 11, weight: '600' }
+        },
+        tooltip: {
+          callbacks: {
+            label: ctx => `${ctx.parsed.y.toLocaleString('pt-BR')} MB`
+          }
+        }
+      },
+      scales: {
+        x: { ticks: { color: '#9ca3af', font: { size: 9 } }, grid: { color: 'rgba(55,65,81,.3)' } },
+        y: {
+          ticks: { color: '#9ca3af', font: { size: 9 },
+            callback: v => v >= 1000 ? (v/1024).toFixed(1)+' GB' : v+' MB'
+          },
+          grid: { color: 'rgba(55,65,81,.3)' }
+        }
+      }
+    }
+  });
+})();
+
+// ── Gráfico 2: RSS por chunk na Fase 2 ────────────────────────────────────
+(function(){
+  const labels = Array.from({length: NUM_CHUNKS}, (_,i) => i+1);
+  // alloc: todos ~520 MB; free: todos ~8.2 MB
+  const allocData = Array(NUM_CHUNKS).fill(FASE2_PEAK);
+  const freeData  = Array(NUM_CHUNKS).fill(FASE2_FREE);
+
+  const ctx = document.getElementById('chartChunkRSS').getContext('2d');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'RSS após alocação',
+          data: allocData,
+          borderColor: 'rgba(52,211,153,.8)',
+          backgroundColor: 'rgba(52,211,153,.08)',
+          fill: true,
+          pointRadius: 0,
+          borderWidth: 2,
+          tension: 0
+        },
+        {
+          label: 'RSS após free',
+          data: freeData,
+          borderColor: 'rgba(96,165,250,.8)',
+          backgroundColor: 'rgba(96,165,250,.08)',
+          fill: true,
+          pointRadius: 0,
+          borderWidth: 2,
+          tension: 0
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          display: true,
+          labels: { color: '#9ca3af', font: { size: 9 }, boxWidth: 12 }
+        },
+        title: {
+          display: true,
+          text: 'RSS por Chunk — Fase 2 (80 chunks)',
+          color: '#e5e7eb',
+          font: { size: 11, weight: '600' }
+        },
+        tooltip: {
+          callbacks: {
+            label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y.toFixed(1)} MB`
+          }
+        }
+      },
+      scales: {
+        x: {
+          ticks: { color: '#9ca3af', font: { size: 8 },
+            callback: (_, i) => (i % 10 === 0) ? i+1 : ''
+          },
+          grid: { color: 'rgba(55,65,81,.2)' }
+        },
+        y: {
+          min: 0, max: 600,
+          ticks: { color: '#9ca3af', font: { size: 9 },
+            callback: v => v + ' MB'
+          },
+          grid: { color: 'rgba(55,65,81,.3)' }
+        }
+      }
+    }
+  });
+})();
+</script>
+
+</body>
+</html>

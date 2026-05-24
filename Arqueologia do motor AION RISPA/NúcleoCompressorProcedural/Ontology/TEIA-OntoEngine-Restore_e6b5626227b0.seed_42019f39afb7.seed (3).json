@@ -1,0 +1,20 @@
+{
+  "version": "1.0",
+  "created_utc": "2025-09-13T19:07:21Z",
+  "file": "D:\\Teia\\TEIA_NUCLEO\\offline\\nano\\universal_core\\data\\seeds\\TEIA-OntoEngine-Restore_e6b5626227b0.seed.json",
+  "size": 615,
+  "sha256": "42019f39afb707a85b20358b1a2f340b9b7fd413843f8e653d6dbe5b0e5439ec",
+  "mtime_utc": "2025-09-13T18:51:43Z",
+  "format": {
+    "sig": "png",
+    "by": "magic",
+    "ext": ".json",
+    "mime": "image/png"
+  },
+  "generator": {
+    "params": {},
+    "name": "none"
+  },
+  "procedural": false,
+  "notes": "No procedural generator identified; restoration not possible without payload or external source."
+}
