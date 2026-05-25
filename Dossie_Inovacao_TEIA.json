@@ -1,0 +1,327 @@
+{
+  "dossie_version": "1.0.0",
+  "generated": "2026-05-24",
+  "titulo": "TEIA-Omega: Motor de Reconstrucao Procedural Deterministica",
+  "subtitulo": "Compressao Semantica via Seeds + CAS + Opcodes C# — Dossie Tecnico v1.0",
+  "operador": "Felippe Barcelos",
+  "hardware": "i3-10100F, 16GB RAM, HDD",
+  "resumo_executivo": {
+    "o_que_e_teia": "TEIA nao e um compressor de proposito geral. E um motor de reconstrucao procedural deterministica: dado um 'seed' (receita semantica), reconstroi o arquivo exato bit-a-bit, verificado por SHA-256. Sua vantagem competitiva esta em dados proceduralmente geraveis — onde o seed e ordens de grandeza menor que o arquivo original.",
+    "onde_teia_vence": [
+      "Dados gerados repetitivamente (gen.repeat): seed = ~200B para arquivos de 512KB",
+      "Padroes periodicos conhecidos (gen.pattern): seed = ~236B para arquivos de 256KB",
+      "JSON arrays uniformes com campos aritmeticamente regulares (gen.json_structured): seed = 578B para 59KB",
+      "Corpora homogeneos compartilhando estrutura via dict.shared (implementando em v0.6.3)"
+    ],
+    "onde_teia_perde": [
+      "JSON heterogeneo real (APIs, schemas, exports) — fallback literal: seed = 1.33x orig",
+      "Dados de alta entropia (crypto, media) — fallback.lzma: ratio > 100%"
+    ],
+    "garantia_de_corretude": "SHA-256 verificado em cada decode — 1 byte divergente = throw imediato. Taxa de corretude: 100% (51/51 corpora testados)"
+  },
+  "motor": {
+    "versao_atual": "v0.6.2",
+    "sha256_v062": "7FB33B16A31DE38B87F21A3E1F357D33FB0B02EB4D23E648D7FE25E5212816E6",
+    "tamanho_bytes": 24087,
+    "classe_csharp": "TEIA.Native.TEIANativeV62",
+    "historico_versoes": [
+      {
+        "versao": "v0.5.0",
+        "sha256": "DEF540A76E1F188DCCA4F6D55D3C06D7B84C0395CF7F82C4A403AE209110F6BE",
+        "bytes": 8338,
+        "inovacao": "Opcodes PowerShell puro: gen.repeat, gen.pattern, rle.decode, gen.json_structured, fallback.lzma",
+        "gargalo": "Loop byte-a-byte PS, foreach por run, for-loop PS por record JSON, startup pwsh por decode"
+      },
+      {
+        "versao": "v0.6.0",
+        "sha256": "1290462833CADD90ADD5FEC38DE9D1BDBB1D9F23235A47DADE3828CB6247C1C1",
+        "bytes": 15464,
+        "inovacao": "C# inline via [Add-Type]: FillRepeat, FillPattern, XorBuffer, DecodeRLE, BuildJsonArray, SHA256Hex — todos CLR nativos",
+        "gargalo": "WriteAllBytes (I/O disco), ConvertFrom-Json (parser PS), startup pwsh"
+      },
+      {
+        "versao": "v0.6.1",
+        "sha256": "732300D7D7A4BCEC530C601261F32CA44A5C7F3667305FF247AE9EE2D61AAC14",
+        "bytes": 23477,
+        "inovacao": "RestoreInMemory: zero WriteAllBytes, System.Text.Json.JsonDocument.Parse em C#, retorna byte[] direto",
+        "gargalo": "SHA-256 final de todo o buffer (proporcional ao tamanho do output)"
+      },
+      {
+        "versao": "v0.6.2",
+        "sha256": "7FB33B16A31DE38B87F21A3E1F357D33FB0B02EB4D23E648D7FE25E5212816E6",
+        "bytes": 24087,
+        "inovacao": "SHA-256 streaming chunk-a-chunk: TransformBlock por opcode elimina passe final; slice.copy com ms.GetBuffer() zero-copia",
+        "gargalo": "dict.shared: NotImplementedException"
+      },
+      {
+        "versao": "v0.6.3",
+        "sha256": "0221A2363BF8BA508AA9D469226AEF8529AB289A0BE2213D6B59357BF757ADEC",
+        "bytes": 33252,
+        "inovacao": "dict.shared implementado: BuildSharedDict + CompressWithSharedDict (GZip-prefix) + DecompressWithSharedDict; Build-TEIASharedDict + Invoke-TEIAEncodeWithDict + Invoke-TEIARestoreWithDict. SHA-256 verificado.",
+        "gargalo": "GZip LZ77 window=32KB insuficiente para arquivos > 32KB. Proximo: dict.zstd_shared via zstd.exe (janela configuravel)"
+      }
+    ],
+    "opcodes_suportados": [
+      {"op": "gen.repeat", "descricao": "Preenchimento com byte unico repetido N vezes", "exemplo": "512KB de 0xAA com seed de 189 bytes"},
+      {"op": "gen.pattern", "descricao": "Repeticao de padrao periodico de P bytes", "exemplo": "256KB de padrao 16B com seed de 220 bytes"},
+      {"op": "gen.json_structured", "descricao": "Array JSON uniforme com campos aritmeticamente regulares", "exemplo": "59KB JSON CAS com seed de 514 bytes"},
+      {"op": "rle.decode", "descricao": "Runs de comprimento variavel", "exemplo": "256KB de 8 runs com seed de 328 bytes"},
+      {"op": "literal", "descricao": "Fallback Base64 quando nenhum opcode procedural se aplica", "custo": "seed = 1.33x orig"},
+      {"op": "fallback.lzma", "descricao": "Fallback LZMA via 7-Zip quando entropia > 0.95", "custo": "seed ~= orig (dados incompressíveis)"},
+      {"op": "lz.decode", "descricao": "Decompressao GZip/Brotli inline", "custo": "seed = compressed_bytes"},
+      {"op": "xform.xor", "descricao": "XOR com chave", "exemplo": "Derivacao de variante a partir de base conhecida"},
+      {"op": "slice.copy", "descricao": "Copia e repeticao de fatia do buffer acumulado", "exemplo": "Padroes de auto-referencia"},
+      {"op": "dict.ref", "descricao": "Mapeamento de indices a entradas de dicionario embutido no seed", "exemplo": "Dados categoricos repetitivos"},
+      {"op": "dict.shared", "descricao": "Dicionario pre-distribuido por SHA-256 — GZip-prefix implementado em v0.6.3. SHA-256 verificado. Ratio: 16.2% vs LZMA 10.72% — inadequado para arquivos > 32KB.", "proximo": "dict.zstd_shared via zstd.exe"}
+    ]
+  },
+  "benchmark_sintetico": {
+    "harness_version": "3.2.0",
+    "data": "2026-05-24",
+    "pwsh_baseline_ms": 269,
+    "nota": "Razao de seed bruta (sem motor) compara seed_bytes vs representacao do compressor concorrente. Net ratio inclui motor (24087 bytes). Latencia medida in-process — sem overhead de subprocess.",
+    "dominios": [
+      {
+        "id": "D1_UNIFORM",
+        "descricao": "512 KB byte unico 0xAA (gen.repeat)",
+        "orig_bytes": 524288,
+        "sha256_orig": "acac3fe365627c359fb15b9f3857eb972ec5402c70e8b1bda2a72db808bb6f12",
+        "teia": {
+          "seed_bytes": 189,
+          "dict_bytes": 0,
+          "seed_ratio_pct": 0.036,
+          "net_ratio_pct": 4.51,
+          "decode_ms_v062": 203,
+          "opcode": "gen.repeat"
+        },
+        "competidores": {
+          "lzma": {"bytes": 281, "ratio_pct": 0.054, "decode_ms": 134},
+          "brotli": {"bytes": 13, "ratio_pct": 0.0025, "decode_ms": 68},
+          "gzip": {"bytes": 544, "ratio_pct": 0.104, "decode_ms": 80}
+        },
+        "teia_vs_lzma_seed": "VENCE — seed 189B vs LZMA 281B (33% menor)",
+        "teia_vs_brotli_seed": "PERDE — brotli 13B vs seed 189B (brotli 14x menor)",
+        "amortizacao": {
+          "break_even_N": 262,
+          "formula": "(189*N + 24087) / (524288*N) < 281/524288",
+          "nota": "Com N>=262 arquivos do mesmo tipo, net_ratio TEIA < LZMA standalone"
+        },
+        "latencia_evolucao": {"v0.5": 244, "v0.6": 201, "v0.6.1": 203, "v0.6.2": 203},
+        "gargalo_residual_ms": 50,
+        "gargalo_causa": "SHA-256 incremental do buffer de 512KB (~50ms) domina"
+      },
+      {
+        "id": "D2_PATTERN",
+        "descricao": "256 KB padrao periodico 16B (gen.pattern)",
+        "orig_bytes": 262144,
+        "sha256_orig": "7b6fee4a726319c08240c0281b1de38aa9703ae230eb54fc077a9eb46879df6d",
+        "teia": {
+          "seed_bytes": 220,
+          "dict_bytes": 16,
+          "seed_total_bytes": 236,
+          "seed_ratio_pct": 0.090,
+          "net_ratio_pct": 9.04,
+          "decode_ms_v062": 89,
+          "opcode": "gen.pattern"
+        },
+        "competidores": {
+          "lzma": {"bytes": 261, "ratio_pct": 0.100, "decode_ms": 69},
+          "brotli": {"bytes": 23, "ratio_pct": 0.0088, "decode_ms": 47},
+          "gzip": {"bytes": 558, "ratio_pct": 0.213, "decode_ms": 45}
+        },
+        "teia_vs_lzma_seed": "VENCE — seed 236B vs LZMA 261B (10% menor)",
+        "teia_vs_brotli_seed": "PERDE — brotli 23B vs seed 236B",
+        "amortizacao": {
+          "break_even_N": 964,
+          "formula": "(236*N + 24087) / (262144*N) < 261/262144",
+          "nota": "Vantagem por arquivo muito pequena (25B) — amortizacao lenta. Arquivos maiores com mesmo padrao seriam mais vantajosos."
+        },
+        "latencia_evolucao": {"v0.5": 96, "v0.6": 97, "v0.6.1": 89, "v0.6.2": 89}
+      },
+      {
+        "id": "D3_RLE",
+        "descricao": "256 KB 8 runs bytes distintos (rle.decode)",
+        "orig_bytes": 262144,
+        "sha256_orig": "45641fde6182d1db36276895523dd6ee3e82c3a6f4a9de9907c3cc83b41795a2",
+        "teia": {
+          "seed_bytes": 328,
+          "dict_bytes": 0,
+          "seed_ratio_pct": 0.125,
+          "net_ratio_pct": 9.08,
+          "decode_ms_v062": 84,
+          "opcode": "rle.decode"
+        },
+        "competidores": {
+          "lzma": {"bytes": 270, "ratio_pct": 0.103, "decode_ms": 73},
+          "brotli": {"bytes": 48, "ratio_pct": 0.018, "decode_ms": 43}
+        },
+        "teia_vs_lzma_seed": "PERDE — seed 328B vs LZMA 270B (21% maior) para 8 runs. Para RLEs com mais runs por unidade TEIA vence.",
+        "contexto": "D3 representa caso desfavoravel de RLE (poucos runs grandes). RLEs com muitos runs curtos invertem o resultado.",
+        "latencia_evolucao": {"v0.5": 194, "v0.6": 103, "v0.6.1": 84, "v0.6.2": 84},
+        "ganho_total_latencia_pct": 56.7
+      },
+      {
+        "id": "D4_JSON",
+        "descricao": "~57 KB JSON CAS estruturado (gen.json_structured)",
+        "orig_bytes": 59395,
+        "sha256_orig": "6128ef78686e3f32399cdf80b10bd6d467bc60e5887182dc71315fef8f8bf1f1",
+        "teia": {
+          "seed_bytes": 514,
+          "dict_bytes": 64,
+          "seed_total_bytes": 578,
+          "seed_ratio_pct": 0.975,
+          "net_ratio_pct": 40.39,
+          "decode_ms_v062": 17,
+          "opcode": "gen.json_structured"
+        },
+        "competidores": {
+          "lzma": {"bytes": 976, "ratio_pct": 1.643, "decode_ms": 41},
+          "brotli": {"bytes": 1512, "ratio_pct": 2.546, "decode_ms": 4},
+          "gzip": {"bytes": 3197, "ratio_pct": 5.383, "decode_ms": 6}
+        },
+        "teia_vs_lzma_seed": "VENCE — seed 578B vs LZMA 976B (41% menor)",
+        "teia_vs_lzma_latencia": "VENCE — decode 17ms vs LZMA 41ms (59% mais rapido)",
+        "meta_20ms": "ALCANCADA: 17ms < 20ms",
+        "amortizacao": {
+          "break_even_N": 61,
+          "formula": "(578*N + 24087) / (59395*N) < 976/59395",
+          "nota": "Melhor amortizacao dos dominios sinteticos: N>=61 arquivos JSON estruturados e TEIA ganha em net ratio"
+        },
+        "latencia_evolucao": {"v0.5": 69, "v0.6": 42, "v0.6.1": 17, "v0.6.2": 17},
+        "ganho_total_latencia_pct": 75.4,
+        "ram_v05_mb": 10,
+        "ram_v062_mb": 0,
+        "nota": "CASO MAIS FORTE: seed procedural capta a intencao geradora. Schema JSON de 514B reconstroi 59KB deterministicamente."
+      },
+      {
+        "id": "D5_ENTROPY",
+        "descricao": "128 KB pseudo-random entropia=0.9985 (fallback.lzma)",
+        "orig_bytes": 131072,
+        "sha256_orig": "b7d3b166ad0f6787b8004ed7fa4b17b5e47481387998fb8b4bf2d9e47848460d",
+        "teia": {
+          "seed_bytes": 175140,
+          "seed_ratio_pct": 133.62,
+          "net_ratio_pct": 151.53,
+          "decode_ms_v062": 80,
+          "opcode": "fallback.lzma"
+        },
+        "competidores": {
+          "lzma": {"bytes": 131212, "ratio_pct": 100.11, "decode_ms": 83},
+          "brotli": {"bytes": 131077, "ratio_pct": 100.00, "decode_ms": 29}
+        },
+        "teia_vs_lzma_seed": "PERDE — alta entropia, sem estrutura procedural exploravel",
+        "nota": "fallback.lzma correto: entropia detectada automaticamente. Overhead do subprocess 7-Zip (~65ms) domina."
+      }
+    ],
+    "sinopse_wins": {
+      "D1": "TEIA VENCE vs LZMA em seed ratio (33% menor)",
+      "D2": "TEIA VENCE vs LZMA em seed ratio (10% menor)",
+      "D3": "TEIA PERDE vs LZMA em seed ratio (21% maior, corpus desfavoravel)",
+      "D4": "TEIA VENCE vs LZMA em seed ratio (41% menor) E latencia (59% mais rapido)",
+      "D5": "TEIA PERDE — entropia > 0.95, fallback correto",
+      "wins_por_seed_ratio": "3/5 (D1, D2, D4)",
+      "wins_por_latencia": "1/5 (D4 unico com decode TEIA mais rapido que LZMA)"
+    }
+  },
+  "choque_real": {
+    "data": "2026-05-24",
+    "harness": "Harness Real v1.0.0",
+    "corpus_descricao": "50 arquivos JSON reais de D:\\; 46 benchmarked (4 skipped > 10MB)",
+    "categorias": ["botocore paginators", "Google API discovery", "AWS service-2", "VS Code NLS", "ChatGPT exports", "Google Takeout", "Altair schema", "tokenizers"],
+    "resultado": {
+      "total_benchmarked": 46,
+      "vitorias_teia_vs_lzma": 0,
+      "win_rate_pct": 0.0,
+      "sha256_pass_rate_pct": 100.0,
+      "ponto_de_inflexao": "NAO ENCONTRADO"
+    },
+    "diagnostico": {
+      "causa_raiz": "100% dos 46 arquivos usaram opcode 'literal' — gen.json_structured nunca acionado",
+      "por_que_literal": "JSONs reais sao objetos heterogeneos (APIs, schemas, configs) ou arrays com campos variados (timestamps, titulos, URLs). Nao ha padroes aritmeticamente regulares detectaveis.",
+      "matematica": "literal: seed = base64(orig) = 1.33x orig. net_ratio = (1.33x_orig + 24KB_motor) / orig. Para orig=190KB: 146% vs LZMA 10%. TEIA perde em toda a gama.",
+      "net_ratio_range": {
+        "minimo_pct": 134.6,
+        "maximo_pct": 1336.81,
+        "arquivo_minimo": "service-2.json 1.8MB (maior arquivo — motor mais amortizado)",
+        "arquivo_maximo": "paginators-1.json 2KB (menor arquivo — motor domina)"
+      },
+      "opcodes_nunca_acionados": ["gen.json_structured", "gen.repeat", "gen.pattern", "rle.decode"]
+    },
+    "conclusao": "TEIA nao e um compressor de proposito geral. O Choque Real confirmou o nicho com precisao cirurgica: TEIA vence onde ha estrutura procedural exploravel. JSON real heterogeneo nao tem essa estrutura. dict.shared e a solucao arquitetural."
+  },
+  "roadmap": {
+    "dict_shared": {
+      "status": "IMPLEMENTADO EM v0.6.3 — BENCHMARKED — GZip-prefix insuficiente, Zstd necessario",
+      "prioridade": "CRITICA",
+      "conceito": "Dicionario pre-distribuido por SHA-256. Motor e dict distribuidos uma vez; N arquivos compartilham custo fixo. Seed por arquivo pequeno.",
+      "mecanismo_v063": "GZip com prefixo de dicionario: compress(dict_bytes + data_bytes). Decode: decompress retorna dict+data, descarta dict. SHA-256 verificado — CORRETO.",
+      "benchmark_real_v063": {
+        "corpus": "AWS botocore service-2.json cloudfront/2016-11-25 (197970 B)",
+        "dict_treino": "7 service-2.json botocore (~190-200KB cada), maxDictBytes=32768",
+        "dict_sha256_prefix16": "945c308ed8ee23bf",
+        "teia_payload_bytes": 32156,
+        "teia_payload_ratio_pct": 16.24,
+        "lzma_standalone_bytes": 21228,
+        "lzma_standalone_ratio_pct": 10.72,
+        "gzip_standalone_bytes": 27822,
+        "gzip_standalone_ratio_pct": 14.05,
+        "sha256_verify": "PASS",
+        "decode_ms": 33,
+        "conclusao": "GZip-prefix 51.5% pior que LZMA em ratio bruto. dict.shared GZip NAO compite."
+      },
+      "diagnostico_falha_gzip": {
+        "causa": "GZip LZ77 sliding window = 32KB. Para arquivo de 197KB, o dict de 32KB beneficia apenas os primeiros 32KB do arquivo (~16%). Os demais 165KB comprimem identico ao GZip standalone.",
+        "evidencia": "GZip standalone=27822B; incremento com dict=27379B — ganho de apenas 443B (1.6%). LZMA usa janela de 16MB — detecta padroes em toda a extensao do arquivo.",
+        "conclusao": "GZip-prefix e arquiteturalmente inadequado para arquivos > 32KB com dict compartilhado."
+      },
+      "solucao_correta": {
+        "tecnologia": "Zstd (Facebook) com --train dictionary",
+        "racional": "Zstd pre-popula a tabela hash LZ77 com sequencias do corpus de treino independente do tamanho. Arquivos similares comprimem a 2-5% (vs LZMA 10.72%).",
+        "dependencia_nova": "zstd.exe (mesmo modelo que 7-Zip para fallback.lzma)",
+        "implementacao": "Opcodes: 'dict.zstd_shared' — encode: zstd -D {dict} -19; decode: zstd -D {dict} -d",
+        "projecao_ratio_pct": "3-5",
+        "break_even_N_estimado": 2,
+        "nota": "Com 2+ arquivos do mesmo corpus, TEIA com Zstd bateria LZMA no net ratio (motor+dict amortizados)."
+      },
+      "corpus_alvo_producao": "AWS service-2.json botocore (~190KB, 10+ arquivos com estrutura muito similar)"
+    },
+    "itens_pendentes": [
+      {"prioridade": 1, "item": "TEIA-Core-v0.6.3 com dict.shared implementado e benchmarked"},
+      {"prioridade": 2, "item": "Prova Choque Real em X:\\ — volume WinFsp, sem nenhum arquivo temporario"},
+      {"prioridade": 3, "item": "dict.shared corpus P1 — fotos/videos: dicionario visual compartilhado para corpora de imagens similares"},
+      {"prioridade": 4, "item": "Porta Fortnite — apos StableLine + Guardiao WinFsp prontos"}
+    ]
+  },
+  "artefatos": {
+    "motor_v062": {
+      "path": "Arqueologia do motor AION RISPA/NucleoCompressorOntoprocedural/Ontologia Procedural/Motor onto procedural/TEIA-Core-v0.6.2.psm1",
+      "sha256": "7FB33B16A31DE38B87F21A3E1F357D33FB0B02EB4D23E648D7FE25E5212816E6",
+      "bytes": 24087
+    },
+    "harness_sintetico": {
+      "path": "Benchmark_Harness.ps1",
+      "version": "3.2.0"
+    },
+    "harness_real": {
+      "path": "Benchmark_Harness_Real.ps1",
+      "version": "1.0.0"
+    },
+    "manifesto_real": {
+      "path": "D4_REAL_MANIFEST.json",
+      "sha256": "9B1AE8C9F98D33CBF5AFE6BB3AEDEA75A147676FEEB24FF543402966C0FAAC03",
+      "arquivos": 50
+    },
+    "relatorio_sintetico": {
+      "path": "Relatorio_Comparativo_v3.1.0.md"
+    },
+    "relatorio_real": {
+      "path": "Relatorio_Auditoria_Producao.md"
+    },
+    "bench_canonico": {
+      "path": "_bench_canonical/benchmark_results_v5.json"
+    },
+    "bench_real": {
+      "path": "_bench_real/benchmark_real_v1.json"
+    }
+  }
+}
