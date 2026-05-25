@@ -1,0 +1,12 @@
+{
+  "git_commit": "4fc50ce",
+  "skipped": 453624,
+  "teia_version": "0.11.0",
+  "timestamp": "2026-05-25T20:31:04Z",
+  "total_source_bytes": 3256196198,
+  "total_source_files": 8324,
+  "zip_file": "TEIA_GOLDEN_MASTER_v0.11.0.zip",
+  "zip_sha256": "0c66bf44a88a8c9001044460d08826346cf819d5ace4d7a64cdda4f29daea2de",
+  "zip_size_bytes": 3143186475,
+  "zip_size_mb": 2997.58
+}
