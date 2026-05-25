@@ -1,9 +1,10 @@
 """
-criar_golden_master_v0110.py — Golden Master TEIA v0.11.0
-Snapshot dos dois repositorios com manifest interno auto-descritivo.
+criar_golden_master_v0110.py — Golden Master TEIA v0.11.0 (core)
+Snapshot de TEIA_CLAUDE_AWAKENING com manifest interno auto-descritivo.
+PaperclipAI excluido: repositorio separado, aumentaria o ZIP em ~3GB desnecessariamente.
 
 Novidades vs v1:
-  - ZIP versionado: TEIA_GOLDEN_MASTER_v0.11.0.zip
+  - ZIP versionado: TEIA_GOLDEN_MASTER_v0.11.0_core.zip
   - GOLDEN_MASTER_MANIFEST.json injetado no ZIP (metadados + provas)
   - SKIP_DIRS ampliado: _bench_v* (artefatos temporarios regeneraveis)
   - SHA-256 do motor v0.11.0 gravado no manifest
@@ -21,11 +22,10 @@ import subprocess
 import zipfile
 from datetime import datetime, timezone
 
-ZIP_PATH = pathlib.Path(r"D:\TEIA_CLAUDE_AWAKENING\TEIA_GOLDEN_MASTER_v0.11.0.zip")
+ZIP_PATH = pathlib.Path(r"D:\TEIA_CLAUDE_AWAKENING\TEIA_GOLDEN_MASTER_v0.11.0_core.zip")
 
 SOURCES = [
-    (pathlib.Path(r"D:\Teia\Agents\PaperclipAI"),  "PaperclipAI"),
-    (pathlib.Path(r"D:\TEIA_CLAUDE_AWAKENING"),      "TEIA_CLAUDE_AWAKENING"),
+    (pathlib.Path(r"D:\TEIA_CLAUDE_AWAKENING"), "TEIA_CLAUDE_AWAKENING"),
 ]
 
 SKIP_DIRS = {
@@ -36,8 +36,13 @@ SKIP_DIRS = {
     "_bench_v6", "_bench_v7", "_bench_v8", "_bench_v9",
     "_bench_v10", "_bench_v11", "_bench_v12",
 }
-SKIP_EXTS  = {".pyc", ".pyo"}
-SKIP_FILES = {ZIP_PATH.name, "TEIA_CORE_GOLDEN_MASTER_v1.zip"}
+SKIP_EXTS  = {
+    ".pyc", ".pyo",
+    # arquivos grandes ja excluidos pelo .gitignore — nao pertencem a snapshot de codigo-fonte:
+    ".zip", ".7z",
+    ".mp4", ".MP4", ".m4v", ".M4V", ".avi", ".mov", ".mkv", ".wmv",
+}
+SKIP_FILES = {ZIP_PATH.name, "TEIA_CORE_GOLDEN_MASTER_v1.zip", "TEIA_GOLDEN_MASTER_v0.11.0.zip"}
 
 MOTOR_PATH = pathlib.Path(
     r"D:\TEIA_CLAUDE_AWAKENING\Arqueologia do motor AION RISPA"
@@ -134,6 +139,7 @@ def build_manifest(timestamp: str, commit: str, total_files: int,
             "total_source_bytes": total_bytes,
             "sources": [str(src) for src, _ in SOURCES],
             "skip_dirs": sorted(SKIP_DIRS),
+            "scope": "TEIA_CLAUDE_AWAKENING only (PaperclipAI excluded — separate repo)",
         },
         "axioms": {
             "sha256_is_identity": True,
