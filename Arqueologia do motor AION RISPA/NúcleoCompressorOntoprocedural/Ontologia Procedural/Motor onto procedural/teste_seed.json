@@ -1,0 +1,15 @@
+{
+  "v": "0.4.0",
+  "out": {
+    "name": "prova_128k_AA.bin",
+    "size": 131072,
+    "sha256": "106f58ee5a2a61c44303c03dde9a47ecb5f0233d4245f4995b8ce55971a060a6"
+  },
+  "plan": [
+    {
+      "op": "gen.repeat",
+      "byte": 170,
+      "count": 131072
+    }
+  ]
+}
