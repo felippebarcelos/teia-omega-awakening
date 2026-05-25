@@ -1,0 +1,137 @@
+[V7] Importando motor v0.8.1...
+[V7] dict-medium copiado: 6c72ae7246b413b8...
+[V7] dict-medium SHA OK: 6c72ae7246b413b8... | 80055 bytes
+
+[V7] === TREINANDO dict-small ===
+[ZSTD TRAIN v0.8.1] 10 arquivo(s) | maxdict=65536 B
+[ZSTD TRAIN v0.8.1] 63147 bytes | SHA: 4be54040b288207e... | 599ms
+[ZSTD TRAIN v0.8.1] Salvo: D:\TEIA_CLAUDE_AWAKENING\_bench_v7\dicts\4be54040b288207e7650274509c20cce66470f76499ef3ac372a046c5972cd5a.zstd-dict
+[V7] dict-small: 4be54040b288207e... | 63147 bytes | 599ms
+
+[V7] Corpus: 105 arquivos — Benchmark Robusto
+
+============================================================================================================
+  ID    BUCKET      ORIG      A:LZMA      B:Zstd      C:Best      D:TEIA  WIN  RAZAO                 SHA
+============================================================================================================
+  R1    TINY        3064B       460B(15,01%)       312B(10,18%)       312B(10,18%)       478B(15,6%) NAO  OVERHEAD_CANCELA      OK
+  R2    TINY        2913B       485B(16,65%)       346B(11,88%)       346B(11,88%)       512B(17,58%) NAO  OVERHEAD_CANCELA      OK
+  R3    TINY        1313B       377B(28,71%)       231B(17,59%)       231B(17,59%)       397B(30,24%) NAO  OVERHEAD_CANCELA      OK
+  R4    TINY        1778B       394B(22,16%)       250B(14,06%)       250B(14,06%)       416B(23,4%) NAO  OVERHEAD_CANCELA      OK
+  R5    TINY        1591B       391B(24,58%)       247B(15,52%)       247B(15,52%)       413B(25,96%) NAO  OVERHEAD_CANCELA      OK
+  R6    TINY        1149B       355B(30,9%)       215B(18,71%)       215B(18,71%)       381B(33,16%) NAO  OVERHEAD_CANCELA      OK
+  R7    TINY        3466B       485B(13,99%)       343B(9,9%)       343B(9,9%)       509B(14,69%) NAO  OVERHEAD_CANCELA      OK
+  R8    TINY        1373B       376B(27,39%)       234B(17,04%)       234B(17,04%)       400B(29,13%) NAO  OVERHEAD_CANCELA      OK
+  R9    TINY        1126B       389B(34,55%)       242B(21,49%)       242B(21,49%)       408B(36,23%) NAO  OVERHEAD_CANCELA      OK
+  R10   TINY        1549B       386B(24,92%)       242B(15,62%)       242B(15,62%)       408B(26,34%) NAO  OVERHEAD_CANCELA      OK
+  R11   TINY        1603B       382B(23,83%)       240B(14,97%)       240B(14,97%)       406B(25,33%) NAO  OVERHEAD_CANCELA      OK
+  R12   TINY        3043B       613B(20,14%)       467B(15,35%)       467B(15,35%)       633B(20,8%) NAO  OVERHEAD_CANCELA      OK
+  R13   TINY        1007B       334B(33,17%)       194B(19,27%)       194B(19,27%)       360B(35,75%) NAO  OVERHEAD_CANCELA      OK
+  R14   TINY        1126B       389B(34,55%)       242B(21,49%)       242B(21,49%)       408B(36,23%) NAO  OVERHEAD_CANCELA      OK
+  R15   TINY        1699B       418B(24,6%)       276B(16,24%)       276B(16,24%)       442B(26,02%) NAO  OVERHEAD_CANCELA      OK
+  R16   TINY        1259B       385B(30,58%)       234B(18,59%)       234B(18,59%)       400B(31,77%) NAO  OVERHEAD_CANCELA      OK
+  R17   TINY        1076B       368B(34,2%)       218B(20,26%)       218B(20,26%)       384B(35,69%) NAO  OVERHEAD_CANCELA      OK
+  R18   TINY        1472B       474B(32,2%)       322B(21,88%)       322B(21,88%)       488B(33,15%) NAO  OVERHEAD_CANCELA      OK
+  R19   TINY        1221B       361B(29,57%)       218B(17,85%)       218B(17,85%)       384B(31,45%) NAO  OVERHEAD_CANCELA      OK
+  R20   TINY        2870B       542B(18,89%)       395B(13,76%)       395B(13,76%)       561B(19,55%) NAO  OVERHEAD_CANCELA      OK
+  R21   SMALL      10858B      2857B(26,31%)      2740B(25,23%)      2364B(21,77%)      2635B(24,27%) SIM  GANHA                 OK
+  R22   SMALL      89237B      6508B(7,29%)      6160B(6,9%)      5806B(6,51%)      6077B(6,81%) SIM  GANHA                 OK
+  R23   SMALL      76981B      9805B(12,74%)      9660B(12,55%)      8911B(11,58%)      9182B(11,93%) SIM  GANHA                 OK
+  R24   SMALL      31373B      4244B(13,53%)      4073B(12,98%)      3634B(11,58%)      3905B(12,45%) SIM  GANHA                 OK
+  R25   SMALL      77014B      8747B(11,36%)      8520B(11,06%)      7991B(10,38%)      8262B(10,73%) SIM  GANHA                 OK
+  R26   SMALL      97831B      9371B(9,58%)      9069B(9,27%)      8478B(8,67%)      8749B(8,94%) SIM  GANHA                 OK
+  R27   SMALL      90468B      9652B(10,67%)      9453B(10,45%)      8829B(9,76%)      9100B(10,06%) SIM  GANHA                 OK
+  R28   SMALL      91340B     11568B(12,66%)     11370B(12,45%)     10647B(11,66%)     10918B(11,95%) SIM  GANHA                 OK
+  R29   SMALL       5118B       619B(12,09%)       468B(9,14%)       391B(7,64%)       661B(12,92%) NAO  OVERHEAD_CANCELA      OK
+  R30   SMALL      53660B      6564B(12,23%)      6394B(11,92%)      5858B(10,92%)      6129B(11,42%) SIM  GANHA                 OK
+  R31   SMALL      86587B     10699B(12,36%)     10494B(12,12%)      9840B(11,36%)     10111B(11,68%) SIM  GANHA                 OK
+  R32   SMALL      26723B      3320B(12,42%)      3092B(11,57%)      2695B(10,08%)      2966B(11,1%) SIM  GANHA                 OK
+  R33   SMALL      65098B      5854B(8,99%)      5560B(8,54%)      5089B(7,82%)      5360B(8,23%) SIM  GANHA                 OK
+  R34   SMALL      77657B      9237B(11,89%)      9114B(11,74%)      8613B(11,09%)      8884B(11,44%) SIM  GANHA                 OK
+  R35   SMALL      16920B      3303B(19,52%)      3134B(18,52%)      2751B(16,26%)      3022B(17,86%) SIM  GANHA                 OK
+  R36   SMALL      26736B      4229B(15,82%)      4062B(15,19%)      3593B(13,44%)      3864B(14,45%) SIM  GANHA                 OK
+  R37   SMALL      47634B      7806B(16,39%)      7692B(16,15%)      7053B(14,81%)      7324B(15,38%) SIM  GANHA                 OK
+  R38   SMALL      85586B      9506B(11,11%)      9256B(10,81%)      8584B(10,03%)      8855B(10,35%) SIM  GANHA                 OK
+  R39   SMALL      99536B      5106B(5,13%)      4705B(4,73%)      4385B(4,41%)      4656B(4,68%) SIM  GANHA                 OK
+  R40   SMALL      53601B      6884B(12,84%)      6702B(12,5%)      6075B(11,33%)      6346B(11,84%) SIM  GANHA                 OK
+  R41   SMALL      84666B     10476B(12,37%)     10374B(12,25%)      9778B(11,55%)     10049B(11,87%) SIM  GANHA                 OK
+  R42   SMALL      71488B      6457B(9,03%)      6213B(8,69%)      5629B(7,87%)      5900B(8,25%) SIM  GANHA                 OK
+  R43   SMALL      66318B      7945B(11,98%)      7774B(11,72%)      7223B(10,89%)      7494B(11,3%) SIM  GANHA                 OK
+  R44   SMALL       5796B      1560B(26,92%)      1415B(24,41%)      1207B(20,82%)      1477B(25,48%) SIM  GANHA                 OK
+  R45   SMALL      87478B      7194B(8,22%)      6891B(7,88%)      6420B(7,34%)      6691B(7,65%) SIM  GANHA                 OK
+  R46   SMALL       6937B      2228B(32,12%)      2067B(29,8%)      1219B(17,57%)      1491B(21,49%) SIM  GANHA                 OK
+  R47   SMALL      54813B     11392B(20,78%)     11359B(20,72%)      9024B(16,46%)      9305B(16,98%) SIM  GANHA                 OK
+  R48   SMALL      74805B     13414B(17,93%)     13415B(17,93%)     10927B(14,61%)     11208B(14,98%) SIM  GANHA                 OK
+  R49   SMALL      63816B     13384B(20,97%)     13393B(20,99%)     11183B(17,52%)     11462B(17,96%) SIM  GANHA                 OK
+  R50   SMALL      37496B      7505B(20,02%)      7384B(19,69%)      4869B(12,99%)      5147B(13,73%) SIM  GANHA                 OK
+  R51   SMALL      19026B      5132B(26,97%)      5052B(26,55%)      3888B(20,44%)      4182B(21,98%) SIM  GANHA                 OK
+  R52   SMALL      72170B     11833B(16,4%)     11744B(16,27%)      9126B(12,65%)      9406B(13,03%) SIM  GANHA                 OK
+  R53   SMALL      97702B     15908B(16,28%)     15820B(16,19%)     13774B(14,1%)     14058B(14,39%) SIM  GANHA                 OK
+  R54   SMALL      69036B     11783B(17,07%)     11617B(16,83%)      9205B(13,33%)      9484B(13,74%) SIM  GANHA                 OK
+  R55   SMALL      87545B     16008B(18,29%)     16025B(18,3%)     14176B(16,19%)     14453B(16,51%) SIM  GANHA                 OK
+  R56   SMALL      38346B      6478B(16,89%)      6357B(16,58%)      4979B(12,98%)      5256B(13,71%) SIM  GANHA                 OK
+  R57   SMALL      39175B      7967B(20,34%)      7847B(20,03%)      6105B(15,58%)      6388B(16,31%) SIM  GANHA                 OK
+  R58   SMALL      76748B     15044B(19,6%)     15020B(19,57%)     12261B(15,98%)     12541B(16,34%) SIM  GANHA                 OK
+  R59   SMALL      56220B     13643B(24,27%)     13655B(24,29%)     11495B(20,45%)     11774B(20,94%) SIM  GANHA                 OK
+  R60   SMALL      60514B      9644B(15,94%)      9483B(15,67%)      8022B(13,26%)      8302B(13,72%) SIM  GANHA                 OK
+  R61   SMALL      44128B     10325B(23,4%)     10293B(23,33%)      8783B(19,9%)      9056B(20,52%) SIM  GANHA                 OK
+  R62   SMALL      16110B      3519B(21,84%)      3352B(20,81%)      2233B(13,86%)      2512B(15,59%) SIM  GANHA                 OK
+  R63   SMALL      50336B     12636B(25,1%)     12639B(25,11%)     11100B(22,05%)     11382B(22,61%) SIM  GANHA                 OK
+  R64   SMALL      41004B      7767B(18,94%)      7602B(18,54%)      6014B(14,67%)      6303B(15,37%) SIM  GANHA                 OK
+  R65   SMALL      84149B     15395B(18,29%)     15405B(18,31%)     12725B(15,12%)     13008B(15,46%) SIM  GANHA                 OK
+  R66   MEDIUM    188709B     23110B(12,25%)     22757B(12,06%)     20925B(11,09%)     21197B(11,23%) SIM  GANHA                 OK
+  R67   MEDIUM    108134B     11250B(10,4%)     10913B(10,09%)      9758B(9,02%)     10030B(9,28%) SIM  GANHA                 OK
+  R68   MEDIUM    148384B     14712B(9,91%)     14421B(9,72%)     13136B(8,85%)     13408B(9,04%) SIM  GANHA                 OK
+  R69   MEDIUM    154636B     13451B(8,7%)     13094B(8,47%)     12004B(7,76%)     12276B(7,94%) SIM  GANHA                 OK
+  R70   MEDIUM    158099B     20127B(12,73%)     19957B(12,62%)     18190B(11,51%)     18462B(11,68%) SIM  GANHA                 OK
+  R71   MEDIUM    229514B     23546B(10,26%)     23159B(10,09%)     21485B(9,36%)     21757B(9,48%) SIM  GANHA                 OK
+  R72   MEDIUM    215016B     23609B(10,98%)     23552B(10,95%)     21627B(10,06%)     21899B(10,18%) SIM  GANHA                 OK
+  R73   MEDIUM    234659B     23935B(10,2%)     23714B(10,11%)     22007B(9,38%)     22279B(9,49%) SIM  GANHA                 OK
+  R74   MEDIUM    297127B     21511B(7,24%)     20877B(7,03%)     19739B(6,64%)     20011B(6,73%) SIM  GANHA                 OK
+  R75   MEDIUM    281575B     28888B(10,26%)     28344B(10,07%)     26643B(9,46%)     26915B(9,56%) SIM  GANHA                 OK
+  R76   MEDIUM    143746B     16732B(11,64%)     16562B(11,52%)     14955B(10,4%)     15227B(10,59%) SIM  GANHA                 OK
+  R77   MEDIUM    136133B     16772B(12,32%)     16700B(12,27%)     14781B(10,86%)     15053B(11,06%) SIM  GANHA                 OK
+  R78   MEDIUM    282414B     22291B(7,89%)     21952B(7,77%)     20701B(7,33%)     20973B(7,43%) SIM  GANHA                 OK
+  R79   MEDIUM    151766B     15136B(9,97%)     14868B(9,8%)     13525B(8,91%)     13797B(9,09%) SIM  GANHA                 OK
+  R80   MEDIUM    244492B     27712B(11,33%)     27396B(11,21%)     25765B(10,54%)     26037B(10,65%) SIM  GANHA                 OK
+  R81   MEDIUM    208213B     19450B(9,34%)     19279B(9,26%)     17716B(8,51%)     17988B(8,64%) SIM  GANHA                 OK
+  R82   MEDIUM    247155B     18611B(7,53%)     18077B(7,31%)     16883B(6,83%)     17155B(6,94%) SIM  GANHA                 OK
+  R83   MEDIUM    144570B     17608B(12,18%)     17460B(12,08%)     15716B(10,87%)     15988B(11,06%) SIM  GANHA                 OK
+  R84   MEDIUM    122553B     10927B(8,92%)     10579B(8,63%)      9498B(7,75%)      9770B(7,97%) SIM  GANHA                 OK
+  R85   MEDIUM    227505B     25046B(11,01%)     24813B(10,91%)     23185B(10,19%)     23457B(10,31%) SIM  GANHA                 OK
+  R86   MEDIUM    264286B     28932B(10,95%)     28785B(10,89%)     27275B(10,32%)     27547B(10,42%) SIM  GANHA                 OK
+  R87   MEDIUM    238101B     22103B(9,28%)     21823B(9,17%)     20221B(8,49%)     20493B(8,61%) SIM  GANHA                 OK
+  R88   MEDIUM    305595B     26013B(8,51%)     25393B(8,31%)     24288B(7,95%)     24560B(8,04%) SIM  GANHA                 OK
+  R89   MEDIUM    148607B     13623B(9,17%)     13223B(8,9%)     11759B(7,91%)     12031B(8,1%) SIM  GANHA                 OK
+  R90   MEDIUM    222076B     29523B(13,29%)     29397B(13,24%)     27406B(12,34%)     27678B(12,46%) SIM  GANHA                 OK
+  R91   LARGE     556492B     46164B(8,3%)     45498B(8,18%)     45498B(8,18%)     45663B(8,21%) SIM  GANHA                 OK
+  R92   LARGE     847080B     76733B(9,06%)     75084B(8,86%)     75084B(8,86%)     75249B(8,88%) SIM  GANHA                 OK
+  R93   LARGE     891280B     80806B(9,07%)     78951B(8,86%)     78951B(8,86%)     79116B(8,88%) SIM  GANHA                 OK
+  R94   LARGE     812261B     81214B(10%)     79911B(9,84%)     79911B(9,84%)     80076B(9,86%) SIM  GANHA                 OK
+  R95   LARGE     588390B     57551B(9,78%)     56489B(9,6%)     56489B(9,6%)     56654B(9,63%) SIM  GANHA                 OK
+  R96   LARGE     926847B     82931B(8,95%)     83409B(9%)     83409B(9%)     83574B(9,02%) NAO  LZMA_JANELA           OK
+  R97   LARGE     588264B     48165B(8,19%)     46630B(7,93%)     46630B(7,93%)     46795B(7,95%) SIM  GANHA                 OK
+  R98   LARGE    3018739B    230206B(7,63%)    222692B(7,38%)    222692B(7,38%)    222858B(7,38%) SIM  GANHA                 OK
+  R99   LARGE     540601B     50296B(9,3%)     48945B(9,05%)     48945B(9,05%)     49110B(9,08%) SIM  GANHA                 OK
+  R100  LARGE     673116B     65466B(9,73%)     65597B(9,75%)     65597B(9,75%)     65762B(9,77%) NAO  LZMA_JANELA           OK
+  R101  LARGE     562255B     38496B(6,85%)     37159B(6,61%)     37159B(6,61%)     37324B(6,64%) SIM  GANHA                 OK
+  R102  LARGE     763800B     42353B(5,55%)     41330B(5,41%)     41330B(5,41%)     41495B(5,43%) SIM  GANHA                 OK
+  R103  LARGE     661619B     59931B(9,06%)     59040B(8,92%)     59040B(8,92%)     59205B(8,95%) SIM  GANHA                 OK
+  R104  LARGE     539923B     53264B(9,87%)     52276B(9,68%)     52276B(9,68%)     52441B(9,71%) SIM  GANHA                 OK
+  R105  LARGE     629302B     47555B(7,56%)     46439B(7,38%)     46439B(7,38%)     46604B(7,41%) SIM  GANHA                 OK
+============================================================================================================
+
+=== SUMARIO POR BUCKET ===
+  TINY  : 0/20 TEIA ganha | A=26,03% B=16,58% D=27,4% | ovhd=166B | SHA=100% OK
+          Perdas: LZMA_JANELA=0 DICT_PREJUDICA=0 OVERHEAD_CANCELA=20 | B wins vs A: 20/20
+  SMALL : 44/45 TEIA ganha | A=16,33% B=15,87% D=14,19% | ovhd=275B | SHA=100% OK
+          Perdas: LZMA_JANELA=0 DICT_PREJUDICA=0 OVERHEAD_CANCELA=45 | B wins vs A: 1/45
+  MEDIUM: 25/25 TEIA ganha | A=10,25% B=10,1% D=9,44% | ovhd=272B | SHA=100% OK
+          Perdas: LZMA_JANELA=0 DICT_PREJUDICA=0 OVERHEAD_CANCELA=25 | B wins vs A: 0/25
+  LARGE : 13/15 TEIA ganha | A=8,59% B=8,43% D=8,45% | ovhd=165B | SHA=100% OK
+          Perdas: LZMA_JANELA=2 DICT_PREJUDICA=0 OVERHEAD_CANCELA=15 | B wins vs A: 0/15
+
+[V7] TOTAL: 82/105 TEIA ganha | 0 erros | Benchmark Robusto
+
+[V7] Gerando relatorio...
+[V7] Relatorio: D:\TEIA_CLAUDE_AWAKENING\Relatorio_Comparativo_v7.0.0.md | SHA: 50ae065528caeafd8ccbbf3d316ebdee515be434d57237cd4b3b1cae1b3b011e
+[V7] CONCLUIDO: 82/105 TEIA ganha | 0 erros | SHA-256=100% OK | Benchmark Robusto

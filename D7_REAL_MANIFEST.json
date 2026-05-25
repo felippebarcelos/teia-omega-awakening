@@ -1,0 +1,862 @@
+{
+  "version": "7.0.0",
+  "created_utc": "2026-05-25T15:27:46Z",
+  "description": "D7_REAL: corpus heterogeneo Benchmark Robusto TEIA v0.8.1 — zero overlap D4, seed=42",
+  "total_files": 105,
+  "seed": 42,
+  "sources": [
+    "botocore/data/**/paginators-1.json (tiny ~2KB)",
+    "botocore/data/**/service-2.json (small/medium/large)",
+    "botocore/data/**/waiters-2.json (small)",
+    "botocore/data/**/endpoint-rule-set-1.json (medium)",
+    "googleapiclient/discovery_cache/documents/*.json (small, exclui 10 arquivos treino dict-small)"
+  ],
+  "bucket_counts": {
+    "medium": 25,
+    "small": 45,
+    "large": 15,
+    "tiny": 20
+  },
+  "files": [
+    {
+      "id": "R1",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\backup\\2018-11-15\\paginators-1.json",
+      "name": "paginators-1.json",
+      "size_bytes": 3064,
+      "sha256": "03fd1820881b9cfdf6e08c5b087938f06945f1e9c080ddcf72c629b1cc2a8ffd",
+      "bucket": "tiny"
+    },
+    {
+      "id": "R2",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\apigateway\\2015-07-09\\paginators-1.json",
+      "name": "paginators-1.json",
+      "size_bytes": 2913,
+      "sha256": "83001bd4aec2907742e3da407f064c81a4f5f079b5af9a832b59bfea6f8a8bdc",
+      "bucket": "tiny"
+    },
+    {
+      "id": "R3",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\codedeploy\\2014-10-06\\paginators-1.json",
+      "name": "paginators-1.json",
+      "size_bytes": 1313,
+      "sha256": "ae2c8cba178f5efce3c77940a0788868e8b453abf694255deb9a97e1458fa31a",
+      "bucket": "tiny"
+    },
+    {
+      "id": "R4",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\qconnect\\2020-10-19\\paginators-1.json",
+      "name": "paginators-1.json",
+      "size_bytes": 1778,
+      "sha256": "6204687bacada6759ad133c14e263b3bd6564a41161fc702c1b42185cf5ea345",
+      "bucket": "tiny"
+    },
+    {
+      "id": "R5",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\mturk\\2017-01-17\\paginators-1.json",
+      "name": "paginators-1.json",
+      "size_bytes": 1591,
+      "sha256": "3457c6c141c7017d25c0a381f764491e77d59053f922f0c2b4cd459d327e0348",
+      "bucket": "tiny"
+    },
+    {
+      "id": "R6",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\service-quotas\\2019-06-24\\paginators-1.json",
+      "name": "paginators-1.json",
+      "size_bytes": 1149,
+      "sha256": "7bd859a61cedcd42692f2d5eee6a57521c286e346c6322cc5a46350d841f469c",
+      "bucket": "tiny"
+    },
+    {
+      "id": "R7",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\omics\\2022-11-28\\paginators-1.json",
+      "name": "paginators-1.json",
+      "size_bytes": 3466,
+      "sha256": "5e09c7c3ecd68389238442d5d6d55478dc55410c0b702835b446d53ff8233ad4",
+      "bucket": "tiny"
+    },
+    {
+      "id": "R8",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\datasync\\2018-11-09\\paginators-1.json",
+      "name": "paginators-1.json",
+      "size_bytes": 1373,
+      "sha256": "c728caec426f4e13573d2eeb886df2a8b979c28f2e7f046ab75cf503c323268b",
+      "bucket": "tiny"
+    },
+    {
+      "id": "R9",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\cloudfront\\2017-03-25\\paginators-1.json",
+      "name": "paginators-1.json",
+      "size_bytes": 1126,
+      "sha256": "23bbb88753057e506f1497a672b2c74a7eee3ab11e0c573b79c586ab00f1185f",
+      "bucket": "tiny"
+    },
+    {
+      "id": "R10",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\nimble\\2020-08-01\\paginators-1.json",
+      "name": "paginators-1.json",
+      "size_bytes": 1549,
+      "sha256": "7d0a0fcc1cd9c9caddd9ba413875bcef08e43ffabaf5f13c32e9ef1f0410101f",
+      "bucket": "tiny"
+    },
+    {
+      "id": "R11",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\m2\\2021-04-28\\paginators-1.json",
+      "name": "paginators-1.json",
+      "size_bytes": 1603,
+      "sha256": "d4ece3cf5b5f8047295b2c0f7b34bbb70360948575e1e66fec0bae742ceff922",
+      "bucket": "tiny"
+    },
+    {
+      "id": "R12",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\devops-guru\\2020-12-01\\paginators-1.json",
+      "name": "paginators-1.json",
+      "size_bytes": 3043,
+      "sha256": "2fc6bf562f45e105198b0df83f92cfb9fe842e14c4dffaca7d2253885f89b2bc",
+      "bucket": "tiny"
+    },
+    {
+      "id": "R13",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\outposts\\2019-12-03\\paginators-1.json",
+      "name": "paginators-1.json",
+      "size_bytes": 1007,
+      "sha256": "f27978bf180106a2589af1c67094b8a7f0412d9aac77d97be3584a32f4017307",
+      "bucket": "tiny"
+    },
+    {
+      "id": "R14",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\cloudfront\\2018-11-05\\paginators-1.json",
+      "name": "paginators-1.json",
+      "size_bytes": 1126,
+      "sha256": "23bbb88753057e506f1497a672b2c74a7eee3ab11e0c573b79c586ab00f1185f",
+      "bucket": "tiny"
+    },
+    {
+      "id": "R15",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\guardduty\\2017-11-28\\paginators-1.json",
+      "name": "paginators-1.json",
+      "size_bytes": 1699,
+      "sha256": "7300ef3e695bc270460afe72dc921b0234bb06345f3d20183bf2264adb0933e0",
+      "bucket": "tiny"
+    },
+    {
+      "id": "R16",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\ssm-incidents\\2018-05-10\\paginators-1.json",
+      "name": "paginators-1.json",
+      "size_bytes": 1259,
+      "sha256": "e2a966102057f63991a6b2fb44ea38878307adf5968c7da018f2ebf6c8ee577a",
+      "bucket": "tiny"
+    },
+    {
+      "id": "R17",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\migrationhubstrategy\\2020-02-19\\paginators-1.json",
+      "name": "paginators-1.json",
+      "size_bytes": 1076,
+      "sha256": "d6453bba8aa98d00e8ce1f5d04d5567fb432643c4ad8f0646a383f81fcfb7716",
+      "bucket": "tiny"
+    },
+    {
+      "id": "R18",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\ecr\\2015-09-21\\paginators-1.json",
+      "name": "paginators-1.json",
+      "size_bytes": 1472,
+      "sha256": "7be0c865be3595d447655650df3b2614f37caf25ba79bb2f6a4487d640a28a80",
+      "bucket": "tiny"
+    },
+    {
+      "id": "R19",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\discovery\\2015-11-01\\paginators-1.json",
+      "name": "paginators-1.json",
+      "size_bytes": 1221,
+      "sha256": "f5301c5ac1041fbebc46dd40ae5ac0cc50d7624a7cdb185d6792a1e4b56b926c",
+      "bucket": "tiny"
+    },
+    {
+      "id": "R20",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\devicefarm\\2015-06-23\\paginators-1.json",
+      "name": "paginators-1.json",
+      "size_bytes": 2870,
+      "sha256": "76c0695abb1462f969863b564acc034b7058a16173a6adecab0a4e2b8111e6f0",
+      "bucket": "tiny"
+    },
+    {
+      "id": "R21",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\freetier\\2023-09-07\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 10858,
+      "sha256": "58b7698015a88bc3091affc3572917adc10bac68e5223645298a964c5854e056",
+      "bucket": "small"
+    },
+    {
+      "id": "R22",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\migrationhuborchestrator\\2021-08-28\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 89237,
+      "sha256": "3a77b6ee0da8eb0734824feebb598c1939a07791ca74c6d8ff67ccc342210ce6",
+      "bucket": "small"
+    },
+    {
+      "id": "R23",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\pi\\2018-02-27\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 76981,
+      "sha256": "63cdc471c7deb1abf86d5e5d4c0ec102e03b424b103cf209be75718d4e36c25f",
+      "bucket": "small"
+    },
+    {
+      "id": "R24",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\repostspace\\2022-05-13\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 31373,
+      "sha256": "e607904c99a15b9185767d871dcc5e33c528d40b4af1f6be203226921dca3409",
+      "bucket": "small"
+    },
+    {
+      "id": "R25",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\codestar-connections\\2019-12-01\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 77014,
+      "sha256": "17fa2b444411b3111e2bf6956be6b7302522fa7988561795fa1649e88288195e",
+      "bucket": "small"
+    },
+    {
+      "id": "R26",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\entityresolution\\2018-05-10\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 97831,
+      "sha256": "6e3b5de0c9a9d4a22e8fe6765b9869bdd86afe17c5c06fcee39275e909cfb11f",
+      "bucket": "small"
+    },
+    {
+      "id": "R27",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\ivs-realtime\\2020-07-14\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 90468,
+      "sha256": "a37fa4a241d341b68eb588beee8e86660e796a3c1d3b4ae4db74ff0bf44aef45",
+      "bucket": "small"
+    },
+    {
+      "id": "R28",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\detective\\2018-10-26\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 91340,
+      "sha256": "74dcba9e7de8263e9a0ca1934f8573d75ea597d304053f7154a8de47f6756386",
+      "bucket": "small"
+    },
+    {
+      "id": "R29",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\elasticache\\2015-02-02\\waiters-2.json",
+      "name": "waiters-2.json",
+      "size_bytes": 5118,
+      "sha256": "37a353607a94a24b566888daa65dd10dea4f927c4d9486dbf1ad309d2d0707f1",
+      "bucket": "small"
+    },
+    {
+      "id": "R30",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\simspaceweaver\\2022-10-28\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 53660,
+      "sha256": "9344d6487c622159462a20ba1f41022420add6981cd9cb49b91b152a924f374f",
+      "bucket": "small"
+    },
+    {
+      "id": "R31",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\support\\2013-04-15\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 86587,
+      "sha256": "621e31d7352d181ce7d9e625e9ec0bdeb098df376d7689ee8f2e9e4ee17e5ee3",
+      "bucket": "small"
+    },
+    {
+      "id": "R32",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\sms-voice\\2018-09-05\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 26723,
+      "sha256": "8b023d81ca8d1b774977ab10971d4b768a6595e402b7cfe8872e02246a739196",
+      "bucket": "small"
+    },
+    {
+      "id": "R33",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\worklink\\2018-09-25\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 65098,
+      "sha256": "77de75e694c950b9410d87e0b157fe7403de437e22000bac14ce0f24412f6da9",
+      "bucket": "small"
+    },
+    {
+      "id": "R34",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\outposts\\2019-12-03\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 77657,
+      "sha256": "813c868a5eaf70869715d993a461003e33e91fdf915210143d24835e9e9103c9",
+      "bucket": "small"
+    },
+    {
+      "id": "R35",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\marketplacecommerceanalytics\\2015-07-01\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 16920,
+      "sha256": "aa7c3c7a66f291dce9d85bbfe2ed12c3976cc870373cfd3f78a331d7f4ffd1b1",
+      "bucket": "small"
+    },
+    {
+      "id": "R36",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\iot-data\\2015-05-28\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 26736,
+      "sha256": "b250d74d0f0ee7eb0c92fc51c2006299e302e6361050b5f78db73825925e23e1",
+      "bucket": "small"
+    },
+    {
+      "id": "R37",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\polly\\2016-06-10\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 47634,
+      "sha256": "9726d17e766b11789ce27b7f95a158fd192da1caad30e2d1524d6fec186e8c44",
+      "bucket": "small"
+    },
+    {
+      "id": "R38",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\iotthingsgraph\\2018-09-06\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 85586,
+      "sha256": "b4546c4937e85091d4728438777e2d6a0b59987cfb45a7185e3a2dbfd7982b75",
+      "bucket": "small"
+    },
+    {
+      "id": "R39",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\schemas\\2019-12-02\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 99536,
+      "sha256": "6124a5902eed499f6407ef01b6a9d10e48206a05e433faec1567474ff022a245",
+      "bucket": "small"
+    },
+    {
+      "id": "R40",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\mgh\\2017-05-31\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 53601,
+      "sha256": "aa0f87876710967e5047a74a2cf91f313b851cf19de62cc75a17719f23615aa7",
+      "bucket": "small"
+    },
+    {
+      "id": "R41",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\budgets\\2016-10-20\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 84666,
+      "sha256": "6ca00fdf7dd5048d5efd8b66e2cc181ef93383c80792fa39d733738968c63792",
+      "bucket": "small"
+    },
+    {
+      "id": "R42",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\identitystore\\2020-06-15\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 71488,
+      "sha256": "2c4c09906e40ac22e9689d8de0c09d7c9a3c16f57057fc223d9943e1f84648dc",
+      "bucket": "small"
+    },
+    {
+      "id": "R43",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\arc-zonal-shift\\2022-10-30\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 66318,
+      "sha256": "82be5337941d8c48a33b9537a1a1f82c619ff91f982431bfcd785db90214df1e",
+      "bucket": "small"
+    },
+    {
+      "id": "R44",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\inspector-scan\\2023-08-08\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 5796,
+      "sha256": "5f8c1b2af18076563ec3a32c5a26351068c2ed8fadd3a24c9fc1fbb16ad26441",
+      "bucket": "small"
+    },
+    {
+      "id": "R45",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\route53-recovery-control-config\\2020-11-02\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 87478,
+      "sha256": "96f1d56c871359dd3459ac1eb6f184a1f2c10623d50cf8f8b5c5d1a553aec35c",
+      "bucket": "small"
+    },
+    {
+      "id": "R46",
+      "path": "D:\\bruto\\TEIA\\Miniconda\\envs\\agents_v2\\Lib\\site-packages\\googleapiclient\\discovery_cache\\documents\\webfonts.v1.json",
+      "name": "webfonts.v1.json",
+      "size_bytes": 6937,
+      "sha256": "323e5b0d15be481cf4377a9b99b171fc482cac31ca740ae32cf41ec8845fa84b",
+      "bucket": "small"
+    },
+    {
+      "id": "R47",
+      "path": "D:\\bruto\\TEIA\\Miniconda\\envs\\agents_v2\\Lib\\site-packages\\googleapiclient\\discovery_cache\\documents\\gameservices.v1beta.json",
+      "name": "gameservices.v1beta.json",
+      "size_bytes": 54813,
+      "sha256": "6a622bb9622d53bc303ffc1358c5d8fe0d9ea18fb6156db8116c8fc7042d32fb",
+      "bucket": "small"
+    },
+    {
+      "id": "R48",
+      "path": "D:\\bruto\\TEIA\\Miniconda\\envs\\agents_v2\\Lib\\site-packages\\googleapiclient\\discovery_cache\\documents\\assuredworkloads.v1.json",
+      "name": "assuredworkloads.v1.json",
+      "size_bytes": 74805,
+      "sha256": "12bb74c7c8955907e5b598b93bc0d22224e500004295dbea95e57d6ac6fd2809",
+      "bucket": "small"
+    },
+    {
+      "id": "R49",
+      "path": "D:\\bruto\\TEIA\\Miniconda\\envs\\agents_v2\\Lib\\site-packages\\googleapiclient\\discovery_cache\\documents\\genomics.v2alpha1.json",
+      "name": "genomics.v2alpha1.json",
+      "size_bytes": 63816,
+      "sha256": "f34c8299cd9caa581225f3d8031a8f302285c4359192c14c673b0492072c4262",
+      "bucket": "small"
+    },
+    {
+      "id": "R50",
+      "path": "D:\\bruto\\TEIA\\Miniconda\\envs\\agents_v2\\Lib\\site-packages\\googleapiclient\\discovery_cache\\documents\\parallelstore.v1.json",
+      "name": "parallelstore.v1.json",
+      "size_bytes": 37496,
+      "sha256": "23fdbdc9bce7617bfcb23b86b251d84a33e048170e3c675f7534af99769ddcc6",
+      "bucket": "small"
+    },
+    {
+      "id": "R51",
+      "path": "D:\\bruto\\TEIA\\Miniconda\\envs\\agents_v2\\Lib\\site-packages\\googleapiclient\\discovery_cache\\documents\\merchantapi.ordertracking_v1beta.json",
+      "name": "merchantapi.ordertracking_v1beta.json",
+      "size_bytes": 19026,
+      "sha256": "259ceb0b4c2bae7ce8c80df11d0b8aec0f84960f76b29068a4d8d086a51f2c3c",
+      "bucket": "small"
+    },
+    {
+      "id": "R52",
+      "path": "D:\\bruto\\TEIA\\Miniconda\\envs\\agents_v2\\Lib\\site-packages\\googleapiclient\\discovery_cache\\documents\\securityposture.v1.json",
+      "name": "securityposture.v1.json",
+      "size_bytes": 72170,
+      "sha256": "fbdae50973eadbc0660cb9859da0b9d09aeafd9bcea2f83f57d8f6510e6ac71a",
+      "bucket": "small"
+    },
+    {
+      "id": "R53",
+      "path": "D:\\bruto\\TEIA\\Miniconda\\envs\\agents_v2\\Lib\\site-packages\\googleapiclient\\discovery_cache\\documents\\bigqueryreservation.v1.json",
+      "name": "bigqueryreservation.v1.json",
+      "size_bytes": 97702,
+      "sha256": "629c5bbff13918b6963885a9431b0d778501020e3e5361ee2b6fc81606849930",
+      "bucket": "small"
+    },
+    {
+      "id": "R54",
+      "path": "D:\\bruto\\TEIA\\Miniconda\\envs\\agents_v2\\Lib\\site-packages\\googleapiclient\\discovery_cache\\documents\\translate.v3beta1.json",
+      "name": "translate.v3beta1.json",
+      "size_bytes": 69036,
+      "sha256": "dc9b2439421d326769657f6778d87a6a65edd0136668c39fa8efbf581adf3a9d",
+      "bucket": "small"
+    },
+    {
+      "id": "R55",
+      "path": "D:\\bruto\\TEIA\\Miniconda\\envs\\agents_v2\\Lib\\site-packages\\googleapiclient\\discovery_cache\\documents\\osconfig.v1beta.json",
+      "name": "osconfig.v1beta.json",
+      "size_bytes": 87545,
+      "sha256": "d0af4ad12a6be11b7cdc4e7caa6bccab91eddbc03aba26e9981bcb4d2ff42908",
+      "bucket": "small"
+    },
+    {
+      "id": "R56",
+      "path": "D:\\bruto\\TEIA\\Miniconda\\envs\\agents_v2\\Lib\\site-packages\\googleapiclient\\discovery_cache\\documents\\safebrowsing.v4.json",
+      "name": "safebrowsing.v4.json",
+      "size_bytes": 38346,
+      "sha256": "b307d558429528bb464a848d6d1740d0b757cb8f2aa2180af0f9f07faca22231",
+      "bucket": "small"
+    },
+    {
+      "id": "R57",
+      "path": "D:\\bruto\\TEIA\\Miniconda\\envs\\agents_v2\\Lib\\site-packages\\googleapiclient\\discovery_cache\\documents\\workflowexecutions.v1.json",
+      "name": "workflowexecutions.v1.json",
+      "size_bytes": 39175,
+      "sha256": "ba35cbad76d119fb15594b94e7fdc8a97e9a33f1e0c235b0a3a30d30c47fb691",
+      "bucket": "small"
+    },
+    {
+      "id": "R58",
+      "path": "D:\\bruto\\TEIA\\Miniconda\\envs\\agents_v2\\Lib\\site-packages\\googleapiclient\\discovery_cache\\documents\\datafusion.v1beta1.json",
+      "name": "datafusion.v1beta1.json",
+      "size_bytes": 76748,
+      "sha256": "9408cf0fbbed1b748d787207a197ea34eebb7acd9392a34c9484a9e20b527d2e",
+      "bucket": "small"
+    },
+    {
+      "id": "R59",
+      "path": "D:\\bruto\\TEIA\\Miniconda\\envs\\agents_v2\\Lib\\site-packages\\googleapiclient\\discovery_cache\\documents\\servicecontrol.v2.json",
+      "name": "servicecontrol.v2.json",
+      "size_bytes": 56220,
+      "sha256": "4f5b841045a71eef3027229e1f35db4daa37ed4568469aa695713c5f1484e20f",
+      "bucket": "small"
+    },
+    {
+      "id": "R60",
+      "path": "D:\\bruto\\TEIA\\Miniconda\\envs\\agents_v2\\Lib\\site-packages\\googleapiclient\\discovery_cache\\documents\\transcoder.v1beta1.json",
+      "name": "transcoder.v1beta1.json",
+      "size_bytes": 60514,
+      "sha256": "9e3fbdbbfaaa466ff51f7b65693a5667600491796023ab88cf04ea8fb0d94188",
+      "bucket": "small"
+    },
+    {
+      "id": "R61",
+      "path": "D:\\bruto\\TEIA\\Miniconda\\envs\\agents_v2\\Lib\\site-packages\\googleapiclient\\discovery_cache\\documents\\genomics.v1.json",
+      "name": "genomics.v1.json",
+      "size_bytes": 44128,
+      "sha256": "afbe659ba783447d1cc62bce3a72109ec9be2a4acc6340bc2a9d47e968aba876",
+      "bucket": "small"
+    },
+    {
+      "id": "R62",
+      "path": "D:\\bruto\\TEIA\\Miniconda\\envs\\agents_v2\\Lib\\site-packages\\googleapiclient\\discovery_cache\\documents\\iamcredentials.v1.json",
+      "name": "iamcredentials.v1.json",
+      "size_bytes": 16110,
+      "sha256": "bbe59e290b3d5047f917e81cf6d0e55b071964b2aa1d1c12228daa9795ac292d",
+      "bucket": "small"
+    },
+    {
+      "id": "R63",
+      "path": "D:\\bruto\\TEIA\\Miniconda\\envs\\agents_v2\\Lib\\site-packages\\googleapiclient\\discovery_cache\\documents\\addressvalidation.v1.json",
+      "name": "addressvalidation.v1.json",
+      "size_bytes": 50336,
+      "sha256": "25057bf9c5bad5a64515d5bd305bbce825530a0e97881bd26bc10622ded592ce",
+      "bucket": "small"
+    },
+    {
+      "id": "R64",
+      "path": "D:\\bruto\\TEIA\\Miniconda\\envs\\agents_v2\\Lib\\site-packages\\googleapiclient\\discovery_cache\\documents\\cloudcommerceprocurement.v1.json",
+      "name": "cloudcommerceprocurement.v1.json",
+      "size_bytes": 41004,
+      "sha256": "5ebcc1a4bad1ed04fa9347aebe3943bc5e1a59965439985d9ea477ebe5eabc9c",
+      "bucket": "small"
+    },
+    {
+      "id": "R65",
+      "path": "D:\\bruto\\TEIA\\Miniconda\\envs\\agents_v2\\Lib\\site-packages\\googleapiclient\\discovery_cache\\documents\\datamigration.v1beta1.json",
+      "name": "datamigration.v1beta1.json",
+      "size_bytes": 84149,
+      "sha256": "7c36b20f06e9d4247f61c2a389a7c27a2ac3d9a977e3db1762c8fe1939aa52d7",
+      "bucket": "small"
+    },
+    {
+      "id": "R66",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\codepipeline\\2015-07-09\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 188709,
+      "sha256": "0471a4c915d9b03754fce99ace7729fb908c8629cc9dfd5209ce1a1148b65b73",
+      "bucket": "medium"
+    },
+    {
+      "id": "R67",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\ssm-contacts\\2021-05-03\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 108134,
+      "sha256": "d53560659f20b1ae24b5d70441c7070884030cb9c927662f0aef02efbeec26fc",
+      "bucket": "medium"
+    },
+    {
+      "id": "R68",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\cloudfront\\2016-08-01\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 148384,
+      "sha256": "832347ebb6eeb2f2cd3e45dd3def2f4ff475ffb91a385ade858d6f65343e9b49",
+      "bucket": "medium"
+    },
+    {
+      "id": "R69",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\cloudfront\\2015-07-27\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 154636,
+      "sha256": "6bb36c5364d3aa60696d6c844351cf688cd32a912b93c561da34cbf1b9c08905",
+      "bucket": "medium"
+    },
+    {
+      "id": "R70",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\sns\\2010-03-31\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 158099,
+      "sha256": "28f7b14914d609e4cde257c8bbfd42cabfdcf7cc15c0302fd9bdf8183182b5ec",
+      "bucket": "medium"
+    },
+    {
+      "id": "R71",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\workspaces\\2015-04-08\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 229514,
+      "sha256": "03f9083205222f21a20ec0ae29bd92651c14dd0f89c21c2b12c07ec2efc856b8",
+      "bucket": "medium"
+    },
+    {
+      "id": "R72",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\firehose\\2015-08-04\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 215016,
+      "sha256": "92e27153ee0e7f1da6845c2be9ea4a6aca623e18386a0e75069ef9ef840301d2",
+      "bucket": "medium"
+    },
+    {
+      "id": "R73",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\network-firewall\\2020-11-12\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 234659,
+      "sha256": "9748f2e3807a8c46e841e1f2fbb7144b1b7e1d6455e80136d1146b4d94076127",
+      "bucket": "medium"
+    },
+    {
+      "id": "R74",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\proton\\2020-07-20\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 297127,
+      "sha256": "644af9d89278174e7e8ef2323bba1e830a27bc6d095e800b180df1e109b5ab47",
+      "bucket": "medium"
+    },
+    {
+      "id": "R75",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\opensearch\\2021-01-01\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 281575,
+      "sha256": "e14eea16d72071fc5fd3d5ec924305f232f88e90208d25ec8900dea13411e05c",
+      "bucket": "medium"
+    },
+    {
+      "id": "R76",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\greengrassv2\\2020-11-30\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 143746,
+      "sha256": "56aea40ee4371e3b2d06cfc35746ef6ab416447eae1a7166ab2d80ddf6566c5f",
+      "bucket": "medium"
+    },
+    {
+      "id": "R77",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\pipes\\2015-10-07\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 136133,
+      "sha256": "2e94da22cccb9d1ef9416cc232c7fbbf459ab366fa82be86ec6c165a36ab54ec",
+      "bucket": "medium"
+    },
+    {
+      "id": "R78",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\pinpoint-sms-voice-v2\\2022-03-31\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 282414,
+      "sha256": "263d291090fa1f4842fc144f3be044cce15b1ff9645f9a324e2c5828692b5c96",
+      "bucket": "medium"
+    },
+    {
+      "id": "R79",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\cloudfront\\2016-09-07\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 151766,
+      "sha256": "85ec7bb02c2c2a2c82ae2553eb05fece55f97486c416adecd1562868b6ac758a",
+      "bucket": "medium"
+    },
+    {
+      "id": "R80",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\datasync\\2018-11-09\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 244492,
+      "sha256": "4471947b7c2959b5773907d1e071c9b888897df34cf08c44ef362955e7cef516",
+      "bucket": "medium"
+    },
+    {
+      "id": "R81",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\devops-guru\\2020-12-01\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 208213,
+      "sha256": "e8f671f2dc3565caf9617d715962db9c4472618ad972db4562a054deb918072f",
+      "bucket": "medium"
+    },
+    {
+      "id": "R82",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\cleanrooms\\2022-02-17\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 247155,
+      "sha256": "6068dab6446d65f64a4238a43338bbe7833a37add16d35d9fab1fb4c75ebb848",
+      "bucket": "medium"
+    },
+    {
+      "id": "R83",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\sqs\\2012-11-05\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 144570,
+      "sha256": "a3ae7694a5cea329ae2b04614b349e871e5702bd5276ec73f22316e252f7d15e",
+      "bucket": "medium"
+    },
+    {
+      "id": "R84",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\amplify\\2017-07-25\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 122553,
+      "sha256": "d0ac7eaf4ed240d244d1c25b27058570d67dd5ee4a1e40606a3272fbc8197751",
+      "bucket": "medium"
+    },
+    {
+      "id": "R85",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\fms\\2018-01-01\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 227505,
+      "sha256": "4b7d3a368e5709430970b060162825808fc1181d6bedd03d9f55200570a278bb",
+      "bucket": "medium"
+    },
+    {
+      "id": "R86",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\ce\\2017-10-25\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 264286,
+      "sha256": "d6e21db51d50ed34ba10442673d0900ceb92f714a67a4dc20c7e9213341ee2db",
+      "bucket": "medium"
+    },
+    {
+      "id": "R87",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\customer-profiles\\2020-08-15\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 238101,
+      "sha256": "83a4d214d4f4a4f823ad91fe81c1851c8f3b4eaa30773054cd0f260ad16ffa71",
+      "bucket": "medium"
+    },
+    {
+      "id": "R88",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\iotwireless\\2020-11-22\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 305595,
+      "sha256": "0bb69a9b7031cf3ce65290e263a86bdda21ba09a83a4412b77d7f6a5396004e0",
+      "bucket": "medium"
+    },
+    {
+      "id": "R89",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\redshift-serverless\\2021-04-21\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 148607,
+      "sha256": "7a8d4d60ce429c30b80d827d9d6266cc49920579e2a21249522f25d4cbadcd90",
+      "bucket": "medium"
+    },
+    {
+      "id": "R90",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\cloudwatch\\2010-08-01\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 222076,
+      "sha256": "0756c5f9afee3e83b27dfaa59882168d4dfa1c5a245eeb731126003c3afcb4ee",
+      "bucket": "medium"
+    },
+    {
+      "id": "R91",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\cognito-idp\\2016-04-18\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 556492,
+      "sha256": "b121ca261db8e85b2922ecdb03323e4c25563c6fdf615ab96d76fcc647e8c5b8",
+      "bucket": "large"
+    },
+    {
+      "id": "R92",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\ec2\\2015-10-01\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 847080,
+      "sha256": "76641d0a52fdd2d158914cd07874405b26f901efd8b14576bab7f99587bd471b",
+      "bucket": "large"
+    },
+    {
+      "id": "R93",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\ec2\\2016-09-15\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 891280,
+      "sha256": "e347b8ee1db56518d90f1ffc826de7513f0bafd1b7d669f2003301791f843e89",
+      "bucket": "large"
+    },
+    {
+      "id": "R94",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\ssm\\2014-11-06\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 812261,
+      "sha256": "cd31fca5a84fd67e2cc6948924f425a3f5f9a0a7775456c49aed452296872a35",
+      "bucket": "large"
+    },
+    {
+      "id": "R95",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\ec2\\2015-03-01\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 588390,
+      "sha256": "ca0ecc1876002fec88db1039759d7ff85c8f58b87f0bc66f4497d5d19496f99e",
+      "bucket": "large"
+    },
+    {
+      "id": "R96",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\mediaconvert\\2017-08-29\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 926847,
+      "sha256": "a6ae6f5d60dc12044b90e0f070e2f3941c4a61698f129ef73c6d60cf110e6cc9",
+      "bucket": "large"
+    },
+    {
+      "id": "R97",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\cloudfront\\2020-05-31\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 588264,
+      "sha256": "a8b3cded10b0b7e1ccad656c5f74733cbecd138637f234e8609356662f7fe9aa",
+      "bucket": "large"
+    },
+    {
+      "id": "R98",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\ec2\\2016-11-15\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 3018739,
+      "sha256": "89120b972f21ef0986979c5f29e2ff5fd4870d8a5f7a8f307efd62c6f7c17fd5",
+      "bucket": "large"
+    },
+    {
+      "id": "R99",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\redshift\\2012-12-01\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 540601,
+      "sha256": "f0380945ff64d3b88204e1795ead4ec22a2cf13b0a46672ada0e783d4191fc4b",
+      "bucket": "large"
+    },
+    {
+      "id": "R100",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\medialive\\2017-10-14\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 673116,
+      "sha256": "6128898c9bfc9d1b8d0be9665517d0fdcd48260e842c8d5bc9d7924e70521d6b",
+      "bucket": "large"
+    },
+    {
+      "id": "R101",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\chime\\2018-05-01\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 562255,
+      "sha256": "6c6cfeb7d505f049ec2710204a8ac5f8d309826bc6526e7d6e40d601eba3001d",
+      "bucket": "large"
+    },
+    {
+      "id": "R102",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\pinpoint\\2016-12-01\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 763800,
+      "sha256": "0e03a7a5c0d68cb25f32a5ba4dffd86e66029a12feba10baf78e017dc8a6d7c8",
+      "bucket": "large"
+    },
+    {
+      "id": "R103",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\lightsail\\2016-11-28\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 661619,
+      "sha256": "8bfa0daf1a3a10ea4546f677ec1dd381c53f6ec2c2924a8c20f75c8b8da7248b",
+      "bucket": "large"
+    },
+    {
+      "id": "R104",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\ec2\\2014-09-01\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 539923,
+      "sha256": "8370d58934f89a619e2b1a0dd1ba9b97ed009dd2480f5be1e623a78497004e59",
+      "bucket": "large"
+    },
+    {
+      "id": "R105",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\iam\\2010-05-08\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 629302,
+      "sha256": "39f281d0d061355bd726bb6cbad31cd5296b16c08d26122aef58185a745524af",
+      "bucket": "large"
+    }
+  ]
+}
