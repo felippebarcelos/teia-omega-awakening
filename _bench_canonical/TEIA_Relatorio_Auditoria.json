@@ -1,0 +1,153 @@
+{
+  "audit_version": "3.0.0",
+  "timestamp_utc": "2026-05-24T22:19:08Z",
+  "motor_v5_sha256": "DEF540A76E1F188DCCA4F6D55D3C06D7B84C0395CF7F82C4A403AE209110F6BE",
+  "motor_v5_bytes": 8338,
+  "motor_v6_sha256": "1290462833CADD90ADD5FEC38DE9D1BDBB1D9F23235A47DADE3828CB6247C1C1",
+  "motor_v6_bytes": 15464,
+  "motor_v61_sha256": "732300D7D7A4BCEC530C601261F32CA44A5C7F3667305FF247AE9EE2D61AAC14",
+  "motor_v61_bytes": 23477,
+  "pwsh_startup_ms": 269,
+  "total_rt_failures": 0,
+  "gargalos_por_dominio": [
+    {
+      "domain": "D1_UNIFORM",
+      "orig_bytes": 524288,
+      "entropy": 0.0,
+      "teia_seed_bytes": 189,
+      "teia_ratio_pct": 0.036,
+      "teia_opcode": "gen.repeat",
+      "teia_peak_mb": 14.8,
+      "teia_rt_ok": true,
+      "best_classic": "brotli",
+      "best_ratio_pct": 0.0025
+    },
+    {
+      "domain": "D2_PATTERN",
+      "orig_bytes": 262144,
+      "entropy": 0.5,
+      "teia_seed_bytes": 220,
+      "teia_ratio_pct": 0.0839,
+      "teia_opcode": "gen.pattern",
+      "teia_peak_mb": 0.0,
+      "teia_rt_ok": true,
+      "best_classic": "brotli",
+      "best_ratio_pct": 0.0088
+    },
+    {
+      "domain": "D3_RLE",
+      "orig_bytes": 262144,
+      "entropy": 0.0,
+      "teia_seed_bytes": 328,
+      "teia_ratio_pct": 0.1251,
+      "teia_opcode": "rle.decode",
+      "teia_peak_mb": 8.9,
+      "teia_rt_ok": true,
+      "best_classic": "brotli",
+      "best_ratio_pct": 0.0183
+    },
+    {
+      "domain": "D4_JSON",
+      "orig_bytes": 59395,
+      "entropy": 0.3489,
+      "teia_seed_bytes": 514,
+      "teia_ratio_pct": 0.8654,
+      "teia_opcode": "gen.json_structured",
+      "teia_peak_mb": 10.0,
+      "teia_rt_ok": true,
+      "best_classic": "teia_v0.6",
+      "best_ratio_pct": 0.8654
+    },
+    {
+      "domain": "D5_ENTROPY",
+      "orig_bytes": 131072,
+      "entropy": 0.9985,
+      "teia_seed_bytes": 175140,
+      "teia_ratio_pct": 133.6212,
+      "teia_opcode": "fallback.lzma",
+      "teia_peak_mb": 3.1,
+      "teia_rt_ok": true,
+      "best_classic": "brotli",
+      "best_ratio_pct": 100.0038
+    }
+  ],
+  "before_after": [
+    {
+      "domain": "D4_JSON",
+      "v5_opcode": "gen.json_structured",
+      "v5_seed_bytes": 514,
+      "v5_ratio": 0.8654,
+      "v5_rt_ok": true,
+      "v2_opcode": "gen.json_structured",
+      "v2_seed_bytes": 511,
+      "v2_decode_ms": 593
+    },
+    {
+      "domain": "D5_ENTROPY",
+      "v5_opcode": "fallback.lzma",
+      "v5_seed_bytes": 175140,
+      "v5_ratio": 133.6212,
+      "v5_rt_ok": true,
+      "v2_opcode": "fallback.lzma",
+      "v2_seed_bytes": 175140,
+      "v2_decode_ms": 633
+    }
+  ],
+  "opcodes_redundantes": [
+    {
+      "finding": "literal para dados estruturados",
+      "status": "ELIMINADO em D4 via gen.json_structured",
+      "severity": "HIGH"
+    },
+    {
+      "finding": "literal para alta entropia sem fallback",
+      "status": "ELIMINADO em D5 via fallback.lzma auto",
+      "severity": "HIGH"
+    },
+    {
+      "finding": "pwsh subprocess por decode (startup overhead ~275ms)",
+      "status": "ELIMINADO v3 — módulo in-process",
+      "severity": "CRITICAL"
+    },
+    {
+      "finding": "gen.json_structured hardcoded",
+      "status": "ELIMINADO v3 — auto-detecção de schema implementada",
+      "severity": "MEDIUM"
+    },
+    {
+      "finding": "hot-loops PS (XorB O(n), RLE foreach, JsonStructured for, SHA256Hex pipeline)",
+      "status": "ELIMINADO v3.1 — C# inline via [Add-Type] em TEIA-Core-v0.6.0.psm1",
+      "severity": "HIGH"
+    }
+  ],
+  "riscos_idempotencia": [
+    {
+      "risco": "SHA-256 divergente não detectado",
+      "mitigacao": "Motor lança throw imediato",
+      "status": "MITIGADO"
+    },
+    {
+      "risco": "LZMA não-determinístico",
+      "mitigacao": "mmt=1 (single thread)",
+      "status": "MITIGADO"
+    },
+    {
+      "risco": "Entropia amostral pode errar threshold",
+      "mitigacao": "Amostra 16KB; para corpus <16KB usa total",
+      "status": "ACEITO"
+    },
+    {
+      "risco": "7-Zip ausente em produção",
+      "mitigacao": "Preflight check no motor e no harness",
+      "status": "MITIGADO"
+    }
+  ],
+  "conclusao": {
+    "gen_json_structured": "VALIDADO — SHA-256 fidelidade confirmada",
+    "fallback_lzma": "VALIDADO — encode/decode LZMA preserva dados",
+    "latencia_decode": "RESOLVIDO v3 — módulo in-process: decode_ms é tempo puro de computação sem startup",
+    "hotloop_cs": "RESOLVIDO v3.1 — XorB/RLE/JsonStructured/SHA256Hex reescritos em C# via [Add-Type]; meta <20ms D1-D4",
+    "io_serialization": "RESOLVIDO v3.2 — WriteAllBytes eliminado (Invoke-TEIARestoreRaw); ConvertFrom-Json eliminado (System.Text.Json.JsonDocument); teia_v0.6.1_raw mede compute puro",
+    "proximo_passo": "dict.shared: seed ~100B por arquivo via dicionário pré-distribuído; SliceCopy C# para seeds alto-Rep"
+  }
+}

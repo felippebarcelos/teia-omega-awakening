@@ -1,0 +1,2070 @@
+{
+  "harness_version": "1.0.0",
+  "motor_v62_sha256": "7FB33B16A31DE38B87F21A3E1F357D33FB0B02EB4D23E648D7FE25E5212816E6",
+  "motor_v62_bytes": 24087,
+  "max_size_mb": 10,
+  "timestamp_utc": "2026-05-24T23:06:03Z",
+  "system": {
+    "os": "Microsoft Windows 10.0.26200",
+    "dotnet": "9.0.14",
+    "cpu_count": 8
+  },
+  "results": [
+    {
+      "id": "R1",
+      "name": "paginators-1.json",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\qbusiness\\2023-11-27\\paginators-1.json",
+      "bucket": [
+        "tiny",
+        "small",
+        "medium",
+        "large"
+      ],
+      "orig_bytes": 2047,
+      "orig_sha256": "42bfb61bf4db6eb70fc50060be9f501b87b6f512c98297bc1306354114cf155b",
+      "entropy": 0.5298,
+      "compressors": {
+        "gzip": {
+          "repr_bytes": 294,
+          "ratio_pct": 14.3625,
+          "encode_ms": 11
+        },
+        "brotli": {
+          "repr_bytes": 298,
+          "ratio_pct": 14.5579,
+          "encode_ms": 3
+        },
+        "lzma": {
+          "repr_bytes": 425,
+          "ratio_pct": 20.7621,
+          "encode_ms": 39
+        },
+        "teia_v0.6.2": {
+          "seed_bytes": 2911,
+          "dict_bytes": 0,
+          "motor_bytes": 24087,
+          "ratio_pct": 142.2081,
+          "net_ratio_pct": 1318.9057,
+          "encode_ms": 9,
+          "decode_ms": 9,
+          "peak_ram_mb": 0.0,
+          "round_trip_ok": true,
+          "opcode": "literal",
+          "entropy": 0.5298
+        }
+      },
+      "teia_opcode": "literal",
+      "teia_ok": true
+    },
+    {
+      "id": "R2",
+      "name": "_package.json",
+      "path": "D:\\VS2026\\Cache\\Microsoft.VisualStudio.WebToolsExtensions.MSBuild.Resources,version=18.3.24.62685,chip=neutral,language=pt-BR,productarch=neutral\\_package.json",
+      "bucket": [
+        "tiny",
+        "small",
+        "medium",
+        "large"
+      ],
+      "orig_bytes": 2045,
+      "orig_sha256": "0e299d691263bd3ff49b239fddd8b541fdaaf3afc6dffffbc6f801026ce25b71",
+      "entropy": 0.6969,
+      "compressors": {
+        "gzip": {
+          "repr_bytes": 885,
+          "ratio_pct": 43.2763,
+          "encode_ms": 0
+        },
+        "brotli": {
+          "repr_bytes": 863,
+          "ratio_pct": 42.2005,
+          "encode_ms": 0
+        },
+        "lzma": {
+          "repr_bytes": 1012,
+          "ratio_pct": 49.4866,
+          "encode_ms": 26
+        },
+        "teia_v0.6.2": {
+          "seed_bytes": 2903,
+          "dict_bytes": 0,
+          "motor_bytes": 24087,
+          "ratio_pct": 141.956,
+          "net_ratio_pct": 1319.8044,
+          "encode_ms": 0,
+          "decode_ms": 0,
+          "peak_ram_mb": 0.0,
+          "round_trip_ok": true,
+          "opcode": "literal",
+          "entropy": 0.6969
+        }
+      },
+      "teia_opcode": "literal",
+      "teia_ok": true
+    },
+    {
+      "id": "R3",
+      "name": "paginators-1.json",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\comprehend\\2017-11-27\\paginators-1.json",
+      "bucket": [
+        "tiny",
+        "small",
+        "medium",
+        "large"
+      ],
+      "orig_bytes": 2033,
+      "orig_sha256": "682a3345a8f351be306e59f1cdbfdb4c9973b670c50b73e7c08b4031e9365ad6",
+      "entropy": 0.5525,
+      "compressors": {
+        "gzip": {
+          "repr_bytes": 283,
+          "ratio_pct": 13.9203,
+          "encode_ms": 0
+        },
+        "brotli": {
+          "repr_bytes": 273,
+          "ratio_pct": 13.4284,
+          "encode_ms": 0
+        },
+        "lzma": {
+          "repr_bytes": 411,
+          "ratio_pct": 20.2164,
+          "encode_ms": 25
+        },
+        "teia_v0.6.2": {
+          "seed_bytes": 2891,
+          "dict_bytes": 0,
+          "motor_bytes": 24087,
+          "ratio_pct": 142.2036,
+          "net_ratio_pct": 1327.0044,
+          "encode_ms": 0,
+          "decode_ms": 0,
+          "peak_ram_mb": 0.0,
+          "round_trip_ok": true,
+          "opcode": "literal",
+          "entropy": 0.5525
+        }
+      },
+      "teia_opcode": "literal",
+      "teia_ok": true
+    },
+    {
+      "id": "R4",
+      "name": "paginators-1.json",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\route53-recovery-readiness\\2019-12-02\\paginators-1.json",
+      "bucket": [
+        "tiny",
+        "small",
+        "medium",
+        "large"
+      ],
+      "orig_bytes": 2032,
+      "orig_sha256": "6e46c3475554d66b437bce0a6a988b33cad650f1ca8fe684a67ed32f3a85796d",
+      "entropy": 0.5375,
+      "compressors": {
+        "gzip": {
+          "repr_bytes": 296,
+          "ratio_pct": 14.5669,
+          "encode_ms": 0
+        },
+        "brotli": {
+          "repr_bytes": 289,
+          "ratio_pct": 14.2224,
+          "encode_ms": 0
+        },
+        "lzma": {
+          "repr_bytes": 418,
+          "ratio_pct": 20.5709,
+          "encode_ms": 27
+        },
+        "teia_v0.6.2": {
+          "seed_bytes": 2891,
+          "dict_bytes": 0,
+          "motor_bytes": 24087,
+          "ratio_pct": 142.2736,
+          "net_ratio_pct": 1327.6575,
+          "encode_ms": 0,
+          "decode_ms": 0,
+          "peak_ram_mb": 0.0,
+          "round_trip_ok": true,
+          "opcode": "literal",
+          "entropy": 0.5375
+        }
+      },
+      "teia_opcode": "literal",
+      "teia_ok": true
+    },
+    {
+      "id": "R5",
+      "name": "package.nls.json",
+      "path": "D:\\Microsoft VS Code\\8b640eef5a\\resources\\app\\extensions\\github\\package.nls.json",
+      "bucket": [
+        "tiny",
+        "small",
+        "medium",
+        "large"
+      ],
+      "orig_bytes": 2018,
+      "orig_sha256": "85098467a1634f0e8f2b7e0f909efd05c4ca4f006cb905430213fcde4d612cb2",
+      "entropy": 0.6096,
+      "compressors": {
+        "gzip": {
+          "repr_bytes": 678,
+          "ratio_pct": 33.5976,
+          "encode_ms": 0
+        },
+        "brotli": {
+          "repr_bytes": 666,
+          "ratio_pct": 33.003,
+          "encode_ms": 0
+        },
+        "lzma": {
+          "repr_bytes": 842,
+          "ratio_pct": 41.7245,
+          "encode_ms": 26
+        },
+        "teia_v0.6.2": {
+          "seed_bytes": 2870,
+          "dict_bytes": 0,
+          "motor_bytes": 24087,
+          "ratio_pct": 142.22,
+          "net_ratio_pct": 1335.8276,
+          "encode_ms": 0,
+          "decode_ms": 0,
+          "peak_ram_mb": 0.0,
+          "round_trip_ok": true,
+          "opcode": "literal",
+          "entropy": 0.6096
+        }
+      },
+      "teia_opcode": "literal",
+      "teia_ok": true
+    },
+    {
+      "id": "R6",
+      "name": "_package.json",
+      "path": "D:\\VS2026\\Cache\\Microsoft.VC.14.44.17.14.Tools.HostX64.TargetX86.Res.base,version=14.44.35221,chip=x64,language=pt-BR\\_package.json",
+      "bucket": [
+        "tiny",
+        "small",
+        "medium",
+        "large"
+      ],
+      "orig_bytes": 2016,
+      "orig_sha256": "074bcaef088b0738c2b2b415c7a5dbe20c313f8707050ac23949b9af6729cca5",
+      "entropy": 0.6787,
+      "compressors": {
+        "gzip": {
+          "repr_bytes": 863,
+          "ratio_pct": 42.8075,
+          "encode_ms": 0
+        },
+        "brotli": {
+          "repr_bytes": 840,
+          "ratio_pct": 41.6667,
+          "encode_ms": 0
+        },
+        "lzma": {
+          "repr_bytes": 985,
+          "ratio_pct": 48.8591,
+          "encode_ms": 27
+        },
+        "teia_v0.6.2": {
+          "seed_bytes": 2863,
+          "dict_bytes": 0,
+          "motor_bytes": 24087,
+          "ratio_pct": 142.0139,
+          "net_ratio_pct": 1336.8056,
+          "encode_ms": 0,
+          "decode_ms": 1,
+          "peak_ram_mb": 0.2,
+          "round_trip_ok": true,
+          "opcode": "literal",
+          "entropy": 0.6787
+        }
+      },
+      "teia_opcode": "literal",
+      "teia_ok": true
+    },
+    {
+      "id": "R7",
+      "name": "adexchangebuyer.v1.2.json",
+      "path": "D:\\bruto\\TEIA\\Miniconda\\envs\\agents_v2\\Lib\\site-packages\\googleapiclient\\discovery_cache\\documents\\adexchangebuyer.v1.2.json",
+      "bucket": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "orig_bytes": 20475,
+      "orig_sha256": "d3e5d5cd46b791ca8588265893f5b46aee66215e7ec3702006d409b129d62fdc",
+      "entropy": 0.5134,
+      "compressors": {
+        "gzip": {
+          "repr_bytes": 3761,
+          "ratio_pct": 18.3687,
+          "encode_ms": 0
+        },
+        "brotli": {
+          "repr_bytes": 3902,
+          "ratio_pct": 19.0574,
+          "encode_ms": 3
+        },
+        "lzma": {
+          "repr_bytes": 3790,
+          "ratio_pct": 18.5104,
+          "encode_ms": 30
+        },
+        "teia_v0.6.2": {
+          "seed_bytes": 27488,
+          "dict_bytes": 0,
+          "motor_bytes": 24087,
+          "ratio_pct": 134.2515,
+          "net_ratio_pct": 251.8926,
+          "encode_ms": 0,
+          "decode_ms": 8,
+          "peak_ram_mb": 2.1,
+          "round_trip_ok": true,
+          "opcode": "literal",
+          "entropy": 0.5134
+        }
+      },
+      "teia_opcode": "literal",
+      "teia_ok": true
+    },
+    {
+      "id": "R8",
+      "name": "Reforma minimalista triangular_03634b8a8a20.json",
+      "path": "D:\\ChatGPT_2438\\Reforma minimalista triangular_03634b8a8a20.json",
+      "bucket": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "orig_bytes": 20454,
+      "orig_sha256": "0d16128d8d16a91693c2e4ed1b1bb32e77d39d0977103dfdf3a4e7368725178a",
+      "entropy": 0.5798,
+      "compressors": {
+        "gzip": {
+          "repr_bytes": 4513,
+          "ratio_pct": 22.0641,
+          "encode_ms": 0
+        },
+        "brotli": {
+          "repr_bytes": 4516,
+          "ratio_pct": 22.0788,
+          "encode_ms": 0
+        },
+        "lzma": {
+          "repr_bytes": 4419,
+          "ratio_pct": 21.6046,
+          "encode_ms": 32
+        },
+        "teia_v0.6.2": {
+          "seed_bytes": 27483,
+          "dict_bytes": 0,
+          "motor_bytes": 24087,
+          "ratio_pct": 134.3649,
+          "net_ratio_pct": 252.1267,
+          "encode_ms": 0,
+          "decode_ms": 5,
+          "peak_ram_mb": 1.8,
+          "round_trip_ok": true,
+          "opcode": "literal",
+          "entropy": 0.5798
+        }
+      },
+      "teia_opcode": "literal",
+      "teia_ok": true
+    },
+    {
+      "id": "R9",
+      "name": "Pintura telha e paredes_958e40a4a371.json",
+      "path": "D:\\ChatGPT_2438\\Pintura telha e paredes_958e40a4a371.json",
+      "bucket": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "orig_bytes": 20446,
+      "orig_sha256": "831d0928c99d60c3c99a1ebe3abe2a1112c14c074d899d38a048ccc09d3a1859",
+      "entropy": 0.5802,
+      "compressors": {
+        "gzip": {
+          "repr_bytes": 4505,
+          "ratio_pct": 22.0336,
+          "encode_ms": 0
+        },
+        "brotli": {
+          "repr_bytes": 4488,
+          "ratio_pct": 21.9505,
+          "encode_ms": 0
+        },
+        "lzma": {
+          "repr_bytes": 4417,
+          "ratio_pct": 21.6032,
+          "encode_ms": 32
+        },
+        "teia_v0.6.2": {
+          "seed_bytes": 27468,
+          "dict_bytes": 0,
+          "motor_bytes": 24087,
+          "ratio_pct": 134.3441,
+          "net_ratio_pct": 252.152,
+          "encode_ms": 0,
+          "decode_ms": 5,
+          "peak_ram_mb": 0.4,
+          "round_trip_ok": true,
+          "opcode": "literal",
+          "entropy": 0.5802
+        }
+      },
+      "teia_opcode": "literal",
+      "teia_ok": true
+    },
+    {
+      "id": "R10",
+      "name": "Design parede Basquiat_cd4a7b3a4004.json",
+      "path": "D:\\TEIA OS\\ChatGPT_2438\\Design parede Basquiat_cd4a7b3a4004.json",
+      "bucket": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "orig_bytes": 20429,
+      "orig_sha256": "a1368be8892e0734583b557e41c3c6dd1825cc64780f0cf68d547124850aaa20",
+      "entropy": 0.5799,
+      "compressors": {
+        "gzip": {
+          "repr_bytes": 4507,
+          "ratio_pct": 22.0618,
+          "encode_ms": 0
+        },
+        "brotli": {
+          "repr_bytes": 4510,
+          "ratio_pct": 22.0765,
+          "encode_ms": 0
+        },
+        "lzma": {
+          "repr_bytes": 4425,
+          "ratio_pct": 21.6604,
+          "encode_ms": 32
+        },
+        "teia_v0.6.2": {
+          "seed_bytes": 27443,
+          "dict_bytes": 0,
+          "motor_bytes": 24087,
+          "ratio_pct": 134.3335,
+          "net_ratio_pct": 252.2395,
+          "encode_ms": 0,
+          "decode_ms": 5,
+          "peak_ram_mb": 0.4,
+          "round_trip_ok": true,
+          "opcode": "literal",
+          "entropy": 0.5799
+        }
+      },
+      "teia_opcode": "literal",
+      "teia_ok": true
+    },
+    {
+      "id": "R11",
+      "name": "groovy.tmLanguage.json",
+      "path": "D:\\Microsoft VS Code\\8b640eef5a\\resources\\app\\extensions\\groovy\\syntaxes\\groovy.tmLanguage.json",
+      "bucket": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "orig_bytes": 20347,
+      "orig_sha256": "8ca903345e29706c1d73e5bf57cad671b3b334fa105ef5e93137315df8c708ab",
+      "entropy": 0.6303,
+      "compressors": {
+        "gzip": {
+          "repr_bytes": 4074,
+          "ratio_pct": 20.0226,
+          "encode_ms": 0
+        },
+        "brotli": {
+          "repr_bytes": 4277,
+          "ratio_pct": 21.0203,
+          "encode_ms": 0
+        },
+        "lzma": {
+          "repr_bytes": 4013,
+          "ratio_pct": 19.7228,
+          "encode_ms": 32
+        },
+        "teia_v0.6.2": {
+          "seed_bytes": 27317,
+          "dict_bytes": 0,
+          "motor_bytes": 24087,
+          "ratio_pct": 134.2557,
+          "net_ratio_pct": 252.6368,
+          "encode_ms": 0,
+          "decode_ms": 5,
+          "peak_ram_mb": 0.4,
+          "round_trip_ok": true,
+          "opcode": "literal",
+          "entropy": 0.6303
+        }
+      },
+      "teia_opcode": "literal",
+      "teia_ok": true
+    },
+    {
+      "id": "R12",
+      "name": "manifest.json",
+      "path": "D:\\VS2026\\Install\\Common7\\IDE\\Extensions\\Microsoft\\ConnectedServices\\manifest.json",
+      "bucket": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "orig_bytes": 20344,
+      "orig_sha256": "b03cbf60d6bc489a2127cc34d8224fd05958639cb435fbd5ce8794ab362c64c4",
+      "entropy": 0.6049,
+      "compressors": {
+        "gzip": {
+          "repr_bytes": 1615,
+          "ratio_pct": 7.9385,
+          "encode_ms": 0
+        },
+        "brotli": {
+          "repr_bytes": 1658,
+          "ratio_pct": 8.1498,
+          "encode_ms": 0
+        },
+        "lzma": {
+          "repr_bytes": 1769,
+          "ratio_pct": 8.6954,
+          "encode_ms": 29
+        },
+        "teia_v0.6.2": {
+          "seed_bytes": 27304,
+          "dict_bytes": 0,
+          "motor_bytes": 24087,
+          "ratio_pct": 134.2116,
+          "net_ratio_pct": 252.6101,
+          "encode_ms": 3,
+          "decode_ms": 5,
+          "peak_ram_mb": 0.4,
+          "round_trip_ok": true,
+          "opcode": "literal",
+          "entropy": 0.6049
+        }
+      },
+      "teia_opcode": "literal",
+      "teia_ok": true
+    },
+    {
+      "id": "R13",
+      "name": "Pintura telha e paredes_0523c643b11a.json",
+      "path": "D:\\TEIA OS\\ChatGPT_2438\\Pintura telha e paredes_0523c643b11a.json",
+      "bucket": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "orig_bytes": 20330,
+      "orig_sha256": "8386905000c9d0e5f962fb53a2a9bd7fe15640101a6cb5a64b475804d2dec272",
+      "entropy": 0.5811,
+      "compressors": {
+        "gzip": {
+          "repr_bytes": 4457,
+          "ratio_pct": 21.9233,
+          "encode_ms": 0
+        },
+        "brotli": {
+          "repr_bytes": 4459,
+          "ratio_pct": 21.9331,
+          "encode_ms": 0
+        },
+        "lzma": {
+          "repr_bytes": 4352,
+          "ratio_pct": 21.4068,
+          "encode_ms": 31
+        },
+        "teia_v0.6.2": {
+          "seed_bytes": 27312,
+          "dict_bytes": 0,
+          "motor_bytes": 24087,
+          "ratio_pct": 134.3433,
+          "net_ratio_pct": 252.8234,
+          "encode_ms": 0,
+          "decode_ms": 17,
+          "peak_ram_mb": 2.8,
+          "round_trip_ok": true,
+          "opcode": "literal",
+          "entropy": 0.5811
+        }
+      },
+      "teia_opcode": "literal",
+      "teia_ok": true
+    },
+    {
+      "id": "R14",
+      "name": "service-2.json",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\iot-jobs-data\\2017-09-29\\service-2.json",
+      "bucket": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "orig_bytes": 20210,
+      "orig_sha256": "67f0f5591df4ac68fcc3b1040b523c2641669a66e507e747bdb968f4ba717bae",
+      "entropy": 0.5745,
+      "compressors": {
+        "gzip": {
+          "repr_bytes": 3412,
+          "ratio_pct": 16.8827,
+          "encode_ms": 0
+        },
+        "brotli": {
+          "repr_bytes": 3605,
+          "ratio_pct": 17.8377,
+          "encode_ms": 1
+        },
+        "lzma": {
+          "repr_bytes": 3457,
+          "ratio_pct": 17.1054,
+          "encode_ms": 32
+        },
+        "teia_v0.6.2": {
+          "seed_bytes": 27125,
+          "dict_bytes": 0,
+          "motor_bytes": 24087,
+          "ratio_pct": 134.2157,
+          "net_ratio_pct": 253.3993,
+          "encode_ms": 0,
+          "decode_ms": 9,
+          "peak_ram_mb": 0.4,
+          "round_trip_ok": true,
+          "opcode": "literal",
+          "entropy": 0.5745
+        }
+      },
+      "teia_opcode": "literal",
+      "teia_ok": true
+    },
+    {
+      "id": "R15",
+      "name": "iap.v1beta1.json",
+      "path": "D:\\bruto\\TEIA\\Miniconda\\envs\\agents_v2\\Lib\\site-packages\\googleapiclient\\discovery_cache\\documents\\iap.v1beta1.json",
+      "bucket": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "orig_bytes": 20190,
+      "orig_sha256": "13e166455b4483909c995d8cb4972b869ff9c98c1b5279b5cb4b186a045dc144",
+      "entropy": 0.624,
+      "compressors": {
+        "gzip": {
+          "repr_bytes": 5382,
+          "ratio_pct": 26.6568,
+          "encode_ms": 1
+        },
+        "brotli": {
+          "repr_bytes": 5442,
+          "ratio_pct": 26.9539,
+          "encode_ms": 1
+        },
+        "lzma": {
+          "repr_bytes": 5334,
+          "ratio_pct": 26.419,
+          "encode_ms": 37
+        },
+        "teia_v0.6.2": {
+          "seed_bytes": 27099,
+          "dict_bytes": 0,
+          "motor_bytes": 24087,
+          "ratio_pct": 134.2199,
+          "net_ratio_pct": 253.5215,
+          "encode_ms": 0,
+          "decode_ms": 8,
+          "peak_ram_mb": 0.4,
+          "round_trip_ok": true,
+          "opcode": "literal",
+          "entropy": 0.624
+        }
+      },
+      "teia_opcode": "literal",
+      "teia_ok": true
+    },
+    {
+      "id": "R16",
+      "name": "adsenseplatform.v1.json",
+      "path": "D:\\bruto\\TEIA\\Miniconda\\envs\\teia_cli\\Lib\\site-packages\\googleapiclient\\discovery_cache\\documents\\adsenseplatform.v1.json",
+      "bucket": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "orig_bytes": 20170,
+      "orig_sha256": "b31a89bf33104b4396ee2feca712abbe6a48d814d9f9f3e0b8005153311e296b",
+      "entropy": 0.6196,
+      "compressors": {
+        "gzip": {
+          "repr_bytes": 4544,
+          "ratio_pct": 22.5285,
+          "encode_ms": 0
+        },
+        "brotli": {
+          "repr_bytes": 4628,
+          "ratio_pct": 22.945,
+          "encode_ms": 1
+        },
+        "lzma": {
+          "repr_bytes": 4518,
+          "ratio_pct": 22.3996,
+          "encode_ms": 30
+        },
+        "teia_v0.6.2": {
+          "seed_bytes": 27082,
+          "dict_bytes": 0,
+          "motor_bytes": 24087,
+          "ratio_pct": 134.2687,
+          "net_ratio_pct": 253.6886,
+          "encode_ms": 0,
+          "decode_ms": 7,
+          "peak_ram_mb": 0.4,
+          "round_trip_ok": true,
+          "opcode": "literal",
+          "entropy": 0.6196
+        }
+      },
+      "teia_opcode": "literal",
+      "teia_ok": true
+    },
+    {
+      "id": "R17",
+      "name": "service-2.json",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\s3outposts\\2017-07-25\\service-2.json",
+      "bucket": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "orig_bytes": 20156,
+      "orig_sha256": "b1b241fdb0b38f4e0923ba2964f6476611f2e0a7586315e2fa86025428f688fd",
+      "entropy": 0.5848,
+      "compressors": {
+        "gzip": {
+          "repr_bytes": 3444,
+          "ratio_pct": 17.0867,
+          "encode_ms": 1
+        },
+        "brotli": {
+          "repr_bytes": 3660,
+          "ratio_pct": 18.1584,
+          "encode_ms": 1
+        },
+        "lzma": {
+          "repr_bytes": 3478,
+          "ratio_pct": 17.2554,
+          "encode_ms": 36
+        },
+        "teia_v0.6.2": {
+          "seed_bytes": 27053,
+          "dict_bytes": 0,
+          "motor_bytes": 24087,
+          "ratio_pct": 134.2181,
+          "net_ratio_pct": 253.721,
+          "encode_ms": 0,
+          "decode_ms": 7,
+          "peak_ram_mb": 0.4,
+          "round_trip_ok": true,
+          "opcode": "literal",
+          "entropy": 0.5848
+        }
+      },
+      "teia_opcode": "literal",
+      "teia_ok": true
+    },
+    {
+      "id": "R18",
+      "name": "package.json",
+      "path": "D:\\Microsoft VS Code\\8b640eef5a\\resources\\app\\extensions\\markdown-language-features\\package.json",
+      "bucket": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "orig_bytes": 20116,
+      "orig_sha256": "7981fb17d88304f761537734ff5986e30fd9ac028a4ca6efafda4c152d7996ae",
+      "entropy": 0.6275,
+      "compressors": {
+        "gzip": {
+          "repr_bytes": 3464,
+          "ratio_pct": 17.2201,
+          "encode_ms": 0
+        },
+        "brotli": {
+          "repr_bytes": 3531,
+          "ratio_pct": 17.5532,
+          "encode_ms": 0
+        },
+        "lzma": {
+          "repr_bytes": 3467,
+          "ratio_pct": 17.235,
+          "encode_ms": 30
+        },
+        "teia_v0.6.2": {
+          "seed_bytes": 26999,
+          "dict_bytes": 0,
+          "motor_bytes": 24087,
+          "ratio_pct": 134.2165,
+          "net_ratio_pct": 253.957,
+          "encode_ms": 4,
+          "decode_ms": 7,
+          "peak_ram_mb": 0.4,
+          "round_trip_ok": true,
+          "opcode": "literal",
+          "entropy": 0.6275
+        }
+      },
+      "teia_opcode": "literal",
+      "teia_ok": true
+    },
+    {
+      "id": "R19",
+      "name": "verifiedaccess.v2.json",
+      "path": "D:\\bruto\\TEIA\\Miniconda\\envs\\teia_cli\\Lib\\site-packages\\googleapiclient\\discovery_cache\\documents\\verifiedaccess.v2.json",
+      "bucket": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "orig_bytes": 20018,
+      "orig_sha256": "d250c5cd5a280b9e18bd748186106dcce4d5d3c28a45af4ad2ca077ae071a869",
+      "entropy": 0.6316,
+      "compressors": {
+        "gzip": {
+          "repr_bytes": 5089,
+          "ratio_pct": 25.4221,
+          "encode_ms": 0
+        },
+        "brotli": {
+          "repr_bytes": 5123,
+          "ratio_pct": 25.592,
+          "encode_ms": 1
+        },
+        "lzma": {
+          "repr_bytes": 5023,
+          "ratio_pct": 25.0924,
+          "encode_ms": 36
+        },
+        "teia_v0.6.2": {
+          "seed_bytes": 26877,
+          "dict_bytes": 0,
+          "motor_bytes": 24087,
+          "ratio_pct": 134.2642,
+          "net_ratio_pct": 254.5909,
+          "encode_ms": 0,
+          "decode_ms": 7,
+          "peak_ram_mb": 0.4,
+          "round_trip_ok": true,
+          "opcode": "literal",
+          "entropy": 0.6316
+        }
+      },
+      "teia_opcode": "literal",
+      "teia_ok": true
+    },
+    {
+      "id": "R20",
+      "name": "Takeout__Minha atividade__Gmail__Minhaatividade.json",
+      "path": "D:\\DownloadsChrome\\Gemini_Audit_20260421T235753Z_3_001\\collected_files\\Takeout__Minha atividade__Gmail__Minhaatividade.json",
+      "bucket": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "orig_bytes": 19981,
+      "orig_sha256": "7b2798b15c82b7ce3f3d54e1b4d0bf2079474f5c47a22b78e9986280b5f9caa9",
+      "entropy": 0.6538,
+      "compressors": {
+        "gzip": {
+          "repr_bytes": 2492,
+          "ratio_pct": 12.4718,
+          "encode_ms": 0
+        },
+        "brotli": {
+          "repr_bytes": 2522,
+          "ratio_pct": 12.622,
+          "encode_ms": 0
+        },
+        "lzma": {
+          "repr_bytes": 2451,
+          "ratio_pct": 12.2667,
+          "encode_ms": 31
+        },
+        "teia_v0.6.2": {
+          "seed_bytes": 26859,
+          "dict_bytes": 0,
+          "motor_bytes": 24087,
+          "ratio_pct": 134.4227,
+          "net_ratio_pct": 254.9722,
+          "encode_ms": 0,
+          "decode_ms": 7,
+          "peak_ram_mb": 0.4,
+          "round_trip_ok": true,
+          "opcode": "literal",
+          "entropy": 0.6538
+        }
+      },
+      "teia_opcode": "literal",
+      "teia_ok": true
+    },
+    {
+      "id": "R21",
+      "name": "service-2.json",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\kinesisanalyticsv2\\2018-05-23\\service-2.json",
+      "bucket": [
+        "medium",
+        "large"
+      ],
+      "orig_bytes": 202197,
+      "orig_sha256": "eed28f5d547ee6c5a72603775c9af8787a040fec13ec3bce4e8f167cd2db97b5",
+      "entropy": 0.5883,
+      "compressors": {
+        "gzip": {
+          "repr_bytes": 23581,
+          "ratio_pct": 11.6624,
+          "encode_ms": 4
+        },
+        "brotli": {
+          "repr_bytes": 23637,
+          "ratio_pct": 11.6901,
+          "encode_ms": 9
+        },
+        "lzma": {
+          "repr_bytes": 19174,
+          "ratio_pct": 9.4828,
+          "encode_ms": 71
+        },
+        "teia_v0.6.2": {
+          "seed_bytes": 269774,
+          "dict_bytes": 0,
+          "motor_bytes": 24087,
+          "ratio_pct": 133.4214,
+          "net_ratio_pct": 145.334,
+          "encode_ms": 0,
+          "decode_ms": 79,
+          "peak_ram_mb": 5.9,
+          "round_trip_ok": true,
+          "opcode": "literal",
+          "entropy": 0.5883
+        }
+      },
+      "teia_opcode": "literal",
+      "teia_ok": true
+    },
+    {
+      "id": "R22",
+      "name": "service-2.json",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\elastictranscoder\\2012-09-25\\service-2.json",
+      "bucket": [
+        "medium",
+        "large"
+      ],
+      "orig_bytes": 201124,
+      "orig_sha256": "ac4b99390a11d19b0ec617d7f0a4f84877511d4794e45069ed111d8e3fd6383a",
+      "entropy": 0.5887,
+      "compressors": {
+        "gzip": {
+          "repr_bytes": 35511,
+          "ratio_pct": 17.6563,
+          "encode_ms": 8
+        },
+        "brotli": {
+          "repr_bytes": 29828,
+          "ratio_pct": 14.8307,
+          "encode_ms": 8
+        },
+        "lzma": {
+          "repr_bytes": 24904,
+          "ratio_pct": 12.3824,
+          "encode_ms": 67
+        },
+        "teia_v0.6.2": {
+          "seed_bytes": 268346,
+          "dict_bytes": 0,
+          "motor_bytes": 24087,
+          "ratio_pct": 133.4232,
+          "net_ratio_pct": 145.3994,
+          "encode_ms": 0,
+          "decode_ms": 71,
+          "peak_ram_mb": 3.6,
+          "round_trip_ok": true,
+          "opcode": "literal",
+          "entropy": 0.5887
+        }
+      },
+      "teia_opcode": "literal",
+      "teia_ok": true
+    },
+    {
+      "id": "R23",
+      "name": "Minhaatividade.json",
+      "path": "D:\\DownloadsChrome\\Takeout_Extracted_20260421T235753Z_3_001\\Takeout\\Minha atividade\\AI Mode\\Minhaatividade.json",
+      "bucket": [
+        "medium",
+        "large"
+      ],
+      "orig_bytes": 201038,
+      "orig_sha256": "49d0cf0fbfecb4cc394ce1f5bbfc0c5570bd41ec98020dfee03c2d337f15121e",
+      "entropy": 0.7321,
+      "compressors": {
+        "gzip": {
+          "repr_bytes": 77033,
+          "ratio_pct": 38.3176,
+          "encode_ms": 9
+        },
+        "brotli": {
+          "repr_bytes": 75941,
+          "ratio_pct": 37.7745,
+          "encode_ms": 11
+        },
+        "lzma": {
+          "repr_bytes": 71811,
+          "ratio_pct": 35.7201,
+          "encode_ms": 57
+        },
+        "teia_v0.6.2": {
+          "seed_bytes": 268235,
+          "dict_bytes": 0,
+          "motor_bytes": 24087,
+          "ratio_pct": 133.425,
+          "net_ratio_pct": 145.4063,
+          "encode_ms": 0,
+          "decode_ms": 74,
+          "peak_ram_mb": 3.9,
+          "round_trip_ok": true,
+          "opcode": "literal",
+          "entropy": 0.7321
+        }
+      },
+      "teia_opcode": "literal",
+      "teia_ok": true
+    },
+    {
+      "id": "R24",
+      "name": "Takeout__Minha atividade__AI Mode__Minhaatividade.json",
+      "path": "D:\\DownloadsChrome\\Gemini_Audit_20260421T235753Z_3_001\\collected_files\\Takeout__Minha atividade__AI Mode__Minhaatividade.json",
+      "bucket": [
+        "medium",
+        "large"
+      ],
+      "orig_bytes": 201038,
+      "orig_sha256": "49d0cf0fbfecb4cc394ce1f5bbfc0c5570bd41ec98020dfee03c2d337f15121e",
+      "entropy": 0.7321,
+      "compressors": {
+        "gzip": {
+          "repr_bytes": 77033,
+          "ratio_pct": 38.3176,
+          "encode_ms": 6
+        },
+        "brotli": {
+          "repr_bytes": 75941,
+          "ratio_pct": 37.7745,
+          "encode_ms": 18
+        },
+        "lzma": {
+          "repr_bytes": 71811,
+          "ratio_pct": 35.7201,
+          "encode_ms": 59
+        },
+        "teia_v0.6.2": {
+          "seed_bytes": 268270,
+          "dict_bytes": 0,
+          "motor_bytes": 24087,
+          "ratio_pct": 133.4424,
+          "net_ratio_pct": 145.4238,
+          "encode_ms": 0,
+          "decode_ms": 70,
+          "peak_ram_mb": 5.3,
+          "round_trip_ok": true,
+          "opcode": "literal",
+          "entropy": 0.7321
+        }
+      },
+      "teia_opcode": "literal",
+      "teia_ok": true
+    },
+    {
+      "id": "R25",
+      "name": "service-2.json",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\ds\\2015-04-16\\service-2.json",
+      "bucket": [
+        "medium",
+        "large"
+      ],
+      "orig_bytes": 200275,
+      "orig_sha256": "fc3d61bd9020547f95db2169da4e09584014e0b0af21962f00556a020dcfff04",
+      "entropy": 0.5896,
+      "compressors": {
+        "gzip": {
+          "repr_bytes": 25406,
+          "ratio_pct": 12.6856,
+          "encode_ms": 3
+        },
+        "brotli": {
+          "repr_bytes": 25810,
+          "ratio_pct": 12.8873,
+          "encode_ms": 9
+        },
+        "lzma": {
+          "repr_bytes": 20950,
+          "ratio_pct": 10.4606,
+          "encode_ms": 63
+        },
+        "teia_v0.6.2": {
+          "seed_bytes": 267214,
+          "dict_bytes": 0,
+          "motor_bytes": 24087,
+          "ratio_pct": 133.4235,
+          "net_ratio_pct": 145.4505,
+          "encode_ms": 1,
+          "decode_ms": 73,
+          "peak_ram_mb": 4.2,
+          "round_trip_ok": true,
+          "opcode": "literal",
+          "entropy": 0.5896
+        }
+      },
+      "teia_opcode": "literal",
+      "teia_ok": true
+    },
+    {
+      "id": "R26",
+      "name": "Prompt para análise textual_e34bd4e0fb36.json",
+      "path": "D:\\TEIA OS\\Arquivo_Morto\\Prompt para análise textual_e34bd4e0fb36.json",
+      "bucket": [
+        "medium",
+        "large"
+      ],
+      "orig_bytes": 200207,
+      "orig_sha256": "fa69156ddb0d380ef8ce5cb1e8add8ced35384f3e5d3c2691a9f55bf61d898ca",
+      "entropy": 0.6047,
+      "compressors": {
+        "gzip": {
+          "repr_bytes": 33938,
+          "ratio_pct": 16.9515,
+          "encode_ms": 3
+        },
+        "brotli": {
+          "repr_bytes": 31143,
+          "ratio_pct": 15.5554,
+          "encode_ms": 6
+        },
+        "lzma": {
+          "repr_bytes": 26678,
+          "ratio_pct": 13.3252,
+          "encode_ms": 59
+        },
+        "teia_v0.6.2": {
+          "seed_bytes": 267154,
+          "dict_bytes": 0,
+          "motor_bytes": 24087,
+          "ratio_pct": 133.4389,
+          "net_ratio_pct": 145.4699,
+          "encode_ms": 0,
+          "decode_ms": 68,
+          "peak_ram_mb": 3.2,
+          "round_trip_ok": true,
+          "opcode": "literal",
+          "entropy": 0.6047
+        }
+      },
+      "teia_opcode": "literal",
+      "teia_ok": true
+    },
+    {
+      "id": "R27",
+      "name": "service-2.json",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\elbv2\\2015-12-01\\service-2.json",
+      "bucket": [
+        "medium",
+        "large"
+      ],
+      "orig_bytes": 199319,
+      "orig_sha256": "6cf09a62728f0e42550de56caa911e35d8a6a0c5958fd349f34672b757485fb3",
+      "entropy": 0.5952,
+      "compressors": {
+        "gzip": {
+          "repr_bytes": 27238,
+          "ratio_pct": 13.6655,
+          "encode_ms": 3
+        },
+        "brotli": {
+          "repr_bytes": 26347,
+          "ratio_pct": 13.2185,
+          "encode_ms": 4
+        },
+        "lzma": {
+          "repr_bytes": 21607,
+          "ratio_pct": 10.8404,
+          "encode_ms": 64
+        },
+        "teia_v0.6.2": {
+          "seed_bytes": 265938,
+          "dict_bytes": 0,
+          "motor_bytes": 24087,
+          "ratio_pct": 133.4233,
+          "net_ratio_pct": 145.508,
+          "encode_ms": 0,
+          "decode_ms": 42,
+          "peak_ram_mb": 3.1,
+          "round_trip_ok": true,
+          "opcode": "literal",
+          "entropy": 0.5952
+        }
+      },
+      "teia_opcode": "literal",
+      "teia_ok": true
+    },
+    {
+      "id": "R28",
+      "name": "service-2.json",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\application-autoscaling\\2016-02-06\\service-2.json",
+      "bucket": [
+        "medium",
+        "large"
+      ],
+      "orig_bytes": 198376,
+      "orig_sha256": "86091a93c3e15b7bd6a92b2177fd98e69ad67d87db905a2bb0aa4751a6a41e36",
+      "entropy": 0.5964,
+      "compressors": {
+        "gzip": {
+          "repr_bytes": 19316,
+          "ratio_pct": 9.7371,
+          "encode_ms": 2
+        },
+        "brotli": {
+          "repr_bytes": 17433,
+          "ratio_pct": 8.7879,
+          "encode_ms": 4
+        },
+        "lzma": {
+          "repr_bytes": 15045,
+          "ratio_pct": 7.5841,
+          "encode_ms": 56
+        },
+        "teia_v0.6.2": {
+          "seed_bytes": 264682,
+          "dict_bytes": 0,
+          "motor_bytes": 24087,
+          "ratio_pct": 133.4244,
+          "net_ratio_pct": 145.5665,
+          "encode_ms": 1,
+          "decode_ms": 41,
+          "peak_ram_mb": 3.5,
+          "round_trip_ok": true,
+          "opcode": "literal",
+          "entropy": 0.5964
+        }
+      },
+      "teia_opcode": "literal",
+      "teia_ok": true
+    },
+    {
+      "id": "R29",
+      "name": "service-2.json",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\cloudfront\\2016-11-25\\service-2.json",
+      "bucket": [
+        "medium",
+        "large"
+      ],
+      "orig_bytes": 197970,
+      "orig_sha256": "0bd66636938ddfbc103bdcf6c9b19cff1a7c6e95efb827fc148c8b41ece0e324",
+      "entropy": 0.6108,
+      "compressors": {
+        "gzip": {
+          "repr_bytes": 27822,
+          "ratio_pct": 14.0536,
+          "encode_ms": 3
+        },
+        "brotli": {
+          "repr_bytes": 25910,
+          "ratio_pct": 13.0878,
+          "encode_ms": 4
+        },
+        "lzma": {
+          "repr_bytes": 21220,
+          "ratio_pct": 10.7188,
+          "encode_ms": 62
+        },
+        "teia_v0.6.2": {
+          "seed_bytes": 264138,
+          "dict_bytes": 0,
+          "motor_bytes": 24087,
+          "ratio_pct": 133.4232,
+          "net_ratio_pct": 145.5902,
+          "encode_ms": 0,
+          "decode_ms": 43,
+          "peak_ram_mb": 3.4,
+          "round_trip_ok": true,
+          "opcode": "literal",
+          "entropy": 0.6108
+        }
+      },
+      "teia_opcode": "literal",
+      "teia_ok": true
+    },
+    {
+      "id": "R30",
+      "name": "strings.localized.json",
+      "path": "D:\\VS2026\\Install\\Common7\\IDE\\Extensions\\Microsoft\\Web Tools\\ServiceHub\\PowerPlatform\\Cli\\loc\\bg\\strings.localized.json",
+      "bucket": [
+        "medium",
+        "large"
+      ],
+      "orig_bytes": 196833,
+      "orig_sha256": "53e957f4a320b5b6f777af8685a7644a1880f9540b6fc34e6a92f20bc4b2fc10",
+      "entropy": 0.6146,
+      "compressors": {
+        "gzip": {
+          "repr_bytes": 40482,
+          "ratio_pct": 20.5667,
+          "encode_ms": 5
+        },
+        "brotli": {
+          "repr_bytes": 42090,
+          "ratio_pct": 21.3836,
+          "encode_ms": 7
+        },
+        "lzma": {
+          "repr_bytes": 33495,
+          "ratio_pct": 17.017,
+          "encode_ms": 80
+        },
+        "teia_v0.6.2": {
+          "seed_bytes": 262630,
+          "dict_bytes": 0,
+          "motor_bytes": 24087,
+          "ratio_pct": 133.4278,
+          "net_ratio_pct": 145.6651,
+          "encode_ms": 0,
+          "decode_ms": 40,
+          "peak_ram_mb": 3.1,
+          "round_trip_ok": true,
+          "opcode": "literal",
+          "entropy": 0.6146
+        }
+      },
+      "teia_opcode": "literal",
+      "teia_ok": true
+    },
+    {
+      "id": "R31",
+      "name": "0031_snapshot.json",
+      "path": "D:\\TEIA\\Agents\\PaperclipAI\\packages\\db\\src\\migrations\\meta\\0031_snapshot.json",
+      "bucket": [
+        "medium",
+        "large"
+      ],
+      "orig_bytes": 196586,
+      "orig_sha256": "31eba15c0575d35f9c89010010b6e8fe1489e846bdc394fda97ac922c2357649",
+      "entropy": 0.4776,
+      "compressors": {
+        "gzip": {
+          "repr_bytes": 9490,
+          "ratio_pct": 4.8274,
+          "encode_ms": 1
+        },
+        "brotli": {
+          "repr_bytes": 11995,
+          "ratio_pct": 6.1017,
+          "encode_ms": 1
+        },
+        "lzma": {
+          "repr_bytes": 8639,
+          "ratio_pct": 4.3945,
+          "encode_ms": 62
+        },
+        "teia_v0.6.2": {
+          "seed_bytes": 262298,
+          "dict_bytes": 0,
+          "motor_bytes": 24087,
+          "ratio_pct": 133.4266,
+          "net_ratio_pct": 145.6792,
+          "encode_ms": 0,
+          "decode_ms": 42,
+          "peak_ram_mb": 0.0,
+          "round_trip_ok": true,
+          "opcode": "literal",
+          "entropy": 0.4776
+        }
+      },
+      "teia_opcode": "literal",
+      "teia_ok": true
+    },
+    {
+      "id": "R32",
+      "name": "service-2.json",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\stepfunctions\\2016-11-23\\service-2.json",
+      "bucket": [
+        "medium",
+        "large"
+      ],
+      "orig_bytes": 195993,
+      "orig_sha256": "e1bedc335bcc5e2425cb4368b4909cfcaba2181cee9ce90088c55e5ccd2ec15b",
+      "entropy": 0.5988,
+      "compressors": {
+        "gzip": {
+          "repr_bytes": 25689,
+          "ratio_pct": 13.1071,
+          "encode_ms": 3
+        },
+        "brotli": {
+          "repr_bytes": 24925,
+          "ratio_pct": 12.7173,
+          "encode_ms": 5
+        },
+        "lzma": {
+          "repr_bytes": 20634,
+          "ratio_pct": 10.5279,
+          "encode_ms": 61
+        },
+        "teia_v0.6.2": {
+          "seed_bytes": 261502,
+          "dict_bytes": 0,
+          "motor_bytes": 24087,
+          "ratio_pct": 133.4242,
+          "net_ratio_pct": 145.7139,
+          "encode_ms": 0,
+          "decode_ms": 40,
+          "peak_ram_mb": 3.2,
+          "round_trip_ok": true,
+          "opcode": "literal",
+          "entropy": 0.5988
+        }
+      },
+      "teia_opcode": "literal",
+      "teia_ok": true
+    },
+    {
+      "id": "R33",
+      "name": "endpoint-rule-set-1.json",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\s3control\\2018-08-20\\endpoint-rule-set-1.json",
+      "bucket": [
+        "medium",
+        "large"
+      ],
+      "orig_bytes": 195500,
+      "orig_sha256": "0acabce55d73e75c45afb89b7258eaba9b09018876a7c5bd8e0f3c168e4aef65",
+      "entropy": 0.2671,
+      "compressors": {
+        "gzip": {
+          "repr_bytes": 6978,
+          "ratio_pct": 3.5693,
+          "encode_ms": 2
+        },
+        "brotli": {
+          "repr_bytes": 5109,
+          "ratio_pct": 2.6133,
+          "encode_ms": 1
+        },
+        "lzma": {
+          "repr_bytes": 4527,
+          "ratio_pct": 2.3156,
+          "encode_ms": 56
+        },
+        "teia_v0.6.2": {
+          "seed_bytes": 260856,
+          "dict_bytes": 0,
+          "motor_bytes": 24087,
+          "ratio_pct": 133.4302,
+          "net_ratio_pct": 145.7509,
+          "encode_ms": 0,
+          "decode_ms": 41,
+          "peak_ram_mb": 0.0,
+          "round_trip_ok": true,
+          "opcode": "literal",
+          "entropy": 0.2671
+        }
+      },
+      "teia_opcode": "literal",
+      "teia_ok": true
+    },
+    {
+      "id": "R34",
+      "name": "service-2.json",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\elasticbeanstalk\\2010-12-01\\service-2.json",
+      "bucket": [
+        "medium",
+        "large"
+      ],
+      "orig_bytes": 194813,
+      "orig_sha256": "629de0692b0e4b03016c084925b19b9a716c30429d4b2c7e439d20e02efb41d5",
+      "entropy": 0.5844,
+      "compressors": {
+        "gzip": {
+          "repr_bytes": 27621,
+          "ratio_pct": 14.1782,
+          "encode_ms": 3
+        },
+        "brotli": {
+          "repr_bytes": 28556,
+          "ratio_pct": 14.6582,
+          "encode_ms": 17
+        },
+        "lzma": {
+          "repr_bytes": 23393,
+          "ratio_pct": 12.0079,
+          "encode_ms": 64
+        },
+        "teia_v0.6.2": {
+          "seed_bytes": 259930,
+          "dict_bytes": 0,
+          "motor_bytes": 24087,
+          "ratio_pct": 133.4254,
+          "net_ratio_pct": 145.7896,
+          "encode_ms": 0,
+          "decode_ms": 44,
+          "peak_ram_mb": 3.1,
+          "round_trip_ok": true,
+          "opcode": "literal",
+          "entropy": 0.5844
+        }
+      },
+      "teia_opcode": "literal",
+      "teia_ok": true
+    },
+    {
+      "id": "R35",
+      "name": "service-2.json",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\cloudfront\\2016-09-29\\service-2.json",
+      "bucket": [
+        "medium",
+        "large"
+      ],
+      "orig_bytes": 194806,
+      "orig_sha256": "eb98854f0ccbcc188b79e8aae8394cff13dae517f42976c9c3a2e6e86c7acd9d",
+      "entropy": 0.6107,
+      "compressors": {
+        "gzip": {
+          "repr_bytes": 27407,
+          "ratio_pct": 14.0689,
+          "encode_ms": 3
+        },
+        "brotli": {
+          "repr_bytes": 25651,
+          "ratio_pct": 13.1675,
+          "encode_ms": 6
+        },
+        "lzma": {
+          "repr_bytes": 20922,
+          "ratio_pct": 10.7399,
+          "encode_ms": 60
+        },
+        "teia_v0.6.2": {
+          "seed_bytes": 259922,
+          "dict_bytes": 0,
+          "motor_bytes": 24087,
+          "ratio_pct": 133.4261,
+          "net_ratio_pct": 145.7907,
+          "encode_ms": 1,
+          "decode_ms": 43,
+          "peak_ram_mb": 3.2,
+          "round_trip_ok": true,
+          "opcode": "literal",
+          "entropy": 0.6107
+        }
+      },
+      "teia_opcode": "literal",
+      "teia_ok": true
+    },
+    {
+      "id": "R36",
+      "name": "service-2.json",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\iotfleetwise\\2021-06-17\\service-2.json",
+      "bucket": [
+        "medium",
+        "large"
+      ],
+      "orig_bytes": 194634,
+      "orig_sha256": "e9fc548074bf53e2c451ce8aea5242b27c95180c6d502ad3747435063b9d70ec",
+      "entropy": 0.5868,
+      "compressors": {
+        "gzip": {
+          "repr_bytes": 23593,
+          "ratio_pct": 12.1217,
+          "encode_ms": 2
+        },
+        "brotli": {
+          "repr_bytes": 23771,
+          "ratio_pct": 12.2132,
+          "encode_ms": 5
+        },
+        "lzma": {
+          "repr_bytes": 19289,
+          "ratio_pct": 9.9104,
+          "encode_ms": 59
+        },
+        "teia_v0.6.2": {
+          "seed_bytes": 259690,
+          "dict_bytes": 0,
+          "motor_bytes": 24087,
+          "ratio_pct": 133.4248,
+          "net_ratio_pct": 145.8003,
+          "encode_ms": 1,
+          "decode_ms": 50,
+          "peak_ram_mb": 3.3,
+          "round_trip_ok": true,
+          "opcode": "literal",
+          "entropy": 0.5868
+        }
+      },
+      "teia_opcode": "literal",
+      "teia_ok": true
+    },
+    {
+      "id": "R37",
+      "name": "inventory.json",
+      "path": "D:\\DownloadsChrome\\Gemini_Audit_20260421T235753Z_3_001\\inventory.json",
+      "bucket": "large",
+      "orig_bytes": 1912912,
+      "orig_sha256": "f880261076af815aaa679291d34f35b9740bf45f4dfcbd918eea324e805c272a",
+      "entropy": 0.6668,
+      "compressors": {
+        "gzip": {
+          "repr_bytes": 60605,
+          "ratio_pct": 3.1682,
+          "encode_ms": 16
+        },
+        "brotli": {
+          "repr_bytes": 58763,
+          "ratio_pct": 3.0719,
+          "encode_ms": 9
+        },
+        "lzma": {
+          "repr_bytes": 46261,
+          "ratio_pct": 2.4184,
+          "encode_ms": 222
+        },
+        "teia_v0.6.2": {
+          "seed_bytes": 2550731,
+          "dict_bytes": 0,
+          "motor_bytes": 24087,
+          "ratio_pct": 133.3428,
+          "net_ratio_pct": 134.602,
+          "encode_ms": 13,
+          "decode_ms": 602,
+          "peak_ram_mb": 71.6,
+          "round_trip_ok": true,
+          "opcode": "literal",
+          "entropy": 0.6668
+        }
+      },
+      "teia_opcode": "literal",
+      "teia_ok": true
+    },
+    {
+      "id": "R38",
+      "name": "nls.metadata.json",
+      "path": "D:\\Microsoft VS Code\\8b640eef5a\\resources\\app\\out\\nls.metadata.json",
+      "bucket": "large",
+      "orig_bytes": 1894245,
+      "orig_sha256": "d9b87eaef55d36bfefa96f9011dde893712098fc1ea972fee249cf592a3d21d3",
+      "entropy": 0.6163,
+      "compressors": {
+        "gzip": {
+          "repr_bytes": 399784,
+          "ratio_pct": 21.1052,
+          "encode_ms": 56
+        },
+        "brotli": {
+          "repr_bytes": 375304,
+          "ratio_pct": 19.8129,
+          "encode_ms": 66
+        },
+        "lzma": {
+          "repr_bytes": 309534,
+          "ratio_pct": 16.3408,
+          "encode_ms": 672
+        },
+        "teia_v0.6.2": {
+          "seed_bytes": 2525842,
+          "dict_bytes": 0,
+          "motor_bytes": 24087,
+          "ratio_pct": 133.3429,
+          "net_ratio_pct": 134.6145,
+          "encode_ms": 12,
+          "decode_ms": 598,
+          "peak_ram_mb": 54.8,
+          "round_trip_ok": true,
+          "opcode": "literal",
+          "entropy": 0.6163
+        }
+      },
+      "teia_opcode": "literal",
+      "teia_ok": true
+    },
+    {
+      "id": "R39",
+      "name": "vega-lite-schema.json",
+      "path": "D:\\TEIA OS\\.venv\\Lib\\site-packages\\altair\\vegalite\\v6\\schema\\vega-lite-schema.json",
+      "bucket": "large",
+      "orig_bytes": 1879221,
+      "orig_sha256": "3e1c8212319440bc3623e5d1564cb506b094968626b0be5fd182490466ce916b",
+      "entropy": 0.5193,
+      "compressors": {
+        "gzip": {
+          "repr_bytes": 182174,
+          "ratio_pct": 9.6941,
+          "encode_ms": 23
+        },
+        "brotli": {
+          "repr_bytes": 72791,
+          "ratio_pct": 3.8735,
+          "encode_ms": 12
+        },
+        "lzma": {
+          "repr_bytes": 58514,
+          "ratio_pct": 3.1137,
+          "encode_ms": 288
+        },
+        "teia_v0.6.2": {
+          "seed_bytes": 2505814,
+          "dict_bytes": 0,
+          "motor_bytes": 24087,
+          "ratio_pct": 133.3432,
+          "net_ratio_pct": 134.625,
+          "encode_ms": 6,
+          "decode_ms": 560,
+          "peak_ram_mb": 17.7,
+          "round_trip_ok": true,
+          "opcode": "literal",
+          "entropy": 0.5193
+        }
+      },
+      "teia_opcode": "literal",
+      "teia_ok": true
+    },
+    {
+      "id": "R40",
+      "name": "Minhaatividade.json",
+      "path": "D:\\DownloadsChrome\\Takeout_Extracted_20260421T235753Z_3_001\\Takeout\\Minha atividade\\Image Search\\Minhaatividade.json",
+      "bucket": "large",
+      "orig_bytes": 1814869,
+      "orig_sha256": "fac355d1cf432f048fa1fa072dbf389c2a96eb4e425fbfa58b7a1370ffe4dfc4",
+      "entropy": 0.6803,
+      "compressors": {
+        "gzip": {
+          "repr_bytes": 282018,
+          "ratio_pct": 15.5393,
+          "encode_ms": 33
+        },
+        "brotli": {
+          "repr_bytes": 264584,
+          "ratio_pct": 14.5787,
+          "encode_ms": 39
+        },
+        "lzma": {
+          "repr_bytes": 234679,
+          "ratio_pct": 12.9309,
+          "encode_ms": 348
+        },
+        "teia_v0.6.2": {
+          "seed_bytes": 2420012,
+          "dict_bytes": 0,
+          "motor_bytes": 24087,
+          "ratio_pct": 133.3436,
+          "net_ratio_pct": 134.6708,
+          "encode_ms": 6,
+          "decode_ms": 543,
+          "peak_ram_mb": 43.8,
+          "round_trip_ok": true,
+          "opcode": "literal",
+          "entropy": 0.6803
+        }
+      },
+      "teia_opcode": "literal",
+      "teia_ok": true
+    },
+    {
+      "id": "R41",
+      "name": "service-2.json",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\sagemaker\\2017-07-24\\service-2.json",
+      "bucket": "large",
+      "orig_bytes": 1803075,
+      "orig_sha256": "93d72bd5481aa34824ed40323d632e8d401f84fed460fe517eb1896836c4c853",
+      "entropy": 0.6111,
+      "compressors": {
+        "gzip": {
+          "repr_bytes": 270231,
+          "ratio_pct": 14.9872,
+          "encode_ms": 37
+        },
+        "brotli": {
+          "repr_bytes": 222131,
+          "ratio_pct": 12.3196,
+          "encode_ms": 37
+        },
+        "lzma": {
+          "repr_bytes": 169315,
+          "ratio_pct": 9.3903,
+          "encode_ms": 530
+        },
+        "teia_v0.6.2": {
+          "seed_bytes": 2404279,
+          "dict_bytes": 0,
+          "motor_bytes": 24087,
+          "ratio_pct": 133.3433,
+          "net_ratio_pct": 134.6791,
+          "encode_ms": 6,
+          "decode_ms": 536,
+          "peak_ram_mb": 44.3,
+          "round_trip_ok": true,
+          "opcode": "literal",
+          "entropy": 0.6111
+        }
+      },
+      "teia_opcode": "literal",
+      "teia_ok": true
+    },
+    {
+      "id": "R42",
+      "name": "Minhaatividade.json",
+      "path": "D:\\DownloadsChrome\\Takeout_Extracted_20260421T235753Z_3_001\\Takeout\\Minha atividade\\Google Translate\\Minhaatividade.json",
+      "bucket": "large",
+      "orig_bytes": 1782936,
+      "orig_sha256": "5fa37f135d1daf1f23a3ae1cb35042863931458a224ff4ec3492c5e2338ba6cd",
+      "entropy": 0.6364,
+      "compressors": {
+        "gzip": {
+          "repr_bytes": 234420,
+          "ratio_pct": 13.148,
+          "encode_ms": 32
+        },
+        "brotli": {
+          "repr_bytes": 225187,
+          "ratio_pct": 12.6301,
+          "encode_ms": 47
+        },
+        "lzma": {
+          "repr_bytes": 158725,
+          "ratio_pct": 8.9025,
+          "encode_ms": 296
+        },
+        "teia_v0.6.2": {
+          "seed_bytes": 2377432,
+          "dict_bytes": 0,
+          "motor_bytes": 24087,
+          "ratio_pct": 133.3437,
+          "net_ratio_pct": 134.6946,
+          "encode_ms": 5,
+          "decode_ms": 534,
+          "peak_ram_mb": 53.4,
+          "round_trip_ok": true,
+          "opcode": "literal",
+          "entropy": 0.6364
+        }
+      },
+      "teia_opcode": "literal",
+      "teia_ok": true
+    },
+    {
+      "id": "R43",
+      "name": "anthropic_tokenizer.json",
+      "path": "D:\\bruto\\TEIA\\Miniconda\\envs\\agents_v2\\Lib\\site-packages\\litellm\\litellm_core_utils\\tokenizers\\anthropic_tokenizer.json",
+      "bucket": "large",
+      "orig_bytes": 1774213,
+      "orig_sha256": "c241737df24b4e7f7c9af4fdcee29a0ca903dcb288a8b753bc346a3092911767",
+      "entropy": 0.6068,
+      "compressors": {
+        "gzip": {
+          "repr_bytes": 766481,
+          "ratio_pct": 43.2012,
+          "encode_ms": 110
+        },
+        "brotli": {
+          "repr_bytes": 778627,
+          "ratio_pct": 43.8858,
+          "encode_ms": 152
+        },
+        "lzma": {
+          "repr_bytes": 567105,
+          "ratio_pct": 31.9637,
+          "encode_ms": 725
+        },
+        "teia_v0.6.2": {
+          "seed_bytes": 2365809,
+          "dict_bytes": 0,
+          "motor_bytes": 24087,
+          "ratio_pct": 133.3441,
+          "net_ratio_pct": 134.7018,
+          "encode_ms": 4,
+          "decode_ms": 557,
+          "peak_ram_mb": 65.0,
+          "round_trip_ok": true,
+          "opcode": "literal",
+          "entropy": 0.6068
+        }
+      },
+      "teia_opcode": "literal",
+      "teia_ok": true
+    },
+    {
+      "id": "R44",
+      "name": "tokenizer.json",
+      "path": "D:\\bruto\\TEIA\\Miniconda\\envs\\teia_cli\\Lib\\site-packages\\anthropic\\tokenizer.json",
+      "bucket": "large",
+      "orig_bytes": 1774213,
+      "orig_sha256": "c241737df24b4e7f7c9af4fdcee29a0ca903dcb288a8b753bc346a3092911767",
+      "entropy": 0.6068,
+      "compressors": {
+        "gzip": {
+          "repr_bytes": 766481,
+          "ratio_pct": 43.2012,
+          "encode_ms": 104
+        },
+        "brotli": {
+          "repr_bytes": 778627,
+          "ratio_pct": 43.8858,
+          "encode_ms": 126
+        },
+        "lzma": {
+          "repr_bytes": 567105,
+          "ratio_pct": 31.9637,
+          "encode_ms": 729
+        },
+        "teia_v0.6.2": {
+          "seed_bytes": 2365799,
+          "dict_bytes": 0,
+          "motor_bytes": 24087,
+          "ratio_pct": 133.3436,
+          "net_ratio_pct": 134.7012,
+          "encode_ms": 5,
+          "decode_ms": 534,
+          "peak_ram_mb": 13.1,
+          "round_trip_ok": true,
+          "opcode": "literal",
+          "entropy": 0.6068
+        }
+      },
+      "teia_opcode": "literal",
+      "teia_ok": true
+    },
+    {
+      "id": "R45",
+      "name": "service-2.json",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\quicksight\\2018-04-01\\service-2.json",
+      "bucket": "large",
+      "orig_bytes": 1271736,
+      "orig_sha256": "bcd917bae43c9f7b803b2245d9b45bd09e454650adc1e9fb8bd144da56def74a",
+      "entropy": 0.6029,
+      "compressors": {
+        "gzip": {
+          "repr_bytes": 152438,
+          "ratio_pct": 11.9866,
+          "encode_ms": 19
+        },
+        "brotli": {
+          "repr_bytes": 129805,
+          "ratio_pct": 10.2069,
+          "encode_ms": 28
+        },
+        "lzma": {
+          "repr_bytes": 100505,
+          "ratio_pct": 7.903,
+          "encode_ms": 300
+        },
+        "teia_v0.6.2": {
+          "seed_bytes": 1695827,
+          "dict_bytes": 0,
+          "motor_bytes": 24087,
+          "ratio_pct": 133.3474,
+          "net_ratio_pct": 135.2414,
+          "encode_ms": 2,
+          "decode_ms": 352,
+          "peak_ram_mb": 15.8,
+          "round_trip_ok": true,
+          "opcode": "literal",
+          "entropy": 0.6029
+        }
+      },
+      "teia_opcode": "literal",
+      "teia_ok": true
+    },
+    {
+      "id": "R46",
+      "name": "components.json",
+      "path": "D:\\VS2026\\Cache\\_Instances\\24a55495\\components.json",
+      "bucket": "large",
+      "orig_bytes": 1181423,
+      "orig_sha256": "0efa3c2b1e4fb90ea616a79b9d525c0c884573ae0b02a90ff46402d10f6030bc",
+      "entropy": 0.7261,
+      "compressors": {
+        "gzip": {
+          "repr_bytes": 204373,
+          "ratio_pct": 17.2989,
+          "encode_ms": 25
+        },
+        "brotli": {
+          "repr_bytes": 172214,
+          "ratio_pct": 14.5768,
+          "encode_ms": 20
+        },
+        "lzma": {
+          "repr_bytes": 133546,
+          "ratio_pct": 11.3038,
+          "encode_ms": 264
+        },
+        "teia_v0.6.2": {
+          "seed_bytes": 1575412,
+          "dict_bytes": 0,
+          "motor_bytes": 24087,
+          "ratio_pct": 133.3487,
+          "net_ratio_pct": 135.3875,
+          "encode_ms": 3,
+          "decode_ms": 331,
+          "peak_ram_mb": 48.4,
+          "round_trip_ok": true,
+          "opcode": "literal",
+          "entropy": 0.7261
+        }
+      },
+      "teia_opcode": "literal",
+      "teia_ok": true
+    },
+    {
+      "id": "R47",
+      "name": "Minhaatividade.json",
+      "path": "D:\\DownloadsChrome\\takeout-20260508T203823Z-3-001\\Takeout\\Minha atividade\\Gemini Apps\\Minhaatividade.json",
+      "bucket": "xlarge",
+      "orig_bytes": 32918811,
+      "skipped": true,
+      "skip_reason": "size>10MB"
+    },
+    {
+      "id": "R48",
+      "name": "Minhaatividade.json",
+      "path": "D:\\DownloadsChrome\\Takeout_Extracted_20260421T235753Z_3_001\\Takeout\\Minha atividade\\Gemini Apps\\Minhaatividade.json",
+      "bucket": "xlarge",
+      "orig_bytes": 28940015,
+      "skipped": true,
+      "skip_reason": "size>10MB"
+    },
+    {
+      "id": "R49",
+      "name": "Minhaatividade.json",
+      "path": "D:\\DownloadsChrome\\Takeout_Extracted_20260421T235753Z_3_001\\Takeout\\Minha atividade\\YouTube\\Minhaatividade.json",
+      "bucket": "xlarge",
+      "orig_bytes": 28738404,
+      "skipped": true,
+      "skip_reason": "size>10MB"
+    },
+    {
+      "id": "R50",
+      "name": "teia_rotas_aprendidas.json",
+      "path": "D:\\TEIA OS\\teia_rotas_aprendidas.json",
+      "bucket": "xlarge",
+      "orig_bytes": 26254037,
+      "skipped": true,
+      "skip_reason": "size>10MB"
+    }
+  ]
+}

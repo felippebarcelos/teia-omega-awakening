@@ -1,0 +1,421 @@
+{
+  "harness_version": "3.1.0",
+  "motor_v5_sha256": "DEF540A76E1F188DCCA4F6D55D3C06D7B84C0395CF7F82C4A403AE209110F6BE",
+  "motor_v5_bytes": 8338,
+  "motor_v6_sha256": "1290462833CADD90ADD5FEC38DE9D1BDBB1D9F23235A47DADE3828CB6247C1C1",
+  "motor_v6_bytes": 15464,
+  "pwsh_baseline_ms": 280,
+  "timestamp_utc": "2026-05-24T21:39:04Z",
+  "system": {
+    "os": "Microsoft Windows 10.0.26200",
+    "dotnet": "9.0.14",
+    "cpu_count": 8
+  },
+  "domains": [
+    {
+      "domain": "D1_UNIFORM",
+      "description": "512 KB byte único (0xAA)",
+      "orig_bytes": 524288,
+      "orig_sha256": "acac3fe365627c359fb15b9f3857eb972ec5402c70e8b1bda2a72db808bb6f12",
+      "entropy": 0.0,
+      "compressors": {
+        "gzip": {
+          "repr_bytes": 544,
+          "dict_bytes": 0,
+          "motor_bytes": 0,
+          "ratio_pct": 0.1038,
+          "net_ratio_pct": 0.1038,
+          "encode_ms": 12,
+          "decode_ms": 76,
+          "peak_ram_mb": null,
+          "round_trip_ok": true
+        },
+        "brotli": {
+          "repr_bytes": 13,
+          "dict_bytes": 0,
+          "motor_bytes": 0,
+          "ratio_pct": 0.0025,
+          "net_ratio_pct": 0.0025,
+          "encode_ms": 4,
+          "decode_ms": 70,
+          "peak_ram_mb": null,
+          "round_trip_ok": true
+        },
+        "deflate": {
+          "repr_bytes": 526,
+          "dict_bytes": 0,
+          "motor_bytes": 0,
+          "ratio_pct": 0.1003,
+          "net_ratio_pct": 0.1003,
+          "encode_ms": 3,
+          "decode_ms": 58,
+          "peak_ram_mb": null,
+          "round_trip_ok": true
+        },
+        "lzma": {
+          "repr_bytes": 281,
+          "dict_bytes": 0,
+          "motor_bytes": 0,
+          "ratio_pct": 0.0536,
+          "net_ratio_pct": 0.0536,
+          "encode_ms": 69,
+          "decode_ms": 134,
+          "peak_ram_mb": null,
+          "round_trip_ok": true
+        },
+        "teia_v0.5": {
+          "repr_bytes": 189,
+          "dict_bytes": 0,
+          "motor_bytes": 8338,
+          "ratio_pct": 0.036,
+          "net_ratio_pct": 1.6264,
+          "encode_ms": 20,
+          "decode_ms": 227,
+          "peak_ram_mb": 7.8,
+          "round_trip_ok": true,
+          "seed_type": "gen.repeat",
+          "entropy": 0.0,
+          "note": "in-process via módulo; net_ratio_pct inclui módulo (8338 B)"
+        },
+        "teia_v0.6": {
+          "repr_bytes": 189,
+          "dict_bytes": 0,
+          "motor_bytes": 15464,
+          "ratio_pct": 0.036,
+          "net_ratio_pct": 2.9856,
+          "encode_ms": 20,
+          "decode_ms": 195,
+          "peak_ram_mb": 9.3,
+          "round_trip_ok": true,
+          "seed_type": "gen.repeat",
+          "entropy": 0.0,
+          "note": "C# inline hot-loops via [Add-Type]; net_ratio_pct inclui módulo (15464 B)"
+        }
+      }
+    },
+    {
+      "domain": "D2_PATTERN",
+      "description": "256 KB padrão periódico 16B",
+      "orig_bytes": 262144,
+      "orig_sha256": "7b6fee4a726319c08240c0281b1de38aa9703ae230eb54fc077a9eb46879df6d",
+      "entropy": 0.5,
+      "compressors": {
+        "gzip": {
+          "repr_bytes": 558,
+          "dict_bytes": 0,
+          "motor_bytes": 0,
+          "ratio_pct": 0.2129,
+          "net_ratio_pct": 0.2129,
+          "encode_ms": 0,
+          "decode_ms": 26,
+          "peak_ram_mb": null,
+          "round_trip_ok": true
+        },
+        "brotli": {
+          "repr_bytes": 23,
+          "dict_bytes": 0,
+          "motor_bytes": 0,
+          "ratio_pct": 0.0088,
+          "net_ratio_pct": 0.0088,
+          "encode_ms": 0,
+          "decode_ms": 34,
+          "peak_ram_mb": null,
+          "round_trip_ok": true
+        },
+        "deflate": {
+          "repr_bytes": 540,
+          "dict_bytes": 0,
+          "motor_bytes": 0,
+          "ratio_pct": 0.206,
+          "net_ratio_pct": 0.206,
+          "encode_ms": 0,
+          "decode_ms": 63,
+          "peak_ram_mb": null,
+          "round_trip_ok": true
+        },
+        "lzma": {
+          "repr_bytes": 261,
+          "dict_bytes": 0,
+          "motor_bytes": 0,
+          "ratio_pct": 0.0996,
+          "net_ratio_pct": 0.0996,
+          "encode_ms": 38,
+          "decode_ms": 73,
+          "peak_ram_mb": null,
+          "round_trip_ok": true
+        },
+        "teia_v0.5": {
+          "repr_bytes": 220,
+          "dict_bytes": 16,
+          "motor_bytes": 8338,
+          "ratio_pct": 0.0839,
+          "net_ratio_pct": 3.2646,
+          "encode_ms": 6,
+          "decode_ms": 92,
+          "peak_ram_mb": 0.0,
+          "round_trip_ok": true,
+          "seed_type": "gen.pattern",
+          "entropy": 0.5,
+          "note": "in-process via módulo; net_ratio_pct inclui módulo (8338 B)"
+        },
+        "teia_v0.6": {
+          "repr_bytes": 220,
+          "dict_bytes": 16,
+          "motor_bytes": 15464,
+          "ratio_pct": 0.0839,
+          "net_ratio_pct": 5.983,
+          "encode_ms": 6,
+          "decode_ms": 96,
+          "peak_ram_mb": 3.4,
+          "round_trip_ok": true,
+          "seed_type": "gen.pattern",
+          "entropy": 0.5,
+          "note": "C# inline hot-loops via [Add-Type]; net_ratio_pct inclui módulo (15464 B)"
+        }
+      }
+    },
+    {
+      "domain": "D3_RLE",
+      "description": "256 KB 8 runs bytes distintos",
+      "orig_bytes": 262144,
+      "orig_sha256": "45641fde6182d1db36276895523dd6ee3e82c3a6f4a9de9907c3cc83b41795a2",
+      "entropy": 0.0,
+      "compressors": {
+        "gzip": {
+          "repr_bytes": 309,
+          "dict_bytes": 0,
+          "motor_bytes": 0,
+          "ratio_pct": 0.1179,
+          "net_ratio_pct": 0.1179,
+          "encode_ms": 0,
+          "decode_ms": 28,
+          "peak_ram_mb": null,
+          "round_trip_ok": true
+        },
+        "brotli": {
+          "repr_bytes": 48,
+          "dict_bytes": 0,
+          "motor_bytes": 0,
+          "ratio_pct": 0.0183,
+          "net_ratio_pct": 0.0183,
+          "encode_ms": 0,
+          "decode_ms": 43,
+          "peak_ram_mb": null,
+          "round_trip_ok": true
+        },
+        "deflate": {
+          "repr_bytes": 291,
+          "dict_bytes": 0,
+          "motor_bytes": 0,
+          "ratio_pct": 0.111,
+          "net_ratio_pct": 0.111,
+          "encode_ms": 0,
+          "decode_ms": 39,
+          "peak_ram_mb": null,
+          "round_trip_ok": true
+        },
+        "lzma": {
+          "repr_bytes": 270,
+          "dict_bytes": 0,
+          "motor_bytes": 0,
+          "ratio_pct": 0.103,
+          "net_ratio_pct": 0.103,
+          "encode_ms": 40,
+          "decode_ms": 76,
+          "peak_ram_mb": null,
+          "round_trip_ok": true
+        },
+        "teia_v0.5": {
+          "repr_bytes": 328,
+          "dict_bytes": 0,
+          "motor_bytes": 8338,
+          "ratio_pct": 0.1251,
+          "net_ratio_pct": 3.3058,
+          "encode_ms": 6,
+          "decode_ms": 196,
+          "peak_ram_mb": 7.8,
+          "round_trip_ok": true,
+          "seed_type": "rle.decode",
+          "entropy": 0.0,
+          "note": "in-process via módulo; net_ratio_pct inclui módulo (8338 B)"
+        },
+        "teia_v0.6": {
+          "repr_bytes": 328,
+          "dict_bytes": 0,
+          "motor_bytes": 15464,
+          "ratio_pct": 0.1251,
+          "net_ratio_pct": 6.0242,
+          "encode_ms": 6,
+          "decode_ms": 107,
+          "peak_ram_mb": 6.8,
+          "round_trip_ok": true,
+          "seed_type": "rle.decode",
+          "entropy": 0.0,
+          "note": "C# inline hot-loops via [Add-Type]; net_ratio_pct inclui módulo (15464 B)"
+        }
+      }
+    },
+    {
+      "domain": "D4_JSON",
+      "description": "~57 KB JSON CAS estruturado",
+      "orig_bytes": 59395,
+      "orig_sha256": "6128ef78686e3f32399cdf80b10bd6d467bc60e5887182dc71315fef8f8bf1f1",
+      "entropy": 0.3489,
+      "compressors": {
+        "gzip": {
+          "repr_bytes": 3197,
+          "dict_bytes": 0,
+          "motor_bytes": 0,
+          "ratio_pct": 5.3826,
+          "net_ratio_pct": 5.3826,
+          "encode_ms": 0,
+          "decode_ms": 4,
+          "peak_ram_mb": null,
+          "round_trip_ok": true
+        },
+        "brotli": {
+          "repr_bytes": 1512,
+          "dict_bytes": 0,
+          "motor_bytes": 0,
+          "ratio_pct": 2.5457,
+          "net_ratio_pct": 2.5457,
+          "encode_ms": 0,
+          "decode_ms": 4,
+          "peak_ram_mb": null,
+          "round_trip_ok": true
+        },
+        "deflate": {
+          "repr_bytes": 3179,
+          "dict_bytes": 0,
+          "motor_bytes": 0,
+          "ratio_pct": 5.3523,
+          "net_ratio_pct": 5.3523,
+          "encode_ms": 0,
+          "decode_ms": 5,
+          "peak_ram_mb": null,
+          "round_trip_ok": true
+        },
+        "lzma": {
+          "repr_bytes": 976,
+          "dict_bytes": 0,
+          "motor_bytes": 0,
+          "ratio_pct": 1.6432,
+          "net_ratio_pct": 1.6432,
+          "encode_ms": 38,
+          "decode_ms": 41,
+          "peak_ram_mb": null,
+          "round_trip_ok": true
+        },
+        "teia_v0.5": {
+          "repr_bytes": 514,
+          "dict_bytes": 64,
+          "motor_bytes": 8338,
+          "ratio_pct": 0.8654,
+          "net_ratio_pct": 14.9036,
+          "encode_ms": 141,
+          "decode_ms": 68,
+          "peak_ram_mb": 8.9,
+          "round_trip_ok": true,
+          "seed_type": "gen.json_structured",
+          "entropy": 0.3489,
+          "note": "in-process via módulo; net_ratio_pct inclui módulo (8338 B)"
+        },
+        "teia_v0.6": {
+          "repr_bytes": 514,
+          "dict_bytes": 64,
+          "motor_bytes": 15464,
+          "ratio_pct": 0.8654,
+          "net_ratio_pct": 26.9013,
+          "encode_ms": 141,
+          "decode_ms": 46,
+          "peak_ram_mb": 1.4,
+          "round_trip_ok": true,
+          "seed_type": "gen.json_structured",
+          "entropy": 0.3489,
+          "note": "C# inline hot-loops via [Add-Type]; net_ratio_pct inclui módulo (15464 B)"
+        }
+      }
+    },
+    {
+      "domain": "D5_ENTROPY",
+      "description": "128 KB pseudo-random (seed=99999) — fallback.lzma se entropia>0.95",
+      "orig_bytes": 131072,
+      "orig_sha256": "b7d3b166ad0f6787b8004ed7fa4b17b5e47481387998fb8b4bf2d9e47848460d",
+      "entropy": 0.9985,
+      "compressors": {
+        "gzip": {
+          "repr_bytes": 131132,
+          "dict_bytes": 0,
+          "motor_bytes": 0,
+          "ratio_pct": 100.0458,
+          "net_ratio_pct": 100.0458,
+          "encode_ms": 19,
+          "decode_ms": 46,
+          "peak_ram_mb": null,
+          "round_trip_ok": true
+        },
+        "brotli": {
+          "repr_bytes": 131077,
+          "dict_bytes": 0,
+          "motor_bytes": 0,
+          "ratio_pct": 100.0038,
+          "net_ratio_pct": 100.0038,
+          "encode_ms": 20,
+          "decode_ms": 40,
+          "peak_ram_mb": null,
+          "round_trip_ok": true
+        },
+        "deflate": {
+          "repr_bytes": 131114,
+          "dict_bytes": 0,
+          "motor_bytes": 0,
+          "ratio_pct": 100.032,
+          "net_ratio_pct": 100.032,
+          "encode_ms": 36,
+          "decode_ms": 28,
+          "peak_ram_mb": null,
+          "round_trip_ok": true
+        },
+        "lzma": {
+          "repr_bytes": 131212,
+          "dict_bytes": 0,
+          "motor_bytes": 0,
+          "ratio_pct": 100.1068,
+          "net_ratio_pct": 100.1068,
+          "encode_ms": 74,
+          "decode_ms": 69,
+          "peak_ram_mb": null,
+          "round_trip_ok": true
+        },
+        "teia_v0.5": {
+          "repr_bytes": 175140,
+          "dict_bytes": 0,
+          "motor_bytes": 8338,
+          "ratio_pct": 133.6212,
+          "net_ratio_pct": 139.9826,
+          "encode_ms": 105,
+          "decode_ms": 91,
+          "peak_ram_mb": 0.0,
+          "round_trip_ok": true,
+          "seed_type": "fallback.lzma",
+          "entropy": 0.9985,
+          "note": "in-process via módulo; net_ratio_pct inclui módulo (8338 B)"
+        },
+        "teia_v0.6": {
+          "repr_bytes": 175140,
+          "dict_bytes": 0,
+          "motor_bytes": 15464,
+          "ratio_pct": 133.6212,
+          "net_ratio_pct": 145.4193,
+          "encode_ms": 105,
+          "decode_ms": 83,
+          "peak_ram_mb": 3.0,
+          "round_trip_ok": true,
+          "seed_type": "fallback.lzma",
+          "entropy": 0.9985,
+          "note": "C# inline hot-loops via [Add-Type]; net_ratio_pct inclui módulo (15464 B)"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,593 @@
+{
+  "version": "1.0.0",
+  "created_utc": "2026-05-24T22:53:26Z",
+  "description": "D4_REAL: 50 JSONs reais heterogêneos para Choque Real — TEIA v0.6.1 stress-test",
+  "total_files": 50,
+  "total_bytes": null,
+  "files": [
+    {
+      "id": "R1",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\qbusiness\\2023-11-27\\paginators-1.json",
+      "name": "paginators-1.json",
+      "size_bytes": 2047,
+      "sha256": "42bfb61bf4db6eb70fc50060be9f501b87b6f512c98297bc1306354114cf155b",
+      "bucket": [
+        "tiny",
+        "small",
+        "medium",
+        "large"
+      ],
+      "category": "pending"
+    },
+    {
+      "id": "R2",
+      "path": "D:\\VS2026\\Cache\\Microsoft.VisualStudio.WebToolsExtensions.MSBuild.Resources,version=18.3.24.62685,chip=neutral,language=pt-BR,productarch=neutral\\_package.json",
+      "name": "_package.json",
+      "size_bytes": 2045,
+      "sha256": "0e299d691263bd3ff49b239fddd8b541fdaaf3afc6dffffbc6f801026ce25b71",
+      "bucket": [
+        "tiny",
+        "small",
+        "medium",
+        "large"
+      ],
+      "category": "pending"
+    },
+    {
+      "id": "R3",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\comprehend\\2017-11-27\\paginators-1.json",
+      "name": "paginators-1.json",
+      "size_bytes": 2033,
+      "sha256": "682a3345a8f351be306e59f1cdbfdb4c9973b670c50b73e7c08b4031e9365ad6",
+      "bucket": [
+        "tiny",
+        "small",
+        "medium",
+        "large"
+      ],
+      "category": "pending"
+    },
+    {
+      "id": "R4",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\route53-recovery-readiness\\2019-12-02\\paginators-1.json",
+      "name": "paginators-1.json",
+      "size_bytes": 2032,
+      "sha256": "6e46c3475554d66b437bce0a6a988b33cad650f1ca8fe684a67ed32f3a85796d",
+      "bucket": [
+        "tiny",
+        "small",
+        "medium",
+        "large"
+      ],
+      "category": "pending"
+    },
+    {
+      "id": "R5",
+      "path": "D:\\Microsoft VS Code\\8b640eef5a\\resources\\app\\extensions\\github\\package.nls.json",
+      "name": "package.nls.json",
+      "size_bytes": 2018,
+      "sha256": "85098467a1634f0e8f2b7e0f909efd05c4ca4f006cb905430213fcde4d612cb2",
+      "bucket": [
+        "tiny",
+        "small",
+        "medium",
+        "large"
+      ],
+      "category": "pending"
+    },
+    {
+      "id": "R6",
+      "path": "D:\\VS2026\\Cache\\Microsoft.VC.14.44.17.14.Tools.HostX64.TargetX86.Res.base,version=14.44.35221,chip=x64,language=pt-BR\\_package.json",
+      "name": "_package.json",
+      "size_bytes": 2016,
+      "sha256": "074bcaef088b0738c2b2b415c7a5dbe20c313f8707050ac23949b9af6729cca5",
+      "bucket": [
+        "tiny",
+        "small",
+        "medium",
+        "large"
+      ],
+      "category": "pending"
+    },
+    {
+      "id": "R7",
+      "path": "D:\\bruto\\TEIA\\Miniconda\\envs\\agents_v2\\Lib\\site-packages\\googleapiclient\\discovery_cache\\documents\\adexchangebuyer.v1.2.json",
+      "name": "adexchangebuyer.v1.2.json",
+      "size_bytes": 20475,
+      "sha256": "d3e5d5cd46b791ca8588265893f5b46aee66215e7ec3702006d409b129d62fdc",
+      "bucket": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "category": "pending"
+    },
+    {
+      "id": "R8",
+      "path": "D:\\ChatGPT_2438\\Reforma minimalista triangular_03634b8a8a20.json",
+      "name": "Reforma minimalista triangular_03634b8a8a20.json",
+      "size_bytes": 20454,
+      "sha256": "0d16128d8d16a91693c2e4ed1b1bb32e77d39d0977103dfdf3a4e7368725178a",
+      "bucket": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "category": "pending"
+    },
+    {
+      "id": "R9",
+      "path": "D:\\ChatGPT_2438\\Pintura telha e paredes_958e40a4a371.json",
+      "name": "Pintura telha e paredes_958e40a4a371.json",
+      "size_bytes": 20446,
+      "sha256": "831d0928c99d60c3c99a1ebe3abe2a1112c14c074d899d38a048ccc09d3a1859",
+      "bucket": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "category": "pending"
+    },
+    {
+      "id": "R10",
+      "path": "D:\\TEIA OS\\ChatGPT_2438\\Design parede Basquiat_cd4a7b3a4004.json",
+      "name": "Design parede Basquiat_cd4a7b3a4004.json",
+      "size_bytes": 20429,
+      "sha256": "a1368be8892e0734583b557e41c3c6dd1825cc64780f0cf68d547124850aaa20",
+      "bucket": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "category": "pending"
+    },
+    {
+      "id": "R11",
+      "path": "D:\\Microsoft VS Code\\8b640eef5a\\resources\\app\\extensions\\groovy\\syntaxes\\groovy.tmLanguage.json",
+      "name": "groovy.tmLanguage.json",
+      "size_bytes": 20347,
+      "sha256": "8ca903345e29706c1d73e5bf57cad671b3b334fa105ef5e93137315df8c708ab",
+      "bucket": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "category": "pending"
+    },
+    {
+      "id": "R12",
+      "path": "D:\\VS2026\\Install\\Common7\\IDE\\Extensions\\Microsoft\\ConnectedServices\\manifest.json",
+      "name": "manifest.json",
+      "size_bytes": 20344,
+      "sha256": "b03cbf60d6bc489a2127cc34d8224fd05958639cb435fbd5ce8794ab362c64c4",
+      "bucket": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "category": "pending"
+    },
+    {
+      "id": "R13",
+      "path": "D:\\TEIA OS\\ChatGPT_2438\\Pintura telha e paredes_0523c643b11a.json",
+      "name": "Pintura telha e paredes_0523c643b11a.json",
+      "size_bytes": 20330,
+      "sha256": "8386905000c9d0e5f962fb53a2a9bd7fe15640101a6cb5a64b475804d2dec272",
+      "bucket": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "category": "pending"
+    },
+    {
+      "id": "R14",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\iot-jobs-data\\2017-09-29\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 20210,
+      "sha256": "67f0f5591df4ac68fcc3b1040b523c2641669a66e507e747bdb968f4ba717bae",
+      "bucket": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "category": "pending"
+    },
+    {
+      "id": "R15",
+      "path": "D:\\bruto\\TEIA\\Miniconda\\envs\\agents_v2\\Lib\\site-packages\\googleapiclient\\discovery_cache\\documents\\iap.v1beta1.json",
+      "name": "iap.v1beta1.json",
+      "size_bytes": 20190,
+      "sha256": "13e166455b4483909c995d8cb4972b869ff9c98c1b5279b5cb4b186a045dc144",
+      "bucket": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "category": "pending"
+    },
+    {
+      "id": "R16",
+      "path": "D:\\bruto\\TEIA\\Miniconda\\envs\\teia_cli\\Lib\\site-packages\\googleapiclient\\discovery_cache\\documents\\adsenseplatform.v1.json",
+      "name": "adsenseplatform.v1.json",
+      "size_bytes": 20170,
+      "sha256": "b31a89bf33104b4396ee2feca712abbe6a48d814d9f9f3e0b8005153311e296b",
+      "bucket": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "category": "pending"
+    },
+    {
+      "id": "R17",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\s3outposts\\2017-07-25\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 20156,
+      "sha256": "b1b241fdb0b38f4e0923ba2964f6476611f2e0a7586315e2fa86025428f688fd",
+      "bucket": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "category": "pending"
+    },
+    {
+      "id": "R18",
+      "path": "D:\\Microsoft VS Code\\8b640eef5a\\resources\\app\\extensions\\markdown-language-features\\package.json",
+      "name": "package.json",
+      "size_bytes": 20116,
+      "sha256": "7981fb17d88304f761537734ff5986e30fd9ac028a4ca6efafda4c152d7996ae",
+      "bucket": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "category": "pending"
+    },
+    {
+      "id": "R19",
+      "path": "D:\\bruto\\TEIA\\Miniconda\\envs\\teia_cli\\Lib\\site-packages\\googleapiclient\\discovery_cache\\documents\\verifiedaccess.v2.json",
+      "name": "verifiedaccess.v2.json",
+      "size_bytes": 20018,
+      "sha256": "d250c5cd5a280b9e18bd748186106dcce4d5d3c28a45af4ad2ca077ae071a869",
+      "bucket": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "category": "pending"
+    },
+    {
+      "id": "R20",
+      "path": "D:\\DownloadsChrome\\Gemini_Audit_20260421T235753Z_3_001\\collected_files\\Takeout__Minha atividade__Gmail__Minhaatividade.json",
+      "name": "Takeout__Minha atividade__Gmail__Minhaatividade.json",
+      "size_bytes": 19981,
+      "sha256": "7b2798b15c82b7ce3f3d54e1b4d0bf2079474f5c47a22b78e9986280b5f9caa9",
+      "bucket": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "category": "pending"
+    },
+    {
+      "id": "R21",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\kinesisanalyticsv2\\2018-05-23\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 202197,
+      "sha256": "eed28f5d547ee6c5a72603775c9af8787a040fec13ec3bce4e8f167cd2db97b5",
+      "bucket": [
+        "medium",
+        "large"
+      ],
+      "category": "pending"
+    },
+    {
+      "id": "R22",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\elastictranscoder\\2012-09-25\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 201124,
+      "sha256": "ac4b99390a11d19b0ec617d7f0a4f84877511d4794e45069ed111d8e3fd6383a",
+      "bucket": [
+        "medium",
+        "large"
+      ],
+      "category": "pending"
+    },
+    {
+      "id": "R23",
+      "path": "D:\\DownloadsChrome\\Takeout_Extracted_20260421T235753Z_3_001\\Takeout\\Minha atividade\\AI Mode\\Minhaatividade.json",
+      "name": "Minhaatividade.json",
+      "size_bytes": 201038,
+      "sha256": "49d0cf0fbfecb4cc394ce1f5bbfc0c5570bd41ec98020dfee03c2d337f15121e",
+      "bucket": [
+        "medium",
+        "large"
+      ],
+      "category": "pending"
+    },
+    {
+      "id": "R24",
+      "path": "D:\\DownloadsChrome\\Gemini_Audit_20260421T235753Z_3_001\\collected_files\\Takeout__Minha atividade__AI Mode__Minhaatividade.json",
+      "name": "Takeout__Minha atividade__AI Mode__Minhaatividade.json",
+      "size_bytes": 201038,
+      "sha256": "49d0cf0fbfecb4cc394ce1f5bbfc0c5570bd41ec98020dfee03c2d337f15121e",
+      "bucket": [
+        "medium",
+        "large"
+      ],
+      "category": "pending"
+    },
+    {
+      "id": "R25",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\ds\\2015-04-16\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 200275,
+      "sha256": "fc3d61bd9020547f95db2169da4e09584014e0b0af21962f00556a020dcfff04",
+      "bucket": [
+        "medium",
+        "large"
+      ],
+      "category": "pending"
+    },
+    {
+      "id": "R26",
+      "path": "D:\\TEIA OS\\Arquivo_Morto\\Prompt para análise textual_e34bd4e0fb36.json",
+      "name": "Prompt para análise textual_e34bd4e0fb36.json",
+      "size_bytes": 200207,
+      "sha256": "fa69156ddb0d380ef8ce5cb1e8add8ced35384f3e5d3c2691a9f55bf61d898ca",
+      "bucket": [
+        "medium",
+        "large"
+      ],
+      "category": "pending"
+    },
+    {
+      "id": "R27",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\elbv2\\2015-12-01\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 199319,
+      "sha256": "6cf09a62728f0e42550de56caa911e35d8a6a0c5958fd349f34672b757485fb3",
+      "bucket": [
+        "medium",
+        "large"
+      ],
+      "category": "pending"
+    },
+    {
+      "id": "R28",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\application-autoscaling\\2016-02-06\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 198376,
+      "sha256": "86091a93c3e15b7bd6a92b2177fd98e69ad67d87db905a2bb0aa4751a6a41e36",
+      "bucket": [
+        "medium",
+        "large"
+      ],
+      "category": "pending"
+    },
+    {
+      "id": "R29",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\cloudfront\\2016-11-25\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 197970,
+      "sha256": "0bd66636938ddfbc103bdcf6c9b19cff1a7c6e95efb827fc148c8b41ece0e324",
+      "bucket": [
+        "medium",
+        "large"
+      ],
+      "category": "pending"
+    },
+    {
+      "id": "R30",
+      "path": "D:\\VS2026\\Install\\Common7\\IDE\\Extensions\\Microsoft\\Web Tools\\ServiceHub\\PowerPlatform\\Cli\\loc\\bg\\strings.localized.json",
+      "name": "strings.localized.json",
+      "size_bytes": 196833,
+      "sha256": "53e957f4a320b5b6f777af8685a7644a1880f9540b6fc34e6a92f20bc4b2fc10",
+      "bucket": [
+        "medium",
+        "large"
+      ],
+      "category": "pending"
+    },
+    {
+      "id": "R31",
+      "path": "D:\\TEIA\\Agents\\PaperclipAI\\packages\\db\\src\\migrations\\meta\\0031_snapshot.json",
+      "name": "0031_snapshot.json",
+      "size_bytes": 196586,
+      "sha256": "31eba15c0575d35f9c89010010b6e8fe1489e846bdc394fda97ac922c2357649",
+      "bucket": [
+        "medium",
+        "large"
+      ],
+      "category": "pending"
+    },
+    {
+      "id": "R32",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\stepfunctions\\2016-11-23\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 195993,
+      "sha256": "e1bedc335bcc5e2425cb4368b4909cfcaba2181cee9ce90088c55e5ccd2ec15b",
+      "bucket": [
+        "medium",
+        "large"
+      ],
+      "category": "pending"
+    },
+    {
+      "id": "R33",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\s3control\\2018-08-20\\endpoint-rule-set-1.json",
+      "name": "endpoint-rule-set-1.json",
+      "size_bytes": 195500,
+      "sha256": "0acabce55d73e75c45afb89b7258eaba9b09018876a7c5bd8e0f3c168e4aef65",
+      "bucket": [
+        "medium",
+        "large"
+      ],
+      "category": "pending"
+    },
+    {
+      "id": "R34",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\elasticbeanstalk\\2010-12-01\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 194813,
+      "sha256": "629de0692b0e4b03016c084925b19b9a716c30429d4b2c7e439d20e02efb41d5",
+      "bucket": [
+        "medium",
+        "large"
+      ],
+      "category": "pending"
+    },
+    {
+      "id": "R35",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\cloudfront\\2016-09-29\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 194806,
+      "sha256": "eb98854f0ccbcc188b79e8aae8394cff13dae517f42976c9c3a2e6e86c7acd9d",
+      "bucket": [
+        "medium",
+        "large"
+      ],
+      "category": "pending"
+    },
+    {
+      "id": "R36",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\iotfleetwise\\2021-06-17\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 194634,
+      "sha256": "e9fc548074bf53e2c451ce8aea5242b27c95180c6d502ad3747435063b9d70ec",
+      "bucket": [
+        "medium",
+        "large"
+      ],
+      "category": "pending"
+    },
+    {
+      "id": "R37",
+      "path": "D:\\DownloadsChrome\\Gemini_Audit_20260421T235753Z_3_001\\inventory.json",
+      "name": "inventory.json",
+      "size_bytes": 1912912,
+      "sha256": "f880261076af815aaa679291d34f35b9740bf45f4dfcbd918eea324e805c272a",
+      "bucket": "large",
+      "category": "pending"
+    },
+    {
+      "id": "R38",
+      "path": "D:\\Microsoft VS Code\\8b640eef5a\\resources\\app\\out\\nls.metadata.json",
+      "name": "nls.metadata.json",
+      "size_bytes": 1894245,
+      "sha256": "d9b87eaef55d36bfefa96f9011dde893712098fc1ea972fee249cf592a3d21d3",
+      "bucket": "large",
+      "category": "pending"
+    },
+    {
+      "id": "R39",
+      "path": "D:\\TEIA OS\\.venv\\Lib\\site-packages\\altair\\vegalite\\v6\\schema\\vega-lite-schema.json",
+      "name": "vega-lite-schema.json",
+      "size_bytes": 1879221,
+      "sha256": "3e1c8212319440bc3623e5d1564cb506b094968626b0be5fd182490466ce916b",
+      "bucket": "large",
+      "category": "pending"
+    },
+    {
+      "id": "R40",
+      "path": "D:\\DownloadsChrome\\Takeout_Extracted_20260421T235753Z_3_001\\Takeout\\Minha atividade\\Image Search\\Minhaatividade.json",
+      "name": "Minhaatividade.json",
+      "size_bytes": 1814869,
+      "sha256": "fac355d1cf432f048fa1fa072dbf389c2a96eb4e425fbfa58b7a1370ffe4dfc4",
+      "bucket": "large",
+      "category": "pending"
+    },
+    {
+      "id": "R41",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\sagemaker\\2017-07-24\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 1803075,
+      "sha256": "93d72bd5481aa34824ed40323d632e8d401f84fed460fe517eb1896836c4c853",
+      "bucket": "large",
+      "category": "pending"
+    },
+    {
+      "id": "R42",
+      "path": "D:\\DownloadsChrome\\Takeout_Extracted_20260421T235753Z_3_001\\Takeout\\Minha atividade\\Google Translate\\Minhaatividade.json",
+      "name": "Minhaatividade.json",
+      "size_bytes": 1782936,
+      "sha256": "5fa37f135d1daf1f23a3ae1cb35042863931458a224ff4ec3492c5e2338ba6cd",
+      "bucket": "large",
+      "category": "pending"
+    },
+    {
+      "id": "R43",
+      "path": "D:\\bruto\\TEIA\\Miniconda\\envs\\agents_v2\\Lib\\site-packages\\litellm\\litellm_core_utils\\tokenizers\\anthropic_tokenizer.json",
+      "name": "anthropic_tokenizer.json",
+      "size_bytes": 1774213,
+      "sha256": "c241737df24b4e7f7c9af4fdcee29a0ca903dcb288a8b753bc346a3092911767",
+      "bucket": "large",
+      "category": "pending"
+    },
+    {
+      "id": "R44",
+      "path": "D:\\bruto\\TEIA\\Miniconda\\envs\\teia_cli\\Lib\\site-packages\\anthropic\\tokenizer.json",
+      "name": "tokenizer.json",
+      "size_bytes": 1774213,
+      "sha256": "c241737df24b4e7f7c9af4fdcee29a0ca903dcb288a8b753bc346a3092911767",
+      "bucket": "large",
+      "category": "pending"
+    },
+    {
+      "id": "R45",
+      "path": "D:\\TEIA OS\\google-cloud-sdk\\lib\\third_party\\botocore\\data\\quicksight\\2018-04-01\\service-2.json",
+      "name": "service-2.json",
+      "size_bytes": 1271736,
+      "sha256": "bcd917bae43c9f7b803b2245d9b45bd09e454650adc1e9fb8bd144da56def74a",
+      "bucket": "large",
+      "category": "pending"
+    },
+    {
+      "id": "R46",
+      "path": "D:\\VS2026\\Cache\\_Instances\\24a55495\\components.json",
+      "name": "components.json",
+      "size_bytes": 1181423,
+      "sha256": "0efa3c2b1e4fb90ea616a79b9d525c0c884573ae0b02a90ff46402d10f6030bc",
+      "bucket": "large",
+      "category": "pending"
+    },
+    {
+      "id": "R47",
+      "path": "D:\\DownloadsChrome\\takeout-20260508T203823Z-3-001\\Takeout\\Minha atividade\\Gemini Apps\\Minhaatividade.json",
+      "name": "Minhaatividade.json",
+      "size_bytes": 32918811,
+      "sha256": "875ee5649f75edb20f027e042e1fa99bb5a23dda5ef9293a48f89da68a33bbdf",
+      "bucket": "xlarge",
+      "category": "pending"
+    },
+    {
+      "id": "R48",
+      "path": "D:\\DownloadsChrome\\Takeout_Extracted_20260421T235753Z_3_001\\Takeout\\Minha atividade\\Gemini Apps\\Minhaatividade.json",
+      "name": "Minhaatividade.json",
+      "size_bytes": 28940015,
+      "sha256": "4f1066e5d4d9369356dc6434fa5ee5f95f6afeae100e83e82f71362292b01379",
+      "bucket": "xlarge",
+      "category": "pending"
+    },
+    {
+      "id": "R49",
+      "path": "D:\\DownloadsChrome\\Takeout_Extracted_20260421T235753Z_3_001\\Takeout\\Minha atividade\\YouTube\\Minhaatividade.json",
+      "name": "Minhaatividade.json",
+      "size_bytes": 28738404,
+      "sha256": "40050a8d88238684dcd342663a0351b7b985ece6dabb4919f33c28fc65551bb6",
+      "bucket": "xlarge",
+      "category": "pending"
+    },
+    {
+      "id": "R50",
+      "path": "D:\\TEIA OS\\teia_rotas_aprendidas.json",
+      "name": "teia_rotas_aprendidas.json",
+      "size_bytes": 26254037,
+      "sha256": "127989c574f6bf9f9f3fc6132c97ac0e42c08bf11258399b71a3fc0631ff74cb",
+      "bucket": "xlarge",
+      "category": "pending"
+    }
+  ]
+}

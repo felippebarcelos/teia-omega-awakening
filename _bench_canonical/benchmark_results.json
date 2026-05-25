@@ -1,0 +1,238 @@
+{
+  "harness_version": "1.0.0",
+  "motor_sha256": "489D3B4024930FB4B0E12D0D40393CB86D0430178E6E272DCE328FDEC16475F6",
+  "pwsh_baseline_ms": 273,
+  "timestamp_utc": "2026-05-24T18:03:27Z",
+  "system": {
+    "os": "Microsoft Windows 10.0.26200",
+    "dotnet": "9.0.14",
+    "cpu_count": 8
+  },
+  "domains": [
+    {
+      "domain": "D1_UNIFORM",
+      "description": "512 KB byte único (0xAA)",
+      "orig_bytes": 524288,
+      "orig_sha256": "acac3fe365627c359fb15b9f3857eb972ec5402c70e8b1bda2a72db808bb6f12",
+      "compressors": {
+        "gzip": {
+          "repr_bytes": 544,
+          "ratio_pct": 0.1038,
+          "encode_ms": 49,
+          "decode_ms": 72,
+          "round_trip_ok": true
+        },
+        "brotli": {
+          "repr_bytes": 13,
+          "ratio_pct": 0.0025,
+          "encode_ms": 41,
+          "decode_ms": 56,
+          "round_trip_ok": true
+        },
+        "deflate": {
+          "repr_bytes": 526,
+          "ratio_pct": 0.1003,
+          "encode_ms": 34,
+          "decode_ms": 73,
+          "round_trip_ok": true
+        },
+        "lzma": {
+          "repr_bytes": 281,
+          "ratio_pct": 0.0536,
+          "encode_ms": 106,
+          "decode_ms": 160,
+          "round_trip_ok": true
+        },
+        "teia_v0.4": {
+          "repr_bytes": 189,
+          "ratio_pct": 0.036,
+          "encode_ms": 4,
+          "decode_ms": 781,
+          "round_trip_ok": true,
+          "seed_type": "gen.repeat",
+          "note": "decode_ms inclui startup pwsh"
+        }
+      }
+    },
+    {
+      "domain": "D2_PATTERN",
+      "description": "256 KB padrão periódico 16B",
+      "orig_bytes": 262144,
+      "orig_sha256": "7b6fee4a726319c08240c0281b1de38aa9703ae230eb54fc077a9eb46879df6d",
+      "compressors": {
+        "gzip": {
+          "repr_bytes": 558,
+          "ratio_pct": 0.2129,
+          "encode_ms": 39,
+          "decode_ms": 35,
+          "round_trip_ok": true
+        },
+        "brotli": {
+          "repr_bytes": 23,
+          "ratio_pct": 0.0088,
+          "encode_ms": 34,
+          "decode_ms": 41,
+          "round_trip_ok": true
+        },
+        "deflate": {
+          "repr_bytes": 540,
+          "ratio_pct": 0.206,
+          "encode_ms": 28,
+          "decode_ms": 33,
+          "round_trip_ok": true
+        },
+        "lzma": {
+          "repr_bytes": 261,
+          "ratio_pct": 0.0996,
+          "encode_ms": 69,
+          "decode_ms": 68,
+          "round_trip_ok": true
+        },
+        "teia_v0.4": {
+          "repr_bytes": 220,
+          "ratio_pct": 0.0839,
+          "encode_ms": 0,
+          "decode_ms": 735,
+          "round_trip_ok": true,
+          "seed_type": "gen.pattern",
+          "note": "decode_ms inclui startup pwsh"
+        }
+      }
+    },
+    {
+      "domain": "D3_RLE",
+      "description": "256 KB 8 runs bytes distintos",
+      "orig_bytes": 262144,
+      "orig_sha256": "45641fde6182d1db36276895523dd6ee3e82c3a6f4a9de9907c3cc83b41795a2",
+      "compressors": {
+        "gzip": {
+          "repr_bytes": 309,
+          "ratio_pct": 0.1179,
+          "encode_ms": 28,
+          "decode_ms": 23,
+          "round_trip_ok": true
+        },
+        "brotli": {
+          "repr_bytes": 48,
+          "ratio_pct": 0.0183,
+          "encode_ms": 31,
+          "decode_ms": 19,
+          "round_trip_ok": true
+        },
+        "deflate": {
+          "repr_bytes": 291,
+          "ratio_pct": 0.111,
+          "encode_ms": 33,
+          "decode_ms": 20,
+          "round_trip_ok": true
+        },
+        "lzma": {
+          "repr_bytes": 270,
+          "ratio_pct": 0.103,
+          "encode_ms": 71,
+          "decode_ms": 59,
+          "round_trip_ok": true
+        },
+        "teia_v0.4": {
+          "repr_bytes": 328,
+          "ratio_pct": 0.1251,
+          "encode_ms": 0,
+          "decode_ms": 606,
+          "round_trip_ok": true,
+          "seed_type": "rle.decode",
+          "note": "decode_ms inclui startup pwsh"
+        }
+      }
+    },
+    {
+      "domain": "D4_JSON",
+      "description": "~57 KB JSON CAS estruturado",
+      "orig_bytes": 59395,
+      "orig_sha256": "6128ef78686e3f32399cdf80b10bd6d467bc60e5887182dc71315fef8f8bf1f1",
+      "compressors": {
+        "gzip": {
+          "repr_bytes": 3197,
+          "ratio_pct": 5.3826,
+          "encode_ms": 2,
+          "decode_ms": 3,
+          "round_trip_ok": true
+        },
+        "brotli": {
+          "repr_bytes": 1512,
+          "ratio_pct": 2.5457,
+          "encode_ms": 9,
+          "decode_ms": 3,
+          "round_trip_ok": true
+        },
+        "deflate": {
+          "repr_bytes": 3179,
+          "ratio_pct": 5.3523,
+          "encode_ms": 6,
+          "decode_ms": 3,
+          "round_trip_ok": true
+        },
+        "lzma": {
+          "repr_bytes": 976,
+          "ratio_pct": 1.6432,
+          "encode_ms": 46,
+          "decode_ms": 37,
+          "round_trip_ok": true
+        },
+        "teia_v0.4": {
+          "repr_bytes": 79372,
+          "ratio_pct": 133.6341,
+          "encode_ms": 2,
+          "decode_ms": 463,
+          "round_trip_ok": true,
+          "seed_type": "literal",
+          "note": "decode_ms inclui startup pwsh"
+        }
+      }
+    },
+    {
+      "domain": "D5_ENTROPY",
+      "description": "128 KB pseudo-random (seed=99999)",
+      "orig_bytes": 131072,
+      "orig_sha256": "b7d3b166ad0f6787b8004ed7fa4b17b5e47481387998fb8b4bf2d9e47848460d",
+      "compressors": {
+        "gzip": {
+          "repr_bytes": 131132,
+          "ratio_pct": 100.0458,
+          "encode_ms": 27,
+          "decode_ms": 21,
+          "round_trip_ok": true
+        },
+        "brotli": {
+          "repr_bytes": 131077,
+          "ratio_pct": 100.0038,
+          "encode_ms": 23,
+          "decode_ms": 25,
+          "round_trip_ok": true
+        },
+        "deflate": {
+          "repr_bytes": 131114,
+          "ratio_pct": 100.032,
+          "encode_ms": 28,
+          "decode_ms": 39,
+          "round_trip_ok": true
+        },
+        "lzma": {
+          "repr_bytes": 131212,
+          "ratio_pct": 100.1068,
+          "encode_ms": 56,
+          "decode_ms": 72,
+          "round_trip_ok": true
+        },
+        "teia_v0.4": {
+          "repr_bytes": 174941,
+          "ratio_pct": 133.4694,
+          "encode_ms": 5,
+          "decode_ms": 460,
+          "round_trip_ok": true,
+          "seed_type": "literal",
+          "note": "decode_ms inclui startup pwsh"
+        }
+      }
+    }
+  ]
+}

@@ -18,6 +18,16 @@ TEIA_CORE_GOLDEN_MASTER_v1.zip
 # Configuração pessoal do Claude Code
 .claude/
 
+# Binários de ferramentas (não pertencem ao repo)
+_tools/**/*.dll
+_tools/**/*.dll.a
+_tools/**/*.lib
+_tools/**/*.exe
+
+# Artefatos temporários de benchmark (regeneráveis)
+_bench_v6/tmp/*.7z
+_bench_v*/tmp/*.lzma
+
 # Logs e temporários
 *.log
 *.tmp
