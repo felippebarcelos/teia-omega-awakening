@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    TEIA_HUD v0.13.0 — Dashboard de saúde em tempo real da TEIA-Omega.
+    TEIA_HUD v0.14.0 — Dashboard de saúde em tempo real da TEIA-Omega.
 
 .PARAMETER RefreshSeg
     Intervalo de atualização em segundos. Padrão: 10.
@@ -23,10 +23,11 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
 $ErrorActionPreference = 'SilentlyContinue'
 
 # ── Paths ────────────────────────────────────────────────────────────────────
-$CASRoot   = 'D:\TEIA_CORE\objects'
-$IndexPath = 'D:\TEIA_CORE\manifests\fractal_index.json'
-$EventLog  = 'D:\TEIA_CORE\dna_events.jsonl'
-$StateFile = 'D:\TEIA_CORE\memory\watchdog_state.json'
+$CASRoot     = 'D:\TEIA_CORE\objects'
+$IndexPath   = 'D:\TEIA_CORE\manifests\fractal_index.json'
+$TeiaMapPath = 'D:\TEIA_CORE\manifests\.teia_map.json'
+$EventLog    = 'D:\TEIA_CORE\dna_events.jsonl'
+$StateFile   = 'D:\TEIA_CORE\memory\watchdog_state.json'
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
 function Get-StatusIcon { param([bool]$Ok) if($Ok){'[OK]'}else{'[!!]'} }
@@ -102,6 +103,36 @@ function Get-CASSize {
     return [math]::Round($sz/1MB, 1)
 }
 
+function Get-TeiaMapStats {
+    if (-not (Test-Path $TeiaMapPath)) {
+        return @{ Total=0; Ingested=0; Verified=0; MissingOriginal=0; TotalMB=0; ValidatedMB=0; SavingsMB=0 }
+    }
+    try {
+        $map = Get-Content $TeiaMapPath -Raw -ErrorAction Stop | ConvertFrom-Json -ErrorAction Stop
+        if (-not $map) { return @{ Total=0; Ingested=0; Verified=0; MissingOriginal=0; TotalMB=0; ValidatedMB=0; SavingsMB=0 } }
+        $ingested  = @($map | Where-Object { $_.status -eq 'INGESTED' })
+        $verified  = @($map | Where-Object { $_.status -eq 'VERIFIED' })
+        $missing   = @($map | Where-Object { $_.status -eq 'MISSING_ORIGINAL' })
+        $totalMB   = [math]::Round(($map    | Measure-Object -Property size -Sum).Sum / 1MB, 2)
+        $validMB   = [math]::Round((($ingested + $verified) | Measure-Object -Property size -Sum).Sum / 1MB, 2)
+        $savings   = 0L
+        $map | Group-Object hash | Where-Object { $_.Count -gt 1 } | ForEach-Object {
+            $savings += ($_.Count - 1) * [long]$_.Group[0].size
+        }
+        return @{
+            Total           = $map.Count
+            Ingested        = $ingested.Count
+            Verified        = $verified.Count
+            MissingOriginal = $missing.Count
+            TotalMB         = $totalMB
+            ValidatedMB     = $validMB
+            SavingsMB       = [math]::Round($savings / 1MB, 2)
+        }
+    } catch {
+        return @{ Total=0; Ingested=0; Verified=0; MissingOriginal=0; TotalMB=0; ValidatedMB=0; SavingsMB=0 }
+    }
+}
+
 # ── Render ───────────────────────────────────────────────────────────────────
 function Show-HUD {
     $now = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'
@@ -114,13 +145,14 @@ function Show-HUD {
     $events = Get-LastEvents -N 6
     $wdSt   = Get-WatchdogState
     $casMB  = Get-CASSize
+    $tmap   = Get-TeiaMapStats
 
     $casOk  = ($cas.Fail -eq 0 -and $cas.Total -gt 0)
     $idxOk  = ($idx.Count -gt 0)
 
     Clear-Host
     Write-Host "╔══════════════════════════════════════════════════════════════╗" -ForegroundColor Cyan
-    Write-Host "║           TEIA-Ω HUD v0.13.0  |  $now          ║" -ForegroundColor Cyan
+    Write-Host "║           TEIA-Ω HUD v0.14.0  |  $now          ║" -ForegroundColor Cyan
     Write-Host "╚══════════════════════════════════════════════════════════════╝" -ForegroundColor Cyan
 
     # ── CAS ──────────────────────────────────────────────────────────────────
@@ -146,6 +178,20 @@ function Show-HUD {
     } else {
         Write-Host "  │  [--] Watchdog não executou nenhum ciclo ainda" -ForegroundColor DarkGray
         Write-Host "  │       Execute: .\TEIA-Sync-Watchdog.ps1" -ForegroundColor DarkGray
+    }
+
+    # ── TEIA_USER ─────────────────────────────────────────────────────────────
+    Write-Host "  ├─ TEIA_USER Integridade" -ForegroundColor Yellow
+    if ($tmap.Total -gt 0) {
+        $mapOk = ($tmap.MissingOriginal -eq 0)
+        Write-Host "  │  $(Get-StatusIcon $mapOk) Mapeados:            $($tmap.Total)" -ForegroundColor $(if($mapOk){'Green'}else{'Yellow'})
+        Write-Host "  │     INGESTED:           $($tmap.Ingested)" -ForegroundColor White
+        Write-Host "  │     VERIFIED:           $($tmap.Verified)" -ForegroundColor $(if($tmap.Verified -gt 0){'Green'}else{'DarkGray'})
+        Write-Host "  │     MISSING_ORIGINAL:   $($tmap.MissingOriginal)" -ForegroundColor $(if($tmap.MissingOriginal -gt 0){'Red'}else{'DarkGray'})
+        Write-Host "  │     Validado/Total:     $($tmap.ValidatedMB)MB / $($tmap.TotalMB)MB" -ForegroundColor White
+        Write-Host "  │     Economia (dedup):   $($tmap.SavingsMB)MB" -ForegroundColor $(if($tmap.SavingsMB -gt 0){'Green'}else{'DarkGray'})
+    } else {
+        Write-Host "  │  [--] .teia_map.json vazio — execute TEIA-Ingerir.ps1" -ForegroundColor DarkGray
     }
 
     # ── DISCO ────────────────────────────────────────────────────────────────

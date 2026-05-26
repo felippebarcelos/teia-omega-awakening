@@ -38,18 +38,21 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
 $ErrorActionPreference = 'Continue'
 
 # ── Paths canônicos ──────────────────────────────────────────────────────────
-$CASRoot    = 'D:\TEIA_CORE\objects'
-$IndexPath  = 'D:\TEIA_CORE\manifests\fractal_index.json'
-$EventLog   = 'D:\TEIA_CORE\dna_events.jsonl'
-$StateFile  = 'D:\TEIA_CORE\memory\watchdog_state.json'
-$LockFile   = 'D:\TEIA_CORE\memory\watchdog.lock'
-$OrfaoIndex = 'D:\bruto\TEIA\fractal_index.json'
+$CASRoot       = 'D:\TEIA_CORE\objects'
+$IndexPath     = 'D:\TEIA_CORE\manifests\fractal_index.json'
+$TeiaMapPath   = 'D:\TEIA_CORE\manifests\.teia_map.json'
+$EventLog      = 'D:\TEIA_CORE\dna_events.jsonl'
+$StateFile     = 'D:\TEIA_CORE\memory\watchdog_state.json'
+$LockFile      = 'D:\TEIA_CORE\memory\watchdog.lock'
+$QuarantineDir = 'D:\TEIA_CORE\QUARENTENA_DEBRIS'
+$OrfaoIndex    = 'D:\bruto\TEIA\fractal_index.json'
 
 $Monitoradas = @(
     'D:\bruto\TEIA\TEIA_Data',
     'D:\bruto\TEIA\TEIA_ATLAS',
     'D:\bruto\TEIA\Analisados',
-    'D:\bruto\TEIA\TEIA_NUCLEO'
+    'D:\bruto\TEIA\TEIA_NUCLEO',
+    'D:\TEIA_USER'
 )
 $CachePattern = 'Miniconda|OllamaModels|__pycache__|\.git\\|Lixo_Entropico'
 
@@ -144,6 +147,34 @@ function Get-OrfaoLookup {
     return $hdict, $dict
 }
 
+# ── Quarentena: mover arquivo problemático sem deletar ───────────────────────
+function Move-ToQuarantine {
+    param([string]$Path, [string]$Reason = 'unspecified')
+    if (-not (Test-Path $Path)) { return }
+    if (-not (Test-Path $QuarantineDir)) {
+        New-Item -ItemType Directory -Path $QuarantineDir -Force | Out-Null
+    }
+    $stamp = Get-Date -Format 'yyyyMMdd_HHmmss'
+    $dest  = Join-Path $QuarantineDir "$stamp`_$(Split-Path $Path -Leaf)"
+    Move-Item -LiteralPath $Path -Destination $dest -Force -ErrorAction SilentlyContinue
+    Write-WDEvent 'WD_QUARANTINE' @{ origem = $Path; destino = $dest; razao = $Reason }
+}
+
+# ── Caminhos VERIFIED no .teia_map.json — evita re-hash no scan ──────────────
+function Get-VerifiedPaths {
+    $set = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+    if (-not (Test-Path $TeiaMapPath)) { return $set }
+    $raw = Get-Content $TeiaMapPath -Raw -ErrorAction SilentlyContinue
+    if (-not $raw -or $raw.Trim().Length -le 2) { return $set }
+    $map = $raw | ConvertFrom-Json -ErrorAction SilentlyContinue
+    if ($map) {
+        foreach ($e in $map) {
+            if ($e.status -eq 'VERIFIED' -and $e.path_user) { [void]$set.Add($e.path_user) }
+        }
+    }
+    return $set
+}
+
 # ── Ingestão de um único arquivo confirmado ──────────────────────────────────
 function Invoke-IngestFile {
     param([System.IO.FileInfo]$File, [string]$Hash, [PSCustomObject]$OrfaoEntry)
@@ -155,7 +186,7 @@ function Invoke-IngestFile {
         Copy-Item -LiteralPath $File.FullName -Destination $dest -Force -ErrorAction Stop
         $verifHash = (Get-FileHash $dest -Algorithm SHA256 -ErrorAction Stop).Hash
         if ($verifHash -ine $Hash) {
-            Remove-Item $dest -ErrorAction SilentlyContinue
+            Move-ToQuarantine -Path $dest -Reason 'hash-post-copy-mismatch'
             throw "Hash pós-cópia diverge"
         }
 
@@ -260,8 +291,9 @@ function Invoke-WatchdogCycle {
     Write-WD "Ciclo iniciado"
     Write-WDEvent 'WD_CYCLE_START' @{ ts = $cycleStart.ToString('o') }
 
-    $casHashes                       = Get-CASHashes
+    $casHashes                         = Get-CASHashes
     $orfaoHashLookup, $orfaoSizeLookup = Get-OrfaoLookup
+    $verifiedPaths                     = Get-VerifiedPaths
 
     $novoOk = 0; $novoFail = 0; $ignorados = 0
 
@@ -271,6 +303,7 @@ function Invoke-WatchdogCycle {
             Where-Object { $_.FullName -notmatch $CachePattern }
 
         foreach ($f in $files) {
+            if ($verifiedPaths.Contains($f.FullName)) { $ignorados++; continue }
             if (-not $orfaoSizeLookup.ContainsKey($f.Length)) { $ignorados++; continue }
 
             $hash = (Get-FileHash $f.FullName -Algorithm SHA256 -ErrorAction SilentlyContinue).Hash
