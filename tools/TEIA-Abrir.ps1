@@ -60,7 +60,7 @@ function Set-MapAtomic {
     param([object[]]$Map)
     $tmp = "$TeiaMapPath.tmp"
     $bak = "$TeiaMapPath.bak"
-    $json = $Map | ConvertTo-Json -Depth 5
+    $json = ConvertTo-Json -InputObject ([array]$Map) -Depth 5
     Set-Content -LiteralPath $tmp -Value $json -Encoding UTF8 -ErrorAction Stop
     $verify = Get-Content $tmp -Raw -ErrorAction Stop | ConvertFrom-Json -ErrorAction Stop
     if ($null -eq $verify) { throw "Verificação JSON do .tmp falhou — original preservado" }
@@ -103,7 +103,7 @@ if (Test-Path $targetPath) {
 }
 
 # ── Caso 2: buscar no .teia_map.json ─────────────────────────────────────────
-$map   = Read-TeiaMap
+[array]$map = Read-TeiaMap
 $entry = $map | Where-Object { $_.path_user -ieq $targetPath } | Select-Object -First 1
 
 if (-not $entry) {

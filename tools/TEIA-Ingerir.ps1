@@ -61,7 +61,8 @@ begin {
         param([object[]]$Map)
         $tmp = "$TeiaMapPath.tmp"
         $bak = "$TeiaMapPath.bak"
-        $json = $Map | ConvertTo-Json -Depth 5
+        # -InputObject com [array] garante colchetes JSON mesmo com 1 elemento
+        $json = ConvertTo-Json -InputObject ([array]$Map) -Depth 5
         Set-Content -LiteralPath $tmp -Value $json -Encoding UTF8 -ErrorAction Stop
         $verify = Get-Content $tmp -Raw -ErrorAction Stop | ConvertFrom-Json -ErrorAction Stop
         if ($null -eq $verify) { throw "Verificação JSON do .tmp falhou — original preservado" }
@@ -123,7 +124,8 @@ process {
 
     # Atualizar .teia_map.json — escrita atômica
     try {
-        $map = Read-TeiaMap
+        # [array] evita unrolling de pipeline quando o mapa tem 1 entrada
+        [array]$map = Read-TeiaMap
         $now = Get-Date -Format 'yyyy-MM-ddTHH:mm:ss'
 
         # Busca por caminho exato
