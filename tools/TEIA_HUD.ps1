@@ -204,8 +204,8 @@ function Show-HUD {
     Write-Host "  ├─ Agentes" -ForegroundColor Yellow
     foreach ($name in $agents.Keys) {
         $val = $agents[$name]
-        $color = if($val -match 'ATIVO'){'Green'}else{'DarkGray'}
-        $icon  = if($val -match 'ATIVO'){'[ON]'}else{'[--]'}
+        $color = if($val -match '^ATIVO'){'Green'}else{'DarkGray'}
+        $icon  = if($val -match '^ATIVO'){'[ON]'}else{'[--]'}
         Write-Host "  │  $icon $name`:  $val" -ForegroundColor $color
     }
 
