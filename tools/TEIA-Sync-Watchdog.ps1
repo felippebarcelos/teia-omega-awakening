@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    TEIA-Sync-Watchdog v0.13.0 — Monitoramento de drift e ingestão automática.
+    TEIA-Sync-Watchdog v0.13.1 — Monitoramento de drift e ingestão automática.
     Detecta novos arquivos nas pastas monitoradas e os ingere no CAS de forma idempotente.
 
 .DESCRIPTION
@@ -8,24 +8,30 @@
     Não usa FileSystemWatcher (instável em volumes NTFS sob alta carga).
     Loop polling com intervalo configurável — compatível com Task Scheduler.
 
+    v0.13.1: escrita atômica de índice (tmp+bak+rename), singleton lock por PID,
+    parâmetro -ReconcileOnly para reconciliar objetos CAS órfãos do índice.
+
 .PARAMETER IntervalSeg
     Intervalo entre scans em segundos. Padrão: 300 (5 min).
 
 .PARAMETER UmaVez
     Executa um ciclo único e sai (útil para Task Scheduler).
 
-.PARAMETER Verbose
-    Log detalhado de cada arquivo verificado.
+.PARAMETER ReconcileOnly
+    Varre D:\TEIA_CORE\objects\*.bin, cruza com o índice e registra órfãos.
+    Não copia nem apaga arquivos.
 
 .EXAMPLE
     .\TEIA-Sync-Watchdog.ps1                    # loop contínuo a cada 5 min
     .\TEIA-Sync-Watchdog.ps1 -UmaVez            # ciclo único (Task Scheduler)
     .\TEIA-Sync-Watchdog.ps1 -IntervalSeg 60    # ciclo a cada 1 min
+    .\TEIA-Sync-Watchdog.ps1 -ReconcileOnly     # reconcilia índice com CAS físico
 #>
 [CmdletBinding()]
 param(
-    [int]$IntervalSeg = 300,
-    [switch]$UmaVez
+    [int]$IntervalSeg   = 300,
+    [switch]$UmaVez,
+    [switch]$ReconcileOnly
 )
 
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
@@ -36,6 +42,7 @@ $CASRoot    = 'D:\TEIA_CORE\objects'
 $IndexPath  = 'D:\TEIA_CORE\manifests\fractal_index.json'
 $EventLog   = 'D:\TEIA_CORE\dna_events.jsonl'
 $StateFile  = 'D:\TEIA_CORE\memory\watchdog_state.json'
+$LockFile   = 'D:\TEIA_CORE\memory\watchdog.lock'
 $OrfaoIndex = 'D:\bruto\TEIA\fractal_index.json'
 
 $Monitoradas = @(
@@ -64,6 +71,51 @@ function Write-WDEvent {
 
 function Write-WD { param([string]$Msg) Write-Host "[WD $(Get-Date -Format 'HH:mm:ss')] $Msg" }
 
+# ── Escrita atômica do fractal_index.json ────────────────────────────────────
+# Padrão: serializa → grava em .tmp → verifica parse → .bak do original → rename
+function Set-IndexAtomic {
+    param([object[]]$Index)
+    $tmp = "$IndexPath.tmp"
+    $bak = "$IndexPath.bak"
+
+    $json = $Index | ConvertTo-Json -Depth 4
+    Set-Content -LiteralPath $tmp -Value $json -Encoding UTF8 -ErrorAction Stop
+
+    # Verificação estrutural antes de substituir o original
+    $verify = Get-Content $tmp -Raw -ErrorAction Stop | ConvertFrom-Json -ErrorAction Stop
+    if ($null -eq $verify) { throw "Verificação JSON do .tmp falhou — original preservado" }
+
+    if (Test-Path $IndexPath) {
+        Copy-Item -LiteralPath $IndexPath -Destination $bak -Force -ErrorAction SilentlyContinue
+    }
+
+    Move-Item -LiteralPath $tmp -Destination $IndexPath -Force -ErrorAction Stop
+}
+
+# ── Singleton lock por PID ───────────────────────────────────────────────────
+function Invoke-AcquireLock {
+    if (Test-Path $LockFile) {
+        $lockData = Get-Content $LockFile -Raw -ErrorAction SilentlyContinue |
+            ConvertFrom-Json -ErrorAction SilentlyContinue
+        if ($lockData -and $lockData.pid) {
+            $proc = Get-Process -Id ([int]$lockData.pid) -ErrorAction SilentlyContinue
+            if ($proc) {
+                Write-WDEvent 'WD_LOCK_ACTIVE' @{ pid = $lockData.pid; started = $lockData.started }
+                Write-WD "LOCK ATIVO: PID $($lockData.pid) iniciado em $($lockData.started). Abortando."
+                exit 1
+            }
+            Write-WD "Lock órfão detectado (PID $($lockData.pid) não existe). Limpando."
+            Write-WDEvent 'WD_LOCK_ORPHAN' @{ pid = $lockData.pid; started = $lockData.started }
+        }
+    }
+    @{ pid = $PID; started = (Get-Date -Format 'o'); host = $env:COMPUTERNAME } |
+        ConvertTo-Json -Compress | Set-Content $LockFile -Encoding UTF8
+}
+
+function Invoke-ReleaseLock {
+    Remove-Item $LockFile -ErrorAction SilentlyContinue
+}
+
 # ── Carregar hashes conhecidos no CAS ────────────────────────────────────────
 function Get-CASHashes {
     $set = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
@@ -76,7 +128,7 @@ function Get-CASHashes {
 
 # ── Carregar lookup do índice órfão (para confirmar novos arquivos) ───────────
 function Get-OrfaoLookup {
-    $dict = [System.Collections.Generic.Dictionary[long,bool]]::new()
+    $dict  = [System.Collections.Generic.Dictionary[long,bool]]::new()
     $hdict = [System.Collections.Generic.Dictionary[string,PSCustomObject]]::new([System.StringComparer]::OrdinalIgnoreCase)
     if (Test-Path $OrfaoIndex) {
         $orfao = Get-Content $OrfaoIndex -Raw -ErrorAction SilentlyContinue | ConvertFrom-Json -ErrorAction SilentlyContinue
@@ -84,7 +136,7 @@ function Get-OrfaoLookup {
             foreach ($e in $orfao) {
                 if (-not $e.hash) { continue }
                 $hdict[$e.hash] = $e
-                $sz = if($null -ne $e.size){[long]$e.size}else{-1L}
+                $sz = if ($null -ne $e.size) { [long]$e.size } else { -1L }
                 $dict[$sz] = $true
             }
         }
@@ -107,7 +159,6 @@ function Invoke-IngestFile {
             throw "Hash pós-cópia diverge"
         }
 
-        # Atualizar fractal_index.json
         $idx = @()
         if (Test-Path $IndexPath) {
             $raw = Get-Content $IndexPath -Raw -ErrorAction SilentlyContinue
@@ -118,15 +169,15 @@ function Invoke-IngestFile {
         $idx += [PSCustomObject]@{
             hash          = $Hash.ToLower()
             size          = $File.Length
-            nome_original = if($OrfaoEntry.file){$OrfaoEntry.file}else{$File.Name}
+            nome_original = if ($OrfaoEntry.file) { $OrfaoEntry.file } else { $File.Name }
             path_cas      = $dest
             path_origem   = $File.FullName
-            created_orig  = if($OrfaoEntry.created){$OrfaoEntry.created}else{$null}
-            seed          = if($OrfaoEntry.seed){$OrfaoEntry.seed}else{$null}
+            created_orig  = if ($OrfaoEntry.created) { $OrfaoEntry.created } else { $null }
+            seed          = if ($OrfaoEntry.seed) { $OrfaoEntry.seed } else { $null }
             indexed_at    = (Get-Date -Format 'yyyy-MM-ddTHH:mm:ss')
-            version       = 'watchdog-v0.13.0'
+            version       = 'watchdog-v0.13.1'
         }
-        $idx | ConvertTo-Json -Depth 4 | Set-Content $IndexPath -Encoding UTF8
+        Set-IndexAtomic -Index $idx
 
         Write-WDEvent 'WD_INGEST_OK' @{
             sha256    = $Hash
@@ -142,13 +193,74 @@ function Invoke-IngestFile {
     }
 }
 
+# ── Reconciliação: registra no índice objetos .bin sem entrada ───────────────
+function Invoke-ReconcileIndex {
+    Write-WD "Reconciliação iniciada — varrendo $CASRoot"
+    Write-WDEvent 'WD_RECONCILE_START' @{ cas_root = $CASRoot }
+
+    $knownHashes = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+    $idx = @()
+    if (Test-Path $IndexPath) {
+        $raw = Get-Content $IndexPath -Raw -ErrorAction SilentlyContinue
+        if ($raw -and $raw.Trim().Length -gt 2) {
+            $parsed = $raw | ConvertFrom-Json -ErrorAction SilentlyContinue
+            if ($parsed) {
+                $idx = $parsed
+                foreach ($e in $idx) { if ($e.hash) { [void]$knownHashes.Add($e.hash) } }
+            }
+        }
+    }
+
+    $binFiles = Get-ChildItem $CASRoot -Filter '*.bin' -File -ErrorAction SilentlyContinue
+    $added = 0; $skipped = 0; $mismatches = 0
+
+    foreach ($bin in $binFiles) {
+        $hashFromName = [System.IO.Path]::GetFileNameWithoutExtension($bin.Name)
+        if ($knownHashes.Contains($hashFromName)) { $skipped++; continue }
+
+        $actualHash = (Get-FileHash $bin.FullName -Algorithm SHA256 -ErrorAction SilentlyContinue).Hash
+        if (-not $actualHash) { continue }
+        if ($actualHash -ine $hashFromName) {
+            Write-WD "AVISO hash divergente: $($bin.Name)"
+            Write-WDEvent 'WD_RECONCILE_HASH_MISMATCH' @{
+                file     = $bin.Name
+                expected = $hashFromName
+                actual   = $actualHash
+            }
+            $mismatches++
+            continue
+        }
+
+        $idx += [PSCustomObject]@{
+            hash          = $hashFromName.ToLower()
+            size          = $bin.Length
+            nome_original = $null
+            path_cas      = $bin.FullName
+            path_origem   = $null
+            created_orig  = $null
+            seed          = $null
+            indexed_at    = (Get-Date -Format 'yyyy-MM-ddTHH:mm:ss')
+            version       = 'reconcile-v0.13.1'
+        }
+        [void]$knownHashes.Add($hashFromName)
+        $added++
+    }
+
+    if ($added -gt 0) {
+        Set-IndexAtomic -Index $idx
+    }
+
+    Write-WD "Reconciliação concluída — Adicionados: $added | Já no índice: $skipped | Divergências: $mismatches"
+    Write-WDEvent 'WD_RECONCILE_END' @{ added = $added; skipped = $skipped; mismatches = $mismatches }
+}
+
 # ── Ciclo principal ──────────────────────────────────────────────────────────
 function Invoke-WatchdogCycle {
     $cycleStart = Get-Date
     Write-WD "Ciclo iniciado"
     Write-WDEvent 'WD_CYCLE_START' @{ ts = $cycleStart.ToString('o') }
 
-    $casHashes          = Get-CASHashes
+    $casHashes                       = Get-CASHashes
     $orfaoHashLookup, $orfaoSizeLookup = Get-OrfaoLookup
 
     $novoOk = 0; $novoFail = 0; $ignorados = 0
@@ -159,22 +271,17 @@ function Invoke-WatchdogCycle {
             Where-Object { $_.FullName -notmatch $CachePattern }
 
         foreach ($f in $files) {
-            # Pré-filtro: tamanho não está no lookup → não é candidato CAS
             if (-not $orfaoSizeLookup.ContainsKey($f.Length)) { $ignorados++; continue }
 
             $hash = (Get-FileHash $f.FullName -Algorithm SHA256 -ErrorAction SilentlyContinue).Hash
             if (-not $hash) { continue }
 
-            # Já está no CAS → ignorar
             if ($casHashes.Contains($hash)) { $ignorados++; continue }
-
-            # Não está no índice órfão → não é um objeto CAS conhecido
             if (-not $orfaoHashLookup.ContainsKey($hash)) { $ignorados++; continue }
 
-            # Novo arquivo confirmado → ingerir
             Write-WD "Novo objeto detectado: $($f.Name) ($($hash.Substring(0,16))...)"
             $result = Invoke-IngestFile -File $f -Hash $hash -OrfaoEntry $orfaoHashLookup[$hash]
-            if ($result -eq 'OK') { $novoOk++; [void]$casHashes.Add($hash) }
+            if ($result -eq 'OK')   { $novoOk++;   [void]$casHashes.Add($hash) }
             elseif ($result -eq 'FAIL') { $novoFail++ }
         }
     }
@@ -182,29 +289,43 @@ function Invoke-WatchdogCycle {
     $elapsed = [math]::Round(((Get-Date) - $cycleStart).TotalSeconds, 1)
     Write-WD "Ciclo concluído — Novos ingeridos: $novoOk | Falhas: $novoFail | Ignorados: $ignorados | ${elapsed}s"
     Write-WDEvent 'WD_CYCLE_END' @{
-        novos_ok   = $novoOk
-        falhas     = $novoFail
-        ignorados  = $ignorados
-        elapsed_s  = $elapsed
-        cas_total  = $casHashes.Count
+        novos_ok  = $novoOk
+        falhas    = $novoFail
+        ignorados = $ignorados
+        elapsed_s = $elapsed
+        cas_total = $casHashes.Count
     }
 
-    # Salvar estado
     @{ ultimo_ciclo = (Get-Date -Format 'o'); cas_total = $casHashes.Count; novos_ok = $novoOk } |
         ConvertTo-Json | Set-Content $StateFile -Encoding UTF8
 }
 
 # ── Entry point ──────────────────────────────────────────────────────────────
-Write-WD "TEIA-Sync-Watchdog v0.13.0 iniciado"
-Write-WD "Pastas monitoradas: $($Monitoradas -join ' | ')"
-Write-WDEvent 'WD_START' @{ interval_seg = $IntervalSeg; uma_vez = $UmaVez.IsPresent }
+Write-WD "TEIA-Sync-Watchdog v0.13.1 iniciado (PID $PID)"
+Write-WDEvent 'WD_START' @{ version = 'v0.13.1'; interval_seg = $IntervalSeg; uma_vez = $UmaVez.IsPresent; reconcile_only = $ReconcileOnly.IsPresent; pid = $PID }
 
-if ($UmaVez) {
-    Invoke-WatchdogCycle
-} else {
-    while ($true) {
+# ReconcileOnly ignora o lock — operação somente-leitura de índice
+if ($ReconcileOnly) {
+    Invoke-ReconcileIndex
+    exit 0
+}
+
+Invoke-AcquireLock
+
+try {
+    Write-WD "Pastas monitoradas: $($Monitoradas -join ' | ')"
+
+    if ($UmaVez) {
         Invoke-WatchdogCycle
-        Write-WD "Aguardando ${IntervalSeg}s até o próximo ciclo... (Ctrl+C para parar)"
-        Start-Sleep -Seconds $IntervalSeg
+    } else {
+        while ($true) {
+            Invoke-WatchdogCycle
+            Write-WD "Aguardando ${IntervalSeg}s até o próximo ciclo... (Ctrl+C para parar)"
+            Start-Sleep -Seconds $IntervalSeg
+        }
     }
+} finally {
+    Invoke-ReleaseLock
+    Write-WDEvent 'WD_STOP' @{ pid = $PID }
+    Write-WD "Lock liberado. Watchdog encerrado."
 }
