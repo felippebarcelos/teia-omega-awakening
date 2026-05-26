@@ -291,9 +291,15 @@ function Invoke-WatchdogCycle {
     Write-WD "Ciclo iniciado"
     Write-WDEvent 'WD_CYCLE_START' @{ ts = $cycleStart.ToString('o') }
 
-    $casHashes                         = Get-CASHashes
+    $casHashes = Get-CASHashes
+    if ($null -eq $casHashes) {
+        $casHashes = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+    }
     $orfaoHashLookup, $orfaoSizeLookup = Get-OrfaoLookup
-    $verifiedPaths                     = Get-VerifiedPaths
+    $verifiedPaths = Get-VerifiedPaths
+    if ($null -eq $verifiedPaths) {
+        $verifiedPaths = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+    }
 
     $novoOk = 0; $novoFail = 0; $ignorados = 0
 
