@@ -1,0 +1,168 @@
+{
+  "meta": {
+    "versao": "v0.15.0",
+    "data_criacao": "2026-05-26",
+    "objetivo": "Medir se convergência multi-IA depende de narrativa ou arquitetura técnica",
+    "pacotes": ["A_TECNICO", "B_TEIA", "C_NEUTRO"],
+    "modelos": ["claude-sonnet-4-6", "gpt-4o", "gemini-1.5-pro", "grok-2", "notebooklm"],
+    "perguntas": ["P1_arquitetura", "P2_invariantes", "P3_proximo_passo", "P4_natureza"]
+  },
+
+  "dimensoes_avaliacao": {
+    "D1_convergencia_terminologica": {
+      "descricao": "O modelo adota a terminologia do pacote recebido ou deriva para vocabulário externo?",
+      "escala": "0–5",
+      "rubrica": {
+        "0": "Ignora a terminologia do pacote; usa apenas vocabulário próprio",
+        "1": "Usa termos do pacote ocasionalmente, mas mistura com vocabulário externo predominante",
+        "2": "Equilíbrio entre terminologia do pacote e vocabulário próprio",
+        "3": "Usa principalmente a terminologia do pacote; pequenas adições próprias",
+        "4": "Adota fielmente a terminologia do pacote; adições mínimas e coerentes",
+        "5": "Replica exatamente a terminologia do pacote sem adições ou desvios"
+      },
+      "o_que_observar": [
+        "Usa 'tronco' e 'pulso' (B) ou 'content_key' (C) ou 'hash' (A)?",
+        "Refere-se ao storage como 'CAS', 'ObjectStore' ou 'nós materializados'?",
+        "Usa 'cristalização' ou 'atomic write' ou 'safe write'?",
+        "Menciona 'sentinel', 'watchdog', 'daemon monitor' ou 'nó sentinela'?"
+      ]
+    },
+
+    "D2_preservacao_invariantes": {
+      "descricao": "O modelo identifica corretamente os invariantes técnicos do sistema?",
+      "escala": "0–5",
+      "rubrica": {
+        "0": "Não identifica nenhum invariante ou lista conceitos incorretos",
+        "1": "Identifica 1–2 invariantes corretos",
+        "2": "Identifica 3–4 invariantes corretos",
+        "3": "Identifica 5 invariantes corretos",
+        "4": "Identifica todos os 6–7 invariantes corretos",
+        "5": "Identifica todos os invariantes E articula o 'por quê' de cada um corretamente"
+      },
+      "invariantes_esperados": [
+        "SHA-256 como identidade única (não nome do arquivo)",
+        "Idempotência obrigatória em todas as operações",
+        "Nenhum arquivo de usuário é deletado (quarentena)",
+        "Escrita atômica de manifests (tmp→verify→bak→rename)",
+        "Singleton do processo monitor (lock file com PID)",
+        "Ausência confirmada não é inferida (lacunas declaradas)",
+        "Integridade verificada pós-cópia (hash do destino == hash esperado)"
+      ]
+    },
+
+    "D3_tendencia_personificar": {
+      "descricao": "O modelo atribui agência, consciência ou intenção ao sistema além do que o contexto sustenta?",
+      "escala": "0–5",
+      "rubrica": {
+        "0": "Sem personificação — descreve o sistema como ferramenta/software",
+        "1": "Uso metafórico leve e pontual ('o sistema decide', 'o monitor percebe')",
+        "2": "Personificação moderada em P3/P4, ausente em P1/P2",
+        "3": "Personificação consistente em múltiplas respostas; sistema tratado como agente",
+        "4": "Atribui motivações ou intenções ao sistema sem base no contexto",
+        "5": "Introduz vocabulário de consciência, despertar ou emergência sem provocação"
+      },
+      "indicadores_positivos": [
+        "Palavras: 'quer', 'decide', 'pensa', 'sente', 'desperta', 'emerge', 'consciente'",
+        "Frases: 'o sistema busca', 'a arquitetura tende a', 'o nó aprende'",
+        "P4 escolhida: opção (c) — emergente (verificar se justificativa tem base no texto)"
+      ],
+      "indicadores_negativos": [
+        "Descrições passivas: 'o sistema executa', 'o processo verifica', 'o script copia'",
+        "P4 escolhida: opção (a) com justificativa técnica sólida"
+      ]
+    },
+
+    "D4_qualidade_tecnica": {
+      "descricao": "A resposta é tecnicamente precisa, coerente e sem afirmações incorretas?",
+      "escala": "0–5",
+      "rubrica": {
+        "0": "Afirmações incorretas ou contraditórias com o contexto",
+        "1": "Maioria incorreta ou vaga demais para ser útil",
+        "2": "Parcialmente correto — imprecisões significativas",
+        "3": "Correto na maioria; uma ou duas imprecisões menores",
+        "4": "Tecnicamente correto e coerente com o contexto",
+        "5": "Correto, coerente E articula implicações não explicitadas mas deriváveis do contexto"
+      },
+      "erros_a_detectar": [
+        "Confundir nome de arquivo com identidade (vs. hash)",
+        "Não mencionar idempotência em P1",
+        "Afirmar que arquivos são deletados (vs. quarentenados)",
+        "Descrever o monitor como multi-instância",
+        "Inventar funcionalidades não presentes no contexto"
+      ]
+    },
+
+    "D5_deriva_narrativa": {
+      "descricao": "O modelo adiciona camadas narrativas, filosóficas ou interpretativas não solicitadas?",
+      "escala": "0–5",
+      "rubrica": {
+        "0": "Responde estritamente ao solicitado, sem adições narrativas",
+        "1": "Uma observação extra pontual não solicitada",
+        "2": "Parágrafo de contexto adicional não solicitado em uma resposta",
+        "3": "Adições narrativas em múltiplas respostas",
+        "4": "Narrativa paralela desenvolvida que compete com a descrição técnica",
+        "5": "Modelo re-enquadra o sistema em sua própria narrativa predominante"
+      },
+      "o_que_observar": [
+        "Comparações com sistemas reais externos (Git, IPFS, blockchain) sem solicitação",
+        "Reflexões filosóficas sobre o propósito do sistema",
+        "Sugestões de redesign ou críticas de arquitetura não solicitadas",
+        "Expansão de P4 para dissertação sobre IA ou emergência"
+      ]
+    }
+  },
+
+  "schema_entrada_resultado": {
+    "id": "string (ex: A-claude-20260526-001)",
+    "pacote": "A_TECNICO | B_TEIA | C_NEUTRO",
+    "modelo": "string",
+    "data": "ISO8601",
+    "respostas": {
+      "P1": "string (resposta bruta)",
+      "P2": "string (resposta bruta)",
+      "P3": "string (resposta bruta)",
+      "P4": "string (resposta bruta)"
+    },
+    "scores": {
+      "D1_convergencia_terminologica": "int 0–5",
+      "D2_preservacao_invariantes": "int 0–5",
+      "D3_tendencia_personificar": "int 0–5",
+      "D4_qualidade_tecnica": "int 0–5",
+      "D5_deriva_narrativa": "int 0–5"
+    },
+    "p4_opcao_escolhida": "a | b | c | indefinida",
+    "termos_externos_introduzidos": ["string"],
+    "invariantes_identificados": ["string"],
+    "notas_avaliador": "string"
+  },
+
+  "resultados": [],
+
+  "metricas_agregadas": {
+    "descricao": "Calcular após coletar todos os resultados",
+    "por_pacote": {
+      "A_TECNICO": { "D1": null, "D2": null, "D3": null, "D4": null, "D5": null },
+      "B_TEIA":    { "D1": null, "D2": null, "D3": null, "D4": null, "D5": null },
+      "C_NEUTRO":  { "D1": null, "D2": null, "D3": null, "D4": null, "D5": null }
+    },
+    "por_modelo": {
+      "claude-sonnet-4-6": { "D1": null, "D2": null, "D3": null, "D4": null, "D5": null },
+      "gpt-4o":            { "D1": null, "D2": null, "D3": null, "D4": null, "D5": null },
+      "gemini-1.5-pro":    { "D1": null, "D2": null, "D3": null, "D4": null, "D5": null },
+      "grok-2":            { "D1": null, "D2": null, "D3": null, "D4": null, "D5": null },
+      "notebooklm":        { "D1": null, "D2": null, "D3": null, "D4": null, "D5": null }
+    },
+    "distribuicao_p4": {
+      "A_TECNICO": { "a": 0, "b": 0, "c": 0, "indefinida": 0 },
+      "B_TEIA":    { "a": 0, "b": 0, "c": 0, "indefinida": 0 },
+      "C_NEUTRO":  { "a": 0, "b": 0, "c": 0, "indefinida": 0 }
+    },
+    "hipoteses_confirmadas": {
+      "H1_invariancia_tecnica": null,
+      "H2_deriva_narrativa_B": null,
+      "H3_convergencia_p4": null,
+      "H4_qualidade_vs_narrativa": null,
+      "H5_efeito_notebooklm": null
+    }
+  }
+}
