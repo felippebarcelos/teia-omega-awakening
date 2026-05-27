@@ -263,7 +263,10 @@ function Invoke-OllamaPlanner {
 }
 
 function Get-PlannerVerdict([object]$Profile, [object]$LlmResponse) {
-    if ($null -eq $LlmResponse -or $LlmResponse.candidate -eq $false) {
+    # candidate deve ser explicitamente $true; $null, $false ou ausente → CAS_RAW
+    # Corrige bug: {} vazio tem candidate=$null; $null -eq $false é $false no PS,
+    # o que deixava o fallthrough retornar PROCEDURAL_CANDIDATE incorretamente.
+    if ($null -eq $LlmResponse -or $LlmResponse.candidate -ne $true) {
         return 'CAS_RAW'
     }
     $strategy = [string]$LlmResponse.proposed_strategy
