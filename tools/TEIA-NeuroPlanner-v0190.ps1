@@ -357,12 +357,11 @@ foreach ($filePath in $Files) {
         Write-Host "     Consultando LLM ($Model)..." -NoNewline
         $llmResponse = Invoke-OllamaPlanner -PromptTemplate $promptTemplate `
                            -Profile $profile -Url $OllamaUrl -Model $Model
-        $verdict = Get-PlannerVerdict -Profile $profile -LlmResponse $llmResponse
-        Write-Host " $verdict" -ForegroundColor (
-            if ($verdict -eq 'PROCEDURAL_CANDIDATE') { 'Green' }
-            elseif ($verdict -eq 'LZMA_PREFERRED')   { 'Yellow' }
-            else                                      { 'Gray' }
-        )
+        $verdict     = Get-PlannerVerdict -Profile $profile -LlmResponse $llmResponse
+        $verdictColor = if ($verdict -eq 'PROCEDURAL_CANDIDATE') { 'Green' }
+                        elseif ($verdict -eq 'LZMA_PREFERRED')   { 'Yellow' }
+                        else                                      { 'Gray' }
+        Write-Host " $verdict" -ForegroundColor $verdictColor
     } catch {
         Write-Host " FALHA LLM: $_" -ForegroundColor Red
         $llmResponse = [ordered]@{
@@ -411,9 +410,11 @@ Write-Host ' RELATÓRIO FINAL — TEIA-NeuroPlanner-v0190' -ForegroundColor Cyan
 Write-Host $('=' * 70)
 
 $totalAnalyzed = $allProfiles.Count
-$candidates    = $allProfiles | Where-Object { $_.period_bytes -gt 0 -or $_.unique_bytes -le 2 -or $_.entropy -lt 2.0 }
-$highEntropy   = $allProfiles | Where-Object { $_.entropy -ge 7.0 }
-$medium        = $allProfiles | Where-Object { $_.entropy -ge 2.0 -and $_.entropy -lt 7.0 -and $_.period_bytes -eq 0 -and $_.unique_bytes -gt 2 }
+# @() força array — evita que Where-Object com 1 resultado retorne hashtable solta
+# cujo .Count seria número de chaves (16) em vez do número de itens (1)
+[object[]]$candidates   = @($allProfiles | Where-Object { $_.period_bytes -gt 0 -or $_.unique_bytes -le 2 -or $_.entropy -lt 2.0 })
+[object[]]$highEntropy  = @($allProfiles | Where-Object { $_.entropy -ge 7.0 })
+[object[]]$medium       = @($allProfiles | Where-Object { $_.entropy -ge 2.0 -and $_.entropy -lt 7.0 -and $_.period_bytes -eq 0 -and $_.unique_bytes -gt 2 })
 
 Write-Host ''
 Write-Host " Arquivos analisados     : $totalAnalyzed"
