@@ -71,19 +71,31 @@
 
 ## 3. MODOS A COMPARAR
 
-| ID | Modo | Implementação | Disponibilidade |
-|----|------|--------------|----------------|
-| M1 | `gen.repeat` | TEIA-Core v0.4.0 | ✅ pronto |
-| M2 | `gen.pattern` | TEIA-Core v0.4.0 | ✅ pronto |
-| M3 | `rle.decode` | TEIA-Core v0.4.0 | ✅ pronto |
-| M4 | `lz.brotli` (v0.4) | TEIA-Seed-Pack v0.4.0 | ✅ pronto |
-| M5 | `lz.gzip` (v0.4) | TEIA-Seed-Pack v0.4.0 | ✅ pronto |
-| M6 | `cmp.zstd` | A implementar em v0.16 | ⚠️ verificar disponibilidade PS |
-| M7 | `cmp.lzma` | A implementar em v0.16 | ⚠️ verificar disponibilidade PS |
-| M8 | `cas.raw` | TEIA-Ingerir v0.14 | ✅ pronto (baseline) |
+| ID | Modo | Implementação | Disponibilidade | Versão origem |
+|----|------|--------------|----------------|--------------|
+| M1 | `gen.repeat` | TEIA-Core v0.4.0 | ✅ pronto | v0.4 |
+| M2 | `gen.pattern` | TEIA-Core v0.4.0 | ✅ pronto | v0.4 |
+| M3 | `rle.decode` | TEIA-Core v0.4.0 | ✅ pronto | v0.4 |
+| M4 | `lz.brotli` (v0.4) | TEIA-Seed-Pack v0.4.0 | ✅ pronto | v0.4 |
+| M5 | `lz.gzip` (v0.4) | TEIA-Seed-Pack v0.4.0 | ✅ pronto | v0.4 |
+| M6 | `cmp.zstd` | A implementar em v0.16 | ⚠️ verificar disponibilidade PS | v0.16 proposto |
+| M7 | `cmp.lzma` (PS/7z) | A implementar em v0.16 | ⚠️ verificar wrapper | v0.16 proposto |
+| **M8** | **`v0.11-lzma`** | **Python lzma FORMAT_ALONE preset=9\|EXTREME** | **✅ pronto** | **v0.11 — campeão atual** |
+| M9 | `cas.raw` | TEIA-Ingerir v0.14 | ✅ pronto (baseline) | v0.14 |
 
-**Linha de base (baseline):** M8 `cas.raw` com ratio = 1.0, encode = tempo de cópia.
+**Linha de base (baseline):** M9 `cas.raw` com ratio = 1.0, encode = tempo de cópia.
 Qualquer modo que não vença o baseline em ratio não justifica sua complexidade.
+
+**Referência histórica obrigatória:** M8 `v0.11-lzma` é o campeão documentado:
+- 17/17 D8 wins, 105/105 D7 wins
+- overhead ~69–79 bytes
+- savings D7: +121.812 bytes; D8: +24.709 bytes
+Qualquer modo v0.16 deve ser comparado diretamente contra M8, não apenas contra o baseline.
+
+**Distinguir M7 vs M8:**
+- M7 (`cmp.lzma` proposto): PowerShell puro ou wrapper 7z — velocidade e disponibilidade a verificar
+- M8 (`v0.11-lzma`): Python `lzma.compress(data, format=FORMAT_ALONE, preset=9|EXTREME)` — implementação validada com 100% win rate
+Se M7 não igualar M8 em ratio, M8 deve ser incorporado ao seletor v0.16 via chamada Python externa.
 
 ---
 
@@ -128,46 +140,56 @@ Dataset × Modo → ratio | encode_ms | decode_ms | sha256_match | overhead_byte
 | D1 texto_rep | M2 gen.pattern | | | | | | |
 | D1 texto_rep | M4 lz.brotli | | | | | | |
 | D1 texto_rep | M6 cmp.zstd | | | | | | |
-| D1 texto_rep | M8 cas.raw | 1.000 | | | ✅ | 0 | baseline |
+| D1 texto_rep | M8 v0.11-lzma | | | | | | referência histórica |
+| D1 texto_rep | M9 cas.raw | 1.000 | | | ✅ | 0 | baseline |
 | D2 json | M4 lz.brotli | | | | | | |
 | D2 json | M5 lz.gzip | | | | | | |
 | D2 json | M6 cmp.zstd | | | | | | |
 | D2 json | M7 cmp.lzma | | | | | | |
-| D2 json | M8 cas.raw | 1.000 | | | ✅ | 0 | baseline |
+| D2 json | M8 v0.11-lzma | | | | | | referência histórica |
+| D2 json | M9 cas.raw | 1.000 | | | ✅ | 0 | baseline |
 | D3 log | M4 lz.brotli | | | | | | |
 | D3 log | M6 cmp.zstd | | | | | | |
 | D3 log | M7 cmp.lzma | | | | | | |
-| D3 log | M8 cas.raw | 1.000 | | | ✅ | 0 | baseline |
+| D3 log | M8 v0.11-lzma | | | | | | referência histórica |
+| D3 log | M9 cas.raw | 1.000 | | | ✅ | 0 | baseline |
 | D4 codigo | M4 lz.brotli | | | | | | |
 | D4 codigo | M6 cmp.zstd | | | | | | |
-| D4 codigo | M8 cas.raw | 1.000 | | | ✅ | 0 | baseline |
+| D4 codigo | M8 v0.11-lzma | | | | | | referência histórica |
+| D4 codigo | M9 cas.raw | 1.000 | | | ✅ | 0 | baseline |
 | D5 aleatorio | M4 lz.brotli | | | | | | |
 | D5 aleatorio | M6 cmp.zstd | | | | | | |
-| D5 aleatorio | M8 cas.raw | 1.000 | | | ✅ | 0 | baseline |
+| D5 aleatorio | M8 v0.11-lzma | | | | | | espera-se ratio ≥ 1.0 |
+| D5 aleatorio | M9 cas.raw | 1.000 | | | ✅ | 0 | baseline |
 | D6 png | M4 lz.brotli | | | | | | |
 | D6 png | M6 cmp.zstd | | | | | | |
-| D6 png | M8 cas.raw | 1.000 | | | ✅ | 0 | baseline |
-| D7 txt_pequeno | M4 lz.brotli | | | | | | |
-| D7 txt_pequeno | M6 cmp.zstd | | | | | | |
-| D7 txt_pequeno | M8 cas.raw | 1.000 | | | ✅ | 0 | baseline |
+| D6 png | M8 v0.11-lzma | | | | | | |
+| D6 png | M9 cas.raw | 1.000 | | | ✅ | 0 | baseline |
+| D7 txt_pequeno | M4 lz.brotli | | | | | | overhead provavelmente domina |
+| D7 txt_pequeno | M6 cmp.zstd | | | | | | overhead provavelmente domina |
+| D7 txt_pequeno | M8 v0.11-lzma | | | | | | overhead ~77B vs arquivo 125B |
+| D7 txt_pequeno | M9 cas.raw | 1.000 | | | ✅ | 0 | baseline |
 | D8 rle_runs | M3 rle.decode | | | | | | |
 | D8 rle_runs | M6 cmp.zstd | | | | | | |
-| D8 rle_runs | M8 cas.raw | 1.000 | | | ✅ | 0 | baseline |
+| D8 rle_runs | M8 v0.11-lzma | | | | | | histórico: 17/17 wins em logs |
+| D8 rle_runs | M9 cas.raw | 1.000 | | | ✅ | 0 | baseline |
 
 ---
 
 ## 6. CRITÉRIOS DE DECISÃO PÓS-BENCHMARK
 
-Baseados apenas nos dados da tabela:
+Baseados apenas nos dados da tabela. **Referência primária: M8 v0.11-lzma** (não apenas baseline M9).
 
 | Pergunta | Critério para SIM |
 |----------|------------------|
-| Implementar cmp.zstd no v0.16? | ratio(D2) < 0.80 E sha256_match AND encode_ms < 5000 |
-| Implementar cmp.lzma no v0.16? | ratio(D2,lzma) < ratio(D2,zstd) - 0.05 E decode_ms razoável |
-| Incluir gen.pattern no seletor v0.16? | ratio(D1,pattern) < 0.001 E sha256 prova independente OK |
-| Incluir rle.decode no seletor v0.16? | ratio(D8,rle) < ratio(D8,zstd) E sha256 prova independente OK |
-| Descartar lz.brotli/gzip herdados? | ratio(Dx,zstd) ≤ ratio(Dx,brotli) em maioria dos datasets |
+| Implementar cmp.zstd no v0.16? | ratio(D2,M6) < ratio(D2,M8) OU encode_ms(M6) < encode_ms(M8) × 0.5 E sha256 ok |
+| Implementar cmp.lzma via PS/7z? | ratio(D2,M7) ≤ ratio(D2,M8) + 0.01 E sha256 ok (confirma equivalência com v0.11) |
+| Chamar Python lzma (M8) no v0.16? | ratio(M7) > ratio(M8) + 0.02 em maioria dos datasets (M7 PS pior que M8 Python) |
+| Incluir gen.pattern no seletor v0.16? | ratio(D1,M2) < 0.001 E sha256 prova independente OK |
+| Incluir rle.decode no seletor v0.16? | ratio(D8,M3) < ratio(D8,M8) E sha256 prova independente OK |
+| Descartar lz.brotli/gzip herdados? | ratio(Dx,M6_ou_M8) ≤ ratio(Dx,M4) em ≥ 6/8 datasets |
 | cas.raw como único fallback? | ratio(D5,qualquer_modo) ≥ 0.98 para dado aleatório |
+| v0.16 superior a v0.11? | soma_savings(D2..D8, M6_ou_M7) > soma_savings(D2..D8, M8) |
 
 ---
 

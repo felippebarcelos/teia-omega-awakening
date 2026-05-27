@@ -252,10 +252,11 @@ Abaixo disso, o overhead de decompressão não justifica o ganho.
 
 Antes de escrever uma linha do v0.16.0:
 
-1. **Executar `BENCHMARK_PLAN_v0160.md`** — confirmar que zstd/lzma são viáveis nas condições reais de hardware (i3-10100F, PowerShell)
-2. **Verificar disponibilidade de zstd no PS** — `[System.IO.Compression.ZstdStream]` requer .NET 7+; pode precisar de wrapper externo
-3. **Confirmar que lzma está disponível** — já presente em PS7 via `[System.IO.Compression.GZipStream]`? Verificar se SharpCompress ou wrapper 7z está acessível
+1. **Executar `BENCHMARK_PLAN_v0160.md`** — confirmar que zstd/lzma são viáveis nas condições reais de hardware (i3-10100F, PowerShell); comparar contra M8 v0.11-lzma (Python) como referência histórica
+2. **Verificar disponibilidade de zstd no PS** — `[System.IO.Compression.ZstdStream]` requer .NET 7+; pode precisar de wrapper externo (`zstd.exe` ou SharpCompress)
+3. **Confirmar equivalência lzma PS vs Python** — medir se `cmp.lzma` em PS/7z atinge ratio igual ao `v0.11-lzma` (Python `lzma.compress` FORMAT_ALONE preset=9|EXTREME); se divergir > 0.02, incorporar chamada Python no seletor em vez de reimplementar
 4. **Provar gen.pattern e rle.decode** — executar provas independentes (SHA-256) para esses dois opcodes antes de incluí-los no seletor v0.16
+5. **Registrar SHA-256 do motor v0.11** — localizar arquivo Python do motor v0.11 e registrar seu hash antes de qualquer modificação; serve como âncora para comparação de ratio
 
 ---
 
