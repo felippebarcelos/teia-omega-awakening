@@ -1,221 +1,230 @@
-# TEIA_FRACTAL_GEN — AUDITORIA READ-ONLY
-**Data:** 2026-05-26
-**Auditor:** Claude Sonnet 4.6 (Nó Ativo TEIA)
-**Modo:** Análise estática — nenhum script foi executado
-**Motor de referência:** TEIA v0.11.0 / CAS v0.14.1
+# TEIA_FRACTAL_GEN — AUDITORIA ARQUEOLÓGICA v0.18.0
+**Data:** 2026-05-27  
+**Auditor:** Claude Sonnet 4.6 (Nó Ativo TEIA)  
+**Modo:** Análise estática read-only — nenhum script executado  
+**Escopo:** Pipeline gerador completo: v1.x (legacy Onto) → v2.0 (CAS atual) → Motor-Ontoprocedural → Planner-v0170  
+**Protocolo:** Arqueologia e Auditoria v0.18.0
 
 ---
 
-## 1. SCRIPTS LOCALIZADOS
+## 1. INVENTÁRIO DE SCRIPTS LOCALIZADOS
 
-| Script | Localização | Versão | Data Modificação |
-|--------|------------|--------|-----------------|
-| `TEIA-Fractal-Gen.ps1` | `D:\bruto\TEIA\` | v1.7c | 2025-08-22 |
-| `TEIA-Fractal-Gen.fixed.ps1` | `D:\bruto\TEIA\` | v1.4 | 2025-08-21 |
-| `TEIA-Fractal-RestoreOnDemand.ps1` | `D:\bruto\TEIA\` | v1.1 | — |
-| `TEIA-Fractal-AutoProfile.ps1` | `D:\bruto\TEIA\` | v1 | — |
-| `TEIA-Fractal-ProvaReal.ps1` | `D:\bruto\TEIA\canon\legacy_resgatado\` | — | — |
-| `GenFunctions.ps1` | **NÃO ENCONTRADO** | — | — |
-| `GenFunctions.fixed.ps1` | **NÃO ENCONTRADO** | — | — |
+| Script | Caminho | Papel | Geração |
+|--------|---------|-------|---------|
+| `TEIA-Fractal-Gen-v2.ps1` | `D:\TEIA_CLAUDE_AWAKENING\tools\` | Motor CAS atual — ingesta + gen_dummy_seed | v2.0 (atual) |
+| `TEIA-Fractal-Gen-v2.ps1` | `D:\TEIA_CORE\tools\` | Cópia idêntica (9,876 bytes) | v2.0 (atual) |
+| `TEIA-OntoSeed-Gen.ps1` | `...Arqueologia\...\Ontology\` | Gerador de seed com Detect-Procedural | v1.x (legacy) |
+| `TEIA-OntoEngine-Restore.ps1` | `...Arqueologia\...\Ontology\` | Executor de restauração por generator.name | v1.x (legacy) |
+| `TEIA-Motor-Ontoprocedural.ps1` | `LEGADO_HISTORICO\` | Prova de Excalibur — SplitMix64 O(1) seek | v1.5 (legado) |
+| `TEIA-SmokeTest-E2E-Procedural.ps1` | `LEGADO_HISTORICO\` | Prova de honestidade entropica E2E | v1.x (legado) |
+| `TEIA-Procedural-Planner-v0170.ps1` | `tools\` | Planner estrutural — análise + seletor de estratégia | v0.17.0 (atual) |
+| `TEIA-Logger.ps1` | `...Arqueologia\...\Ontology\` | Logger compartilhado via dot-source | v1.x (legacy) |
+| `GenFunctions.ps1` | **NÃO ENCONTRADO** em todo `D:\` | — | ausente |
 
-> Cópias idênticas existem em `D:\bruto\TEIA\Analisados\` (mesmos timestamps).
-> `GenFunctions*.ps1` ausente em todo `D:\` — busca recursiva confirmou.
-
----
-
-## 2. INPUTS E OUTPUTS
-
-### 2.1 TEIA-Fractal-Gen.ps1 / TEIA-Fractal-Gen.fixed.ps1
-
-| # | Input | Tipo | Descrição |
-|---|-------|------|-----------|
-| 1 | `-Manifest` | `PSCustomObject` / `string` / `string[]` | JSON inline, caminho para .json, ou objeto PS |
-| 2 | `-Out` | `string` (path) | Caminho do arquivo a gerar |
-| 3 | `-Verify` | `switch` | Se presente, relê e verifica o SHA-256 do output |
-
-| # | Output | Tipo | Descrição |
-|---|--------|------|-----------|
-| 1 | Arquivo gerado | binário | Resultado da função `fn` do manifesto |
-| 2 | `[Gen] <path> (SHA=<hash>)` | stdout | Hash SHA-256 do arquivo gerado |
-| 3 | `[Verify] SHA256=<hash>` | stdout | (apenas com `-Verify`) |
-
-**Funções implementadas no `switch ($fn)`:**
-
-| `fn` | Parâmetros esperados | Output |
-|------|---------------------|--------|
-| `gen_checkered_png` | `seed`, `params.width`, `params.height`, `params.color1`, `params.color2` | PNG xadrez |
-| *(qualquer outro)* | — | `throw "Função desconhecida"` |
-
-> Escopo funcional extremamente estreito: apenas geração de PNG xadrez.
-
-### 2.2 TEIA-Fractal-RestoreOnDemand.ps1
-
-| # | Input | Tipo | Descrição |
-|---|-------|------|-----------|
-| 1 | `-Root` | `string` (path) | Diretório com manifestos `.fractal_manifest*.json` |
-| 2 | `-OutDir` | `string` (path) | Destino dos arquivos restaurados |
-| 3 | `-Interval` | `int` | Segundos entre ciclos do loop infinito |
-
-| # | Output | Tipo | Descrição |
-|---|--------|------|-----------|
-| 1 | Arquivo restaurado | binário | Decodificado de Base64 do manifesto |
-| 2 | `dna_restore_ondemand_log.txt` | log | Registro de restaurações |
+> **Nota:** cópias deduplicadas com sufixo `(1)`, `(2)`, `dedup` existem em `...Arqueologia\...\Ontology\` — são variantes com ajustes menores, não versões distintas do pipeline.
 
 ---
 
-## 3. DEPENDÊNCIAS EXTERNAS
+## 2. CADEIA DE DOT-SOURCE (DEPENDÊNCIAS)
 
-| Dependência | Tipo | Status | Impacto se ausente |
-|------------|------|--------|--------------------|
-| `GenFunctions.ps1` (dot-source) | Script PS | **AUSENTE — não existe em D:\\** | Script aborta com `throw` na linha 62 |
-| `GenFunctions.fixed.ps1` (dot-source) | Script PS | **AUSENTE — não existe em D:\\** | Script aborta com `throw` na linha 21 |
-| `PowerShell 7+` (pwsh) | Runtime | Presente | `throw "Requer PowerShell 7+"` |
-| `.fractal_manifest*.json` | Dados | **AUSENTE — formato abandonado** | RestoreOnDemand carrega 0 manifestos |
-| `TEIA-Fractal-Preload.ps1` | Script PS | **AUSENTE** | ProvaReal pula etapa silenciosamente |
-| `TEIA-Fractal-Launch.ps1` | Script PS | **AUSENTE** | ProvaReal pula etapa silenciosamente |
-| `FortniteClient-Win64-Shipping.exe` | Binário | Não presente | ProvaReal — P7 (deferido) |
+```
+TEIA-OntoSeed-Gen.ps1
+  └─ . "$PSScriptRoot/TEIA-Logger.ps1" -LogPath ... -VerificationPath ...
+       └─ expõe: Write-TEIALog, Get-TEIASha256, Get-TEIAUtcNow, Update-Verification
 
----
+TEIA-OntoEngine-Restore.ps1
+  └─ . "$PSScriptRoot/TEIA-Logger.ps1" -LogPath ... -VerificationPath ...
+       └─ (mesmas funções)
 
-## 4. COMANDOS POTENCIALMENTE DESTRUTIVOS
+TEIA-Fractal-Gen-v2.ps1
+  └─ [sem dot-source] — funções internas: Write-FGEvent, Read-TeiaMap, Set-MapAtomic,
+       Invoke-IngestToCAS, Write-SeedAtomic, gen_dummy_seed
 
-| Script | Linha | Comando | Contexto | Risco |
-|--------|-------|---------|----------|-------|
-| `RestoreOnDemand.ps1` | 60 | `Remove-Item $targetPath -Force` | Apaga arquivo restaurado se hash diverge | MÉDIO — opera em `$OutDir` (path configurável), não em originais |
-| `AutoProfile.ps1` | 16 | `Remove-Item $probe -Force` | Apaga `tmp_probe.bin` de 64 MB criado pelo próprio script | BAIXO — temp file, sem risco |
-| `ProvaReal.ps1` | 15 | `Remove-Item $metrics,$cacheLog -Force` | Apaga logs de run anterior | BAIXO — apenas logs de telemetria |
-| `AutoProfile.ps1` | 31-32 | `Set-Content $identityPath` / `Set-Content $policyPath` | Sobrescreve `dna_identity.json` e `dna_policy_autoadapt.json` | BAIXO — arquivos de perfil, não dados de usuário |
+TEIA-Motor-Ontoprocedural.ps1
+  └─ [sem dot-source] — Add-Type inline: SM64 (C# unchecked UInt64)
 
-> **Veredicto destrutivo:** Nenhum script toca em arquivos de usuário originais nem no CAS.
-> O único `Remove-Item` relevante (RestoreOnDemand, linha 60) opera sobre um arquivo
-> recém-restaurado com hash inválido — comportamento defensivo aceitável em princípio,
-> mas **o caminho $OutDir aponta para diretório inexistente** (ver seção 5).
-
----
-
-## 5. AUDITORIA DE CAMINHOS
-
-### Caminhos hardcoded obsoletos (infra `D:\Teia\` — não existe mais)
-
-| Script | Caminho obsoleto | Caminho atual equivalente |
-|--------|-----------------|--------------------------|
-| `RestoreOnDemand.ps1` | `D:\Teia\TEIA_NUCLEO\offline\nano` | `D:\TEIA_CORE\` |
-| `RestoreOnDemand.ps1` | `D:\Teia\TEIA_NUCLEO\offline\restaurados_auto` | `D:\TEIA_USER\` (ou subpasta) |
-| `ProvaReal.ps1` | `D:\Teia\TEIA_NUCLEO\offline\nano` | `D:\TEIA_CORE\` |
-
-### Caminhos relativos perigosos
-
-| Script | Código | Problema |
-|--------|--------|---------|
-| `AutoProfile.ps1` | `$Root="."` como default | Escreve `dna_identity.json` no diretório atual de execução — comportamento imprevisível |
-| `Fractal-Gen*.ps1` | `Join-Path $PSScriptRoot 'GenFunctions.ps1'` | Correto em princípio, mas o arquivo alvo não existe |
-
----
-
-## 6. ANÁLISE DE INTEGRIDADE ESTRUTURAL DO CÓDIGO
-
-### TEIA-Fractal-Gen.ps1 v1.7 — BROKEN (colagem manual mal-sucedida)
-
-O script contém **dois blocos de código órfão** que executam no escopo global antes da lógica principal:
-
-**Bloco Órfão 1 (linhas 41–55):** Duplicata do corpo interno da função `Invoke-JsonCascade`, colada fora da função. Referencia `$Text` e `$MaxPasses` indefinidos no escopo global.
-
-```powershell
-# Linha 41 — $Text é $null no escopo global
-$t = $Text
-# Linha 43 — NullReferenceException aqui com ErrorActionPreference='Stop'
-$t = $t.Trim()
+TEIA-Procedural-Planner-v0170.ps1
+  └─ [sem dot-source] — autocontido
 ```
 
-Com `$ErrorActionPreference='Stop'` (linha 8), o script **lança exceção na linha 43** e aborta antes de executar qualquer lógica útil. Linha 55 tem o comentário `# [TEIA] removed stray }` — evidência de tentativa de reparo anterior que não resolveu o problema raiz.
+---
 
-**Bloco Órfão 2 (linhas 78–84):** `else { ... }` não conectado a nenhum `if`. PowerShell aceita sintaticamente mas é código morto / estruturalmente sem sentido.
+## 3. CADEIA CAUSAL — LINHA DO TEMPO TÉCNICA
 
-### TEIA-Fractal-Gen.fixed.ps1 v1.4 — Estrutura limpa
+### 3.1 Fase Legacy (v1.x): Onto-Pipeline com Detect-Procedural
 
-Sem código órfão. Fluxo linear e legível. Seria executável se `GenFunctions.fixed.ps1` existisse.
+**Como a seed era gerada (TEIA-OntoSeed-Gen.ps1):**
+
+```
+[Arquivo de entrada]
+    │
+    ├─ Read-Bytes → $bytes (ReadAllBytes completo em RAM)
+    ├─ Detect-Format → mime/tipo via magic signatures + ontologia JSON
+    ├─ Get-TEIASha256 → hash canônico
+    └─ Detect-Procedural → classificação estrutural:
+          ┌─ uniqueBytes == 1          → repeat_byte { value, size }
+          ├─ padrão periódico ≤64B     → repeat_sequence { hex, period, size }
+          └─ nenhum padrão encontrado  → none { procedural=false }
+                │
+                └─ nota explícita: "No procedural generator identified;
+                   restoration not possible without payload or external source."
+```
+
+A seed resultante contém `generator.name` + `generator.params` — a receita que o Executor entende.
+
+**Como o Executor decide entre procedural e fallback (TEIA-OntoEngine-Restore.ps1):**
+
+```powershell
+switch ($gen.name) {
+    'empty'           { ... }
+    'repeat_byte'     { [Array]::Fill($bytes, $val) }
+    'repeat_sequence' { for ($i=0; ...) { $bytes[$i] = $seq[$i % $period] } }
+    default           { throw "No procedural generator available: $($gen.name)" }
+}
+```
+
+**Diagnóstico:** não há fallback para CAS. Se `generator.name = 'none'`, o script lança exceção e a restauração falha. O design pressupõe que `Detect-Procedural` terá êxito — uma premissa que só se sustenta para dados sintéticos de baixa entropia.
+
+### 3.2 Fase Motor (v1.5 legacy): SplitMix64 / Prova de Excalibur
+
+**Como a seed é gerada (TEIA-Motor-Ontoprocedural.ps1):**
+
+```
+[Semente uint64 canônica: 0xFE1A7E1A00C0FFEE]
+    │
+    ├─ SHA-256 da semente → identificador SR-AUT
+    └─ Para cada bloco k:
+           estado_k = semente + k × 0x9E3779B97F4A7C15 (mod 2^64) — O(1) seek
+           bloco_k  = SM64.GenBlock(estado_k, tamanhoBloco)          — C# unchecked
+```
+
+A "seed" aqui é a SR-AUT (Semente-Registro Autônoma Transcendente) — um objeto JSON de ≈300 bytes que representa uma matriz de N MB. O O(1) seek é real e provado: `state[n] = semente + n × INC (mod 2^64)`.
+
+**Limitação arqueológica crítica:** este sistema gera dados deterministicos a partir de uma seed SplitMix64. Funciona **apenas quando o arquivo original foi gerado por esta mesma semente** — ou seja, o arquivo é uma saída do motor, não um arquivo externo arbitrário. Para arquivos do usuário (fotos, documentos), não existe método para "descobrir" a semente SplitMix64 que os teria gerado.
+
+### 3.3 Fase Planner (v0.17.0 atual): Análise Estrutural + Seletor MDL
+
+**Como o Planner analisa um arquivo (TEIA-Procedural-Planner-v0170.ps1):**
+
+```
+[Arquivo de entrada]
+    │
+    ├─ sha256hex          → identidade
+    ├─ Get-Entropy        → entropia Shannon (bits/byte)
+    ├─ Get-UniqueBytes    → cardinalidade do alfabeto
+    ├─ Get-RunStats       → runs RLE, run máximo, avg run length
+    ├─ Find-Period        → período mínimo de repetição (até 512B)
+    ├─ Find-DupBlocks     → % de chunks 4KB duplicados
+    ├─ Get-ChunkVariance  → variância de entropia entre quartos do arquivo
+    ├─ Get-LineStats      → (texto) linhas repetidas
+    └─ Get-JsonKeyFreq    → (JSON) frequência de chaves
+
+    → Select-Strategy: MDL implícito — menor seed possível que reconstrói o dado
+          ┌─ uniqueBytes==1            → gen.repeat
+          ├─ period ≤512B detectado    → gen.pattern
+          ├─ runs favoráveis           → rle.decode
+          ├─ JSON com chaves repetidas → dict.ref (HIPÓTESE — encoder não existe)
+          ├─ dupRatio >40%             → slice.copy (HIPÓTESE — encoder não existe)
+          ├─ entropia <5.5             → cmp.lzma (lzma domina)
+          ├─ entropia <7.0             → cmp.brotli ou cmp.lzma
+          └─ entropia ≥7.0             → cas.raw (fallback correto)
+```
+
+**Critério de honestidade entropica no Planner:** cada estratégia informa explicitamente `beatsLzma` e `seedWorth`. Em todos os casos de dados reais, o Planner conclui `seedWorth="NÃO"` — lzma/brotli dominam. Apenas dados sintéticos classe D1–D3 (constante, periódico, RLE curto) recebem tratamento procedural.
 
 ---
 
-## 7. COMPATIBILIDADE COM O MOTOR v0.11.0
+## 4. AUDITORIA DE SEGURANÇA — COMANDOS POTENCIALMENTE DESTRUTIVOS
 
-### Modelo de dados: incompatibilidade fundamental
+| Script | Linha | Comando | Contexto | Risco Real |
+|--------|-------|---------|----------|------------|
+| `TEIA-Fractal-Gen-v2.ps1` | 86 | `Remove-Item $dest` | Após hash pós-cópia divergir — remove cópia corrompida | **MÍNIMO** — só executa em falha de integridade; arquivo original intacto |
+| `TEIA-Motor-Ontoprocedural.ps1` | 419 | `Remove-Item $ArquivoBaselineDisco` | **Comentado** — limpeza opcional pós-prova | **ZERO** — linha comentada (`#`) |
+| `TEIA-SmokeTest-E2E-Procedural.ps1` | 25–26 | `Remove-Item $SeedPath -Force`, `Remove-Item $RestoredFile -Force` | Limpeza de artefatos de teste anteriores antes de re-executar | **BAIXO** — afeta apenas arquivos de teste temporários, não dados originais |
+| `TEIA-OntoEngine-Restore.ps1` | — | nenhum `Remove-Item` | — | **ZERO** |
+| `TEIA-OntoSeed-Gen.ps1` | — | nenhum `Remove-Item` | — | **ZERO** |
+| `TEIA-Procedural-Planner-v0170.ps1` | — | nenhum `Remove-Item` | Read-only por design | **ZERO** |
 
-| Dimensão | Motor v0.11.0 (atual) | Suite Fractal-Gen (legado) |
-|----------|----------------------|---------------------------|
-| Armazenamento | `D:\TEIA_CORE\objects\{sha256}.bin` | Base64 embutido em `.fractal_manifest*.json` |
-| Índice | `fractal_index.json` (array: hash, seed, tamanho) | `.fractal_manifest*.json` (um arquivo por objeto) |
-| Restore | `Invoke-TEIARestoreBin` (CAS→path, SHA-256 verify) | `[Convert]::FromBase64String($obj.data)` → `WriteAllBytes` |
-| Seed | Campo em `fractal_index.json` | Campo em manifesto individual |
-| Mapa usuário | `.teia_map.json` (INGESTED/VERIFIED/MISSING) | Não existe |
-| Paths | `D:\TEIA_CORE\`, `D:\TEIA_USER\` | `D:\Teia\TEIA_NUCLEO\offline\nano` |
-
-### Tabela de compatibilidade por função
-
-| Função / Script | Compatível com v0.11.0? | Razão |
-|----------------|------------------------|-------|
-| `gen_checkered_png` (GenFunctions) | Desconhecido | Arquivo ausente — não auditável |
-| Leitura de `fractal_index.json` | ❌ Não | Scripts não referenciam este arquivo |
-| Escrita em CAS (`objects/{hash}.bin`) | ❌ Não | Não gera `.bin`, não conhece CAS |
-| Leitura de `.teia_map.json` | ❌ Não | Arquivo criado em v0.14.0, desconhecido pela suite |
-| Restauração via CAS | ❌ Não | Usa Base64 em manifesto, não CAS |
-| Idempotência de re-run | ⚠️ Parcial | `gen_checkered_png` é determinístico se seed fixo; mas sem guarda `Test-Path` |
-| Paths atuais (`D:\TEIA_CORE\`) | ❌ Não | Hardcoded para `D:\Teia\` (inexistente) |
+**Conclusão de segurança:** nenhum script do pipeline principal apaga arquivos de origem. O único `Remove-Item` ativo (`Fractal-Gen-v2.ps1:86`) é um mecanismo de rollback de integridade, não de compressão destrutiva.
 
 ---
 
-## 8. VIOLAÇÕES DOS AXIOMAS TEIA
+## 5. AUDITORIA DE VALIDAÇÃO SHA-256
 
-| Axioma | Script | Violação |
-|--------|--------|---------|
-| Paths absolutos | `AutoProfile.ps1` | `$Root="."` como default — path relativo |
-| SHA-256 como identidade | `RestoreOnDemand.ps1` | Restaura por nome de arquivo, não por hash CAS |
-| Idempotência obrigatória | `RestoreOnDemand.ps1` | Loop infinito sem guarda de estado |
-| CAS é a espinha dorsal | Toda a suite | Ignora `D:\TEIA_CORE\objects\` completamente |
-| Sem `System.Random` sem seed em provas | `AutoProfile.ps1` | `[System.Random]::new()` sem seed (linha 14) |
+| Script | Onde valida | Mecanismo | Falha como |
+|--------|-------------|-----------|------------|
+| `TEIA-Fractal-Gen-v2.ps1` | Pós-cópia para CAS | `Get-FileHash $dest` == `$Hash` | `throw` + `Remove-Item $dest` |
+| `TEIA-OntoEngine-Restore.ps1` | Pós-restauração | `Get-TEIASha256 $bytes` == `$sha` (da seed) | `throw "Hash mismatch after restore"` |
+| `TEIA-Motor-Ontoprocedural.ps1` | Por bloco (disco vs onto) | SHA-256 do bloco disco == SHA-256 do bloco onto | Exibe `[DIVERGE!]` em vermelho; `$todasHashesIguais = $false` |
+| `TEIA-Motor-Ontoprocedural.ps1` | Matriz completa | SHA-256 streaming da baseline no disco | Armazenado em `sraut.json` |
+| `TEIA-SmokeTest-E2E-Procedural.ps1` | Final do ciclo E2E | `$OriginalHash -eq $RestoredHash` | `[FALHA DE IDEMPOTENCIA]` |
+| `TEIA-Procedural-Planner-v0170.ps1` | Por arquivo analisado | SHA-256 completo para identidade | N/A — análise estática |
 
----
-
-## 9. VEREDITO FINAL
-
-### Por script
-
-| Script | Veredito | Motivo |
-|--------|---------|--------|
-| `TEIA-Fractal-Gen.ps1` v1.7 | **[INSEGURO]** | Código órfão causa crash na linha 43; `GenFunctions.ps1` ausente |
-| `TEIA-Fractal-Gen.fixed.ps1` v1.4 | **[PRECISA_PATCH]** | Estrutura limpa; bloqueado apenas pela ausência de `GenFunctions.fixed.ps1` |
-| `TEIA-Fractal-RestoreOnDemand.ps1` | **[INSEGURO]** | Paths inexistentes; modelo Base64 incompatível com CAS v0.11.0 |
-| `TEIA-Fractal-AutoProfile.ps1` | **[PRECISA_PATCH]** | Útil como utilitário de profiling; requer path absoluto e seed no Random |
-| `TEIA-Fractal-ProvaReal.ps1` | **[INSEGURO]** | 5 dependências ausentes; todos os paths obsoletos; escopo Fortnite (P7 deferido) |
-
-### Veredito da suite
-
-> ## `[INSEGURO]`
->
-> A suite fractal como um todo **não pode ser executada** no estado atual:
-> - O script principal (v1.7) crasha antes de executar qualquer lógica útil.
-> - A dependência crítica (`GenFunctions.ps1`) não existe em disco.
-> - O modelo de dados (Base64 em manifesto) é arquiteturalmente incompatível com o CAS v0.11.0.
-> - Todos os paths hardcoded apontam para `D:\Teia\` — diretório removido na consolidação de infra.
+**Conclusão:** todos os pontos de restauração do pipeline verificam SHA-256. A cadeia de prova é consistente desde a ingesta (v2) até a restauração (legacy Onto + Motor).
 
 ---
 
-## 10. ROADMAP DE REESCRITA (pré-condições para próxima fase)
+## 6. MAPA DE FUNÇÕES DE GERAÇÃO PROCEDURAL
 
-Para atingir `[SEGURO_PARA_TESTE]`, a reescrita deve cobrir:
+### `gen_dummy_seed` (TEIA-Fractal-Gen-v2.ps1, função única disponível)
 
-| # | Tarefa | Prioridade |
-|---|--------|-----------|
-| 1 | Criar `GenFunctions.ps1` do zero — implementar `gen_checkered_png` + funções futuras | CRÍTICA |
-| 2 | Reescrever `TEIA-Fractal-Gen.ps1` limpo — sem código órfão, sem bloco `else` solto | CRÍTICA |
-| 3 | Integrar com `fractal_index.json`: ler seed/hash da entrada CAS, gerar para `objects/{hash}.bin` | CRÍTICA |
-| 4 | Substituir `RestoreOnDemand` por wrapper sobre `TEIA-Abrir.ps1` existente | ALTA |
-| 5 | Fixar `AutoProfile.ps1`: path absoluto + seed explícito no Random | MÉDIA |
-| 6 | `ProvaReal.ps1`: defer completo até P7 (Fortnite) — não reescrever agora | BAIXA |
+```
+Entrada : FileInfo + SHA-256 hash
+Saída   : seed.json com {
+    teia_version: '2.0'
+    fn: 'gen_dummy_seed'
+    hash_sha256: <hash>
+    entropy: { head_hex (32B), tail_hex (32B), size_bytes }
+    cas_path: <caminho no CAS>
+    note: 'Conteúdo preservado integralmente no CAS. Semente não substitui o original.'
+}
+```
 
-> **Regra do freeze:** nenhuma dessas tarefas deve ser iniciada nesta sessão.
-> Esta auditoria é o insumo para a próxima fase de reescrita, a ser autorizada separadamente.
+**Diagnóstico:** `gen_dummy_seed` é uma semente de **identidade**, não de **regeneração**. Ela registra o contexto do arquivo, mas não contém receita para reconstrução. A restauração é sempre via CAS (arquivo completo armazenado). O `ValidateSet('gen_dummy_seed')` sinaliza que funções procedurais reais (que eliminassem o CAS) ainda não foram implementadas nesta versão.
+
+### `Detect-Procedural` (TEIA-OntoSeed-Gen.ps1 legacy)
+
+```
+Entrada : byte[] do arquivo completo (ReadAllBytes)
+Saída   : { name, params, procedural: bool }
+
+Capacidade real:
+  ✓ repeat_byte     : arquivo = único byte repetido
+  ✓ repeat_sequence : padrão periódico de até 64 bytes
+  ✗ todo o resto     : name='none', procedural=false
+```
+
+**Diagnóstico:** `Detect-Procedural` é o embrião do Planner. Detecta apenas os dois padrões mais simples — aqueles que ocorrem em dados sintéticos de laboratório. Para arquivos reais (fotos, documentos, logs), o campo `notes` da seed explicita: "restoration not possible without payload or external source."
+
+### `SplitMix64 / SM64.GenBlock` (TEIA-Motor-Ontoprocedural.ps1 legacy)
+
+```
+Entrada : uint64 semente + offset_bytes
+Saída   : byte[] de tamanho arbitrário, determinístico
+
+Seek O(1): state[n] = semente + n × 0x9E3779B97F4A7C15 (mod 2^64)
+           qualquer bloco a qualquer offset sem iterar
+```
+
+**Diagnóstico:** a propriedade O(1) seek é real e provada. A limitação não é a matemática — é a aplicabilidade: funciona apenas para dados gerados por esta função, não para arquivos arbitrários do mundo real.
 
 ---
 
-*Auditoria concluída em 2026-05-26. Nenhum arquivo foi modificado ou executado.*
+## 7. DIAGNÓSTICO FINAL — O QUE ESTE CÓDIGO PROVA E O QUE NÃO PROVA
+
+### O que é provado (evidência em código executável)
+
+1. **CAS com SHA-256 funciona:** `TEIA-Fractal-Gen-v2.ps1` ingesta e verifica corretamente.
+2. **Execução determinística para dados sintéticos:** `TEIA-OntoEngine-Restore.ps1` restaura `repeat_byte` e `repeat_sequence` com SHA-256 validado.
+3. **O(1) seek em RNG:** `TEIA-Motor-Ontoprocedural.ps1` prova que `state[n]` é calculável diretamente — sem I/O de disco.
+4. **Planner estrutural funciona:** `TEIA-Procedural-Planner-v0170.ps1` analisa entropia, período, runs e seleciona estratégia com honestidade entropica.
+
+### O que NÃO é provado (limitações explícitas no código)
+
+1. **Compressão de arquivos arbitrários:** `gen_dummy_seed` preserva o arquivo integralmente no CAS — não há redução de espaço para arquivos arbitrários.
+2. **Detect-Procedural para dados reais:** detecta apenas `repeat_byte` e `repeat_sequence` — ambos padrões sintéticos. Arquivo real → `name='none'`, restauração impossível sem CAS.
+3. **Planner implícito era o LLM:** as seeds compactas que demonstravam compressão dependiam de o operador (humano/LLM) já saber que o arquivo era proceduralmente gerado. O Planner como software autônomo não existe ainda.
+
+---
+
+*Este documento é análise arqueológica estática. Nenhum arquivo foi modificado, executado ou movido durante sua produção.*
