@@ -268,3 +268,42 @@ Antes de escrever uma linha do v0.16.0:
 
 Afirmação válida: "cmp.zstd atingiu ratio 0.12 em dna_events.jsonl em 340ms."
 Afirmação inválida: "o motor híbrido supera a compressão convencional."
+
+---
+
+## 9. RESULTADOS BENCHMARK HÍBRIDO v0.16.2
+
+**Data:** 2026-05-27 | **Script:** `benchmark_hibrido_v0162.ps1` | **Motor:** SHA-256 `489D3B40...`
+
+### Vencedor por dataset (9 modos × 9 datasets, todos SHA-256 ✅)
+
+| Dataset | Tipo | Vencedor | Ratio% |
+|---------|------|---------|------:|
+| D1 uniform_1MB | Sintético constante | **M9 brotli** | 0.0012% |
+| D2 periodic_ABCD_1MB | Sintético periódico | **M9 brotli** | 0.0016% |
+| D3 rle_3runs_300KB | Sintético RLE favorável | **M9 brotli** | 0.0075% |
+| D4 json_real_512KB | JSON real (fractal_index.json) | **M7 cmp.lzma** | 10.198% |
+| D5 logs_real_512KB | JSONL real (dna_events.jsonl) | **M7 cmp.lzma** | 18.0193% |
+| D6 code_ps_20KB | Código PS real | **M7 cmp.lzma** | 31.2254% |
+| D7 text_md_docs | Texto/doc real | **M7 cmp.lzma** | 32.7218% |
+| D8 random_binary_512KB | Binário aleatório (CSPRNG) | **M1 cas.raw** | 100% |
+| D9 real_file_teia | Arquivo comprimido real (.zip) | **M7 cmp.lzma** | 96.3309% |
+
+### Registros explícitos obrigatórios
+
+- **`procedural.best` (M5) venceu 0/9 datasets.** Idem 0/6 datasets reais (D4–D9).
+- **`cmp.zstd` (M6): N/A** — `ZstdStream` indisponível neste ambiente (.NET / PowerShell).
+- **M7 e M8 produzem resultado idêntico** — mesmo algoritmo Python `lzma.compress(FORMAT_ALONE, preset=9|EXTREME)`.
+- **D8 (random binary):** lzma atingiu ratio 101.37% (expansão). `cas.raw` é o fallback correto.
+- **D9 (.zip):** lzma ratio 96.33% — levemente comprime mas não economiza de forma significativa.
+
+### Implicações confirmadas para o seletor v0.16.0
+
+1. `gen.repeat` — manter apenas para dados D1-class (byte uniforme). Não entra no seletor geral.
+2. `gen.pattern` e `rle.decode` — VALIDADO_MAS_NICHO; fora do seletor automático.
+3. Seletor automático: tentar **lzma** → se ratio > 0.95 tentar **brotli** → se ainda > 0.95 usar **cas.raw**.
+4. Brotli é ~10-300× mais rápido que lzma (encode), porém lzma vence em ratio em dados reais (4/5 datasets reais estruturados).
+5. Threshold prático: se `lzma_ratio - brotli_ratio < 0.05`, preferir brotli (velocidade).
+6. Pre-condições 1–4 da seção 7 confirmadas por este benchmark.
+
+*Detalhes completos: `BENCHMARK_HIBRIDO_v0162.md` e `benchmark_hibrido_v0162.json`.*
