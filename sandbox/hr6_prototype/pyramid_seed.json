@@ -1,0 +1,79 @@
+{
+  "schema_version": "1.0",
+  "opcode": "gen.parametric_mesh",
+  "primitive_type": "pyramid",
+  "original_sha256": "b3bfab74b16da716043eb2a3ad9a908918b579920b236fa8cb95f77cf41d5a9e",
+  "original_size_bytes": 367,
+  "canonical_sha256": "f4ef0a91107525f87ebbb4881417c42a3505711776c8b56427f8a0f6c15a8866",
+  "geometry": {
+    "vertex_count": 5,
+    "face_count": 6
+  },
+  "topology": {
+    "vertices": [
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        1.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.5,
+        0.5,
+        1.0
+      ]
+    ],
+    "faces": [
+      [
+        1,
+        2,
+        5
+      ],
+      [
+        2,
+        3,
+        5
+      ],
+      [
+        3,
+        4,
+        5
+      ],
+      [
+        4,
+        1,
+        5
+      ],
+      [
+        1,
+        3,
+        2
+      ],
+      [
+        1,
+        4,
+        3
+      ]
+    ]
+  },
+  "meta": {
+    "line_ending": "LF",
+    "generated": "2026-05-28",
+    "protocol": "P4.5"
+  }
+}
+
