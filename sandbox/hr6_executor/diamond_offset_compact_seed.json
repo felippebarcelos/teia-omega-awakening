@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "opcode": "gen.parametric_mesh",
+  "primitive_type": "octahedron",
+  "original_sha256": "70256a59930b83157f899b167aa4d921caffac4880e5aff41cc9068cdf653236",
+  "topology_params": {
+    "center": [
+      2.5,
+      -1.0,
+      0.3333330000000001
+    ],
+    "radius": 0.7500000000000001
+  },
+  "topology_algorithm": "octahedron_v1_ccw",
+  "meta": {
+    "protocol": "P4.9",
+    "generated": "2026-05-28",
+    "line_ending": "LF"
+  }
+}

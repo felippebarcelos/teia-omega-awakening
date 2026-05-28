@@ -1,0 +1,24 @@
+{
+  "schema_version": "1.0",
+  "opcode": "gen.parametric_mesh",
+  "primitive_type": "cube",
+  "original_sha256": "2caedfa99857893746782ff60f03f24c2bf77ba3c65bee1afbdcb11e128ba118",
+  "topology_params": {
+    "min_coord": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "max_coord": [
+      1000.0,
+      1000.0,
+      1000.0
+    ]
+  },
+  "topology_algorithm": "cube_v1_ccw",
+  "meta": {
+    "protocol": "P4.9",
+    "generated": "2026-05-28",
+    "line_ending": "LF"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "schema_version": "1.0",
+  "opcode": "gen.parametric_mesh",
+  "primitive_type": "plane",
+  "original_sha256": "889eddd70790960b4304a8665b5f8fa8136cb78669f6077eb64278f3765edd81",
+  "topology_params": {
+    "min_coord": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "max_coord": [
+      100.0,
+      0.0,
+      100.0
+    ]
+  },
+  "topology_algorithm": "plane_v1_ccw",
+  "meta": {
+    "protocol": "P4.9",
+    "generated": "2026-05-28",
+    "line_ending": "LF"
+  }
+}
