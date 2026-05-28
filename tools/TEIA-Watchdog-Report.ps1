@@ -33,11 +33,12 @@ $ErrorActionPreference = 'Continue'
 # (ex: 0.72 = arquivo comprimido ocupa ~28% do original)
 
 $SAVINGS = [ordered]@{
-    'gen.repeat'  = [pscustomobject]@{ rate=0.999; label='~99.9%'; note='seed+size (~35B) para qualquer tamanho' }
-    'gen.pattern' = [pscustomobject]@{ rate=0.995; label='~99.5%'; note='padrão+count (<512B) para qualquer tamanho' }
-    'cmp.lzma'    = [pscustomobject]@{ rate=0.72;  label='~72%';   note='benchmarks: arquivos ocupam 10–28% do original' }
-    'cmp.brotli'  = [pscustomobject]@{ rate=0.65;  label='~65%';   note='benchmarks: arquivos ocupam 23–36% do original (pequenos)' }
-    'cas.raw'     = [pscustomobject]@{ rate=0.00;  label='0%';     note='incompressível — sem economia' }
+    'gen.repeat'           = [pscustomobject]@{ rate=0.999; label='~99.9%'; note='seed+size (~35B) para qualquer tamanho' }
+    'gen.pattern'          = [pscustomobject]@{ rate=0.995; label='~99.5%'; note='padrão+count (<512B) para qualquer tamanho' }
+    'gen.parametric_mesh'  = [pscustomobject]@{ rate=0.79;  label='~79%';   note='P4.7: pure payload ~21% do original (cube/plane/octahedron)' }
+    'cmp.lzma'             = [pscustomobject]@{ rate=0.72;  label='~72%';   note='benchmarks: arquivos ocupam 10–28% do original' }
+    'cmp.brotli'           = [pscustomobject]@{ rate=0.65;  label='~65%';   note='benchmarks: arquivos ocupam 23–36% do original (pequenos)' }
+    'cas.raw'              = [pscustomobject]@{ rate=0.00;  label='0%';     note='incompressível — sem economia' }
 }
 
 # ── validação ────────────────────────────────────────────────────────────────
