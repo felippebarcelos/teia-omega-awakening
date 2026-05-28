@@ -157,7 +157,7 @@ function Get-LocalEntropyMap {
             e       = Get-Entropy $chunk
         })
     }
-    ,$results.ToArray()
+    $results.ToArray()
 }
 
 function Get-ByteFreqTop16 {
