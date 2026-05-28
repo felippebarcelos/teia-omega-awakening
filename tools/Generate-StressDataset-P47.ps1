@@ -40,7 +40,8 @@ function Write-CubeObj {
         }
     }
     $content = $sb.ToString().TrimEnd().Replace("`r`n","`n") + "`n"
-    [System.IO.File]::WriteAllText("$OutDir\$Name", $content, [System.Text.Encoding]::UTF8)
+    $enc = New-Object System.Text.UTF8Encoding($false)   # UTF-8 sem BOM
+    [System.IO.File]::WriteAllText("$OutDir\$Name", $content, $enc)
 }
 
 function Write-PlaneObj {
@@ -67,7 +68,8 @@ function Write-PlaneObj {
     [void]$sb.AppendLine('f 1/1/1 3/3/1 4/4/1')
     [void]$sb.AppendLine('f 1/1/1 4/4/1 2/2/1')
     $content = $sb.ToString().TrimEnd().Replace("`r`n","`n") + "`n"
-    [System.IO.File]::WriteAllText("$OutDir\$Name", $content, [System.Text.Encoding]::UTF8)
+    $enc = New-Object System.Text.UTF8Encoding($false)   # UTF-8 sem BOM
+    [System.IO.File]::WriteAllText("$OutDir\$Name", $content, $enc)
 }
 
 function Write-DiamondObj {
@@ -95,7 +97,8 @@ function Write-DiamondObj {
         [void]$sb.AppendLine("f $f")
     }
     $content = $sb.ToString().TrimEnd().Replace("`r`n","`n") + "`n"
-    [System.IO.File]::WriteAllText("$OutDir\$Name", $content, [System.Text.Encoding]::UTF8)
+    $enc = New-Object System.Text.UTF8Encoding($false)   # UTF-8 sem BOM
+    [System.IO.File]::WriteAllText("$OutDir\$Name", $content, $enc)
 }
 
 # === 10 STRESS FILES ===
