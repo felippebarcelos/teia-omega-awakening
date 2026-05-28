@@ -109,13 +109,13 @@ Saída completa de `TEIA-Watchdog-Report.ps1 -ShowFiles` na base histórica acum
 | `cas.raw` | 10 | 7.34 | 7.34 | 0% |
 | `cmp.brotli` | 15 | 0.03 | 0.01 | ~65% |
 | `cmp.lzma` | 25 | 6.15 | 1.72 | ~72% |
-| `gen.parametric_mesh` | 6 | ~0.003 | — | ~79%* |
+| `gen.parametric_mesh` | 6 | ~0.003 | ~0.001 | ~79% ✓ |
 | `gen.pattern` | 1 | 0.25 | 0.001 | ~99.5% |
 | `gen.repeat` | 1 | 0.25 | 0.0002 | ~99.9% |
 | `unknown` | 2 | ~0.003 | — | — |
 | **TOTAL** | **60** | **14.03** | **9.08** | **35.3%** |
 
-*`gen.parametric_mesh` aparece como `?` no Report (taxa de economia não cadastrada no dicionário `$SAVINGS`). Ver seção 6.
+Taxa HR6 corrigida em P5.2 — `$SAVINGS` atualizado com `rate=0.79` baseado no benchmark P4.7.
 
 ---
 
@@ -142,29 +142,36 @@ Saída completa de `TEIA-Watchdog-Report.ps1 -ShowFiles` na base histórica acum
 
 | Lacuna | Descrição | Impacto |
 |--------|-----------|---------|
-| `gen.parametric_mesh` sem taxa no Report | `$SAVINGS` não contém HR6 — mostra `?` e 0% | Cosmético — subestima a economia total |
+| ~~`gen.parametric_mesh` sem taxa no Report~~ | ~~`$SAVINGS` não contém HR6~~ | **Corrigida em P5.2** — `rate=0.79` adicionado |
 | SVG (w3c_logo.svg) — rate-limited | Wikimedia retornou 429 durante coleta | Sem impacto no roteador |
 | RFC PDFs menores — 404 | `rfc2119`, `rfc7159`, `rfc4648` retornaram 404 no rfc-editor | Sem impacto — 2 PDFs coletados foram suficientes |
 | Áudio/OGG — não testado | Nenhum arquivo de áudio no lote final | Hipótese: rota para cas.raw (alta entropy) |
 
 ---
 
-## 6. Pendência: `gen.parametric_mesh` no Watchdog Report
+## 6. ~~Pendência~~ → Correção Aplicada em P5.2: `gen.parametric_mesh` no Watchdog Report
 
-O script `TEIA-Watchdog-Report.ps1` usa o dicionário `$SAVINGS` para estimar economia por estratégia. A entrada `gen.parametric_mesh` está ausente, resultando em:
+O script `TEIA-Watchdog-Report.ps1` exibia `?` e `0%` para `gen.parametric_mesh` porque a
+entrada estava ausente do dicionário `$SAVINGS`. Antes da correção:
 
 ```
 gen.parametric_mesh  6   0   0   ?   1×   estratégia desconhecida
 ```
 
-A taxa empírica do benchmark P4.7 é **~79% de economia** (pure payload 159–184B vs original 411–818B). Esta entrada deveria ser adicionada em P5.x:
+**Fix aplicado em P5.2** (`commit bda5b99`) — entrada adicionada com taxa empírica do P4.7:
 
 ```powershell
 'gen.parametric_mesh' = [pscustomobject]@{
     rate  = 0.79
     label = '~79%'
-    note  = 'P4.7: pure payload ~21% do original (algoritmos cube/plane/octahedron)'
+    note  = 'P4.7: pure payload ~21% do original (cube/plane/octahedron)'
 }
+```
+
+Após a correção, o Report exibe:
+
+```
+gen.parametric_mesh  6   ~0.003   ~0.001   ~79%   4.8×   P4.7: pure payload ~21% do original
 ```
 
 ---
