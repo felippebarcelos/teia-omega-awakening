@@ -313,10 +313,13 @@ Write-Host "[PH] SHA-256 (streaming)..." -ForegroundColor White
 $sha256 = Get-FileSha256Stream $file.FullName
 Write-Host "     $sha256"
 
-# Idempotency guard
-$theoryPath = Join-Path $OutputRoot "${sha256}_theory.md"
+# Sanitiza nome do modelo para uso seguro em caminhos de arquivo
+$modelSafe  = $Model -replace '[:\\/\*\?\"\<\>\|]', '_'
+
+# Idempotency guard — nome inclui modelo para permitir comparação entre modelos
+$theoryPath = Join-Path $OutputRoot "${sha256}_${modelSafe}_theory.md"
 if (Test-Path $theoryPath) {
-    Write-Host "[PH] SKIP — hipotese ja existe: ${sha256}_theory.md" -ForegroundColor DarkGray
+    Write-Host "[PH] SKIP — hipotese ja existe: ${sha256}_${modelSafe}_theory.md  [$Model]" -ForegroundColor DarkGray
     exit 0
 }
 
