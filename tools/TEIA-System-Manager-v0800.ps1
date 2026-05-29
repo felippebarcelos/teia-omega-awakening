@@ -63,7 +63,8 @@ param(
     [string]$Model              = 'qwen2.5-coder:7b',
     [int]   $AutoSynthMaxBytes  = 8192,
     [double]$AutoSynthMaxEntropy = 4.8,
-    [int]   $PollMs             = 250
+    [int]   $PollMs             = 250,
+    [switch]$ProcessExisting
 )
 
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
@@ -397,12 +398,17 @@ function Invoke-IngestFile([string]$path) {
 
 # ── Processar arquivos existentes ─────────────────────────────────────────────
 Write-Log "Processando arquivos existentes em $WatchDir..." 'Cyan'
-$existing = Get-ChildItem -LiteralPath $WatchDir -File -EA SilentlyContinue |
+$existing = Get-ChildItem -LiteralPath $WatchDir -Recurse -File -EA SilentlyContinue |
     Where-Object { $_.Extension -ne '.teia_stub' -and $_.Extension -ne '.teia_seed' }
 foreach ($f in $existing) {
     try { Invoke-IngestFile $f.FullName } catch { Write-Log "ERRO $($f.Name): $_" 'Red' }
 }
 Write-Log "Arquivos existentes processados: $($existing.Count)" 'Cyan'
+
+if ($ProcessExisting) {
+    Write-Log "Modo -ProcessExisting: encerrando apos ingestao inicial." 'Cyan'
+    exit 0
+}
 
 # ── FileSystemWatcher + ConcurrentQueue ──────────────────────────────────────
 $script:queue = [System.Collections.Concurrent.ConcurrentQueue[string]]::new()
@@ -436,7 +442,7 @@ try {
                 Start-Sleep -Milliseconds 200  # wait for file write to complete
                 Invoke-IngestFile $path
             } catch {
-                Write-Log "ERRO processando $path: $_" 'Red'
+                Write-Log "ERRO processando ${path}: $_" 'Red'
             }
         }
         Start-Sleep -Milliseconds $PollMs
