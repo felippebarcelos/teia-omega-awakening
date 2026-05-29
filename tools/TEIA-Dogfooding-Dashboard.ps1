@@ -1,18 +1,19 @@
 <#
 .SYNOPSIS
-    TEIA-Dogfooding-Dashboard.ps1 — Painel de Controle CLI v0.80.1
+    TEIA-Dogfooding-Dashboard.ps1 — Painel de Controle CLI v0.80.4
 
 .DESCRIPTION
-    Wrapper interativo para o motor TEIA-Omega v0.80.0.
+    Wrapper interativo para o motor TEIA-Omega v0.80.2.
     NAO contem logica de engenharia — orquestra chamadas ao P11.0.
 
     Opcoes:
       [1] Status do Sistema (WinFsp, porta 8767, drive Z:\)
       [2] Iniciar VFS Drive Z:\
-      [3] Parar VFS Drive
+      [3] Parar VFS Drive (+ Restart-Service WebClient para limpar cache)
       [4] Executar Ingestao Segura (requer confirmacao Y/N)
       [5] Relatorio de Economia Global
       [6] Sair
+      [7] Abrir Z:\ no Explorer
 
     Invariante P11.0: Delta por extenso em todos os logs.
     Contencao: invoca System Manager apenas sobre MyRealData.
@@ -165,6 +166,40 @@ function Stop-VFSDrive {
         Write-Host "  Nenhum processo VFS desta sessao para encerrar." -ForegroundColor Yellow
     }
 
+    # Cache Buster: reinicia WebClient para limpar cache de rede do Windows
+    Write-Host "  Limpando cache WebDAV (Restart-Service WebClient)..." -ForegroundColor DarkCyan
+    try {
+        Restart-Service WebClient -Force -ErrorAction SilentlyContinue
+        Write-Host "  WebClient reiniciado — cache de rede limpo." -ForegroundColor Green
+    } catch {
+        Write-Host "  Aviso WebClient restart: $_ (pode exigir elevacao)" -ForegroundColor Yellow
+    }
+
+    Write-Host ''
+}
+
+# ── Opcao 7 — Abrir Z:\ no Explorer ─────────────────────────────────────────
+
+function Open-ExplorerDrive {
+    Write-Header "ABRIR ${VFSDrive}:\ NO EXPLORER"
+
+    $zDrive = Get-PSDrive -Name $VFSDrive -EA SilentlyContinue
+    if (-not $zDrive) {
+        Write-Host "  Drive ${VFSDrive}:\ nao esta montado." -ForegroundColor Red
+        Write-Host "  Use a opcao [2] para iniciar o VFS primeiro." -ForegroundColor Yellow
+        Write-Host ''
+        return
+    }
+
+    Write-Host "  Abrindo ${VFSDrive}:\ no Windows Explorer..." -ForegroundColor Cyan
+    try {
+        Start-Process explorer.exe -ArgumentList "${VFSDrive}:\"
+        Write-Host "  Explorer iniciado. Se a janela estiver vazia, aguarde 5s e pressione F5." -ForegroundColor Green
+    } catch {
+        Write-Host "  Falha ao abrir Explorer: $_" -ForegroundColor Red
+        Write-Host "  Alternativa: execute 'Invoke-Item Z:\' no terminal." -ForegroundColor Yellow
+    }
+
     Write-Host ''
 }
 
@@ -262,7 +297,11 @@ function Show-EconomyReport {
 function Show-Menu {
     Write-Host ''
     Write-Sep
-    Write-Host '  TEIA-Omega  PAINEL DE CONTROLE  v0.80.1' -ForegroundColor Cyan
+    Write-Host '  TEIA-Omega  PAINEL DE CONTROLE  v0.80.4' -ForegroundColor Cyan
+    Write-Sep
+    Write-Host '  ATENCAO: Nunca abra os arquivos .teia_stub manualmente' -ForegroundColor Yellow
+    Write-Host '  na pasta MyRealData! Sempre acesse, edite e assista seus' -ForegroundColor Yellow
+    Write-Host '  arquivos atraves do Drive Virtual Z:\' -ForegroundColor Yellow
     Write-Sep
     Write-Host '  [1] Status do Sistema'                    -ForegroundColor White
     Write-Host '  [2] Iniciar VFS Drive Z:\'               -ForegroundColor White
@@ -270,6 +309,7 @@ function Show-Menu {
     Write-Host '  [4] Executar Ingestao Segura'             -ForegroundColor Yellow
     Write-Host '  [5] Relatorio de Economia Global'         -ForegroundColor Cyan
     Write-Host '  [6] Sair'                                 -ForegroundColor DarkGray
+    Write-Host '  [7] Abrir Z:\ no Explorer'               -ForegroundColor White
     Write-Sep
 }
 
@@ -278,7 +318,7 @@ function Show-Menu {
 Clear-Host
 Write-Host ('=' * 62) -ForegroundColor Green
 Write-Host '  TEIA-Omega  OMNI-GESTOR + VFS  PAINEL DE CONTROLE' -ForegroundColor Green
-Write-Host "  P11.1 — Dogfooding Dashboard  |  $(Get-Date -Format 'yyyy-MM-dd')" -ForegroundColor DarkGreen
+Write-Host "  P11.4 — Cache Buster + Explorer  |  $(Get-Date -Format 'yyyy-MM-dd')" -ForegroundColor DarkGreen
 Write-Host "  WatchDir : $WatchDir" -ForegroundColor DarkGreen
 Write-Host "  VFSScript: $VFSScript" -ForegroundColor DarkGreen
 Write-Host ('=' * 62) -ForegroundColor Green
@@ -293,6 +333,7 @@ while ($true) {
         '4' { Invoke-SafeIngestion }
         '5' { Show-EconomyReport }
         '6' { Write-Host '  Encerrando painel. Ate logo.' -ForegroundColor DarkYellow; Write-Host ''; exit 0 }
+        '7' { Open-ExplorerDrive }
         default { Write-Host "  Opcao invalida: '$($choice.Trim())'" -ForegroundColor Red }
     }
 }
