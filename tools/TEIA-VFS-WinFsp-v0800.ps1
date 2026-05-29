@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    TEIA-VFS-WinFsp-v0800.ps1 — VFS Nativo P11.0 (Drive Z:\)
+    TEIA-VFS-WinFsp-v0800.ps1 — VFS Nativo P11.0/P11.2 (Drive Z:\)
 
 .DESCRIPTION
     Estende o WebDAV Daemon v0510 para montar D:\TEIA_USER\MyRealData\
@@ -11,6 +11,8 @@
       - Porta 8767 → drive Z:\
       - VFSRoot: D:\TEIA_USER\MyRealData\
       - Build-Manifest extendido para ler decoder_path + seed_path de stubs
+      - Hot-reload do manifesto a cada ManifestRefreshSeconds (padrão 5s)
+        sem interromper a montagem; detecta novos stubs em tempo real
 
     Estratégias suportadas:
       gen.repeat      → Read-GenRepeat (O(1) RAM, sem CAS)
@@ -41,14 +43,20 @@
 
 .PARAMETER ClearCache
     Limpa arquivos .dec do CacheDir ao iniciar.
+
+.PARAMETER ManifestRefreshSeconds
+    Intervalo de hot-reload do manifesto de stubs em segundos. Padrão: 5.
+    O check ocorre no início de cada request PROPFIND/GET/HEAD.
+    Custo: zero quando dentro da janela; ~5-15ms na varredura efetiva.
 #>
 [CmdletBinding()]
 param(
-    [string]$VFSRoot    = 'D:\TEIA_USER\MyRealData',
-    [string]$Port       = '8767',
-    [string]$CacheDir   = 'D:\TEIA_CORE\vfs_cache_z',
-    [string]$DecoderDir = 'D:\TEIA_CORE\decoders',
-    [switch]$ClearCache
+    [string]$VFSRoot                = 'D:\TEIA_USER\MyRealData',
+    [string]$Port                   = '8767',
+    [string]$CacheDir               = 'D:\TEIA_CORE\vfs_cache_z',
+    [string]$DecoderDir             = 'D:\TEIA_CORE\decoders',
+    [switch]$ClearCache,
+    [int]   $ManifestRefreshSeconds = 5
 )
 
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
@@ -59,13 +67,14 @@ $IC = [System.Globalization.CultureInfo]::InvariantCulture
 # ── Banner ────────────────────────────────────────────────────────────────────
 Write-Host ''
 Write-Host ('=' * 78) -ForegroundColor Cyan
-Write-Host '  TEIA-VFS-WinFsp v0.80.0 — VFS Nativo P11.0 (Drive Z:\)' -ForegroundColor Cyan
+Write-Host '  TEIA-VFS-WinFsp v0.80.2 — VFS Nativo P11.2 | Hot-Reload Manifesto' -ForegroundColor Cyan
 Write-Host ('─' * 78)
 Write-Host "  VFSRoot   : $VFSRoot"
 Write-Host "  Port      : $Port"
 Write-Host "  CacheDir  : $CacheDir"
 Write-Host "  DecoderDir: $DecoderDir"
 Write-Host "  CAS Delta : 0 — operacao de leitura pura (objects/ intocado)"
+Write-Host "  Hot-Reload: manifesto atualizado a cada ${ManifestRefreshSeconds}s por request"
 Write-Host ('─' * 78)
 
 if (-not (Test-Path -LiteralPath $VFSRoot)) {
@@ -119,10 +128,12 @@ function Build-Manifest([string]$Dir) {
     return $m
 }
 
-$script:manifest  = Build-Manifest $VFSRoot
-$script:startTime = Get-Date
+$script:manifest          = Build-Manifest $VFSRoot
+$script:manifestSW        = [System.Diagnostics.Stopwatch]::StartNew()
+$script:startTime         = Get-Date
 
 Write-Host "  Manifesto : $($script:manifest.Count) arquivos virtuais"
+Write-Host "  Refresh   : a cada ${ManifestRefreshSeconds}s (hot-reload sem restart)"
 
 # ── MIME types ────────────────────────────────────────────────────────────────
 function Get-MimeType([string]$Name) {
@@ -325,6 +336,20 @@ function Send-RangeData([hashtable]$VE, [long]$Offset, [long]$Length, [System.IO
     }
 }
 
+# ── Hot-Reload do Manifesto ───────────────────────────────────────────────────
+
+function Invoke-ManifestRefreshIfDue {
+    if ($script:manifestSW.Elapsed.TotalSeconds -lt $ManifestRefreshSeconds) { return }
+    $before = $script:manifest.Count
+    $script:manifest = Build-Manifest $VFSRoot
+    $script:manifestSW.Restart()
+    $diff = $script:manifest.Count - $before
+    if ($diff -ne 0) {
+        $sign = if ($diff -gt 0) { '+' } else { '' }
+        Write-Log "Hot-reload: $($script:manifest.Count) stubs (${sign}${diff} vs anterior)" 'DarkCyan'
+    }
+}
+
 # ── Handlers WebDAV ───────────────────────────────────────────────────────────
 
 function Handle-Options([System.Net.HttpListenerContext]$Ctx) {
@@ -338,6 +363,7 @@ function Handle-Options([System.Net.HttpListenerContext]$Ctx) {
 }
 
 function Handle-Propfind([System.Net.HttpListenerContext]$Ctx, [string]$NormPath) {
+    Invoke-ManifestRefreshIfDue
     $depth = $Ctx.Request.Headers['Depth']
     if ([string]::IsNullOrEmpty($depth)) { $depth = '1' }
 
@@ -374,6 +400,7 @@ function Handle-Propfind([System.Net.HttpListenerContext]$Ctx, [string]$NormPath
 }
 
 function Handle-ReadOrHead([System.Net.HttpListenerContext]$Ctx, [string]$FileName) {
+    Invoke-ManifestRefreshIfDue
     $req  = $Ctx.Request
     $resp = $Ctx.Response
     $name = [System.Uri]::UnescapeDataString($FileName)
@@ -462,6 +489,7 @@ function Handle-Lock([System.Net.HttpListenerContext]$Ctx, [string]$FileName) {
 }
 
 function Handle-RootGet([System.Net.HttpListenerContext]$Ctx) {
+    Invoke-ManifestRefreshIfDue
     $sb = [System.Text.StringBuilder]::new()
     [void]$sb.Append('<html><head><meta charset="utf-8"/><title>TEIA VFS Z:\</title></head><body>')
     [void]$sb.Append('<h2>TEIA VFS P11.0 — MyRealData (Z:\)</h2>')
