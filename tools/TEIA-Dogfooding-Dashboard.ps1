@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    TEIA-Dogfooding-Dashboard.ps1 — Painel de Controle CLI v0.80.4
+    TEIA-Dogfooding-Dashboard.ps1 — Painel de Controle CLI v0.80.5
 
 .DESCRIPTION
     Wrapper interativo para o motor TEIA-Omega v0.80.2.
@@ -107,22 +107,42 @@ function Show-Status {
     Write-Host ''
 }
 
+# ── Zombie Hunter — elimina qualquer instancia VFS ativa no sistema ──────────
+
+function Invoke-ZombieHunt {
+    $zombies = Get-CimInstance Win32_Process -EA SilentlyContinue |
+        Where-Object { $_.CommandLine -match 'TEIA-VFS' }
+    if ($zombies) {
+        foreach ($z in $zombies) {
+            try {
+                Invoke-CimMethod -InputObject $z -MethodName Terminate | Out-Null
+                Write-Host "  Zumbi eliminado: PID $($z.ProcessId) — $($z.CommandLine -replace '.{0,60}TEIA-VFS','...TEIA-VFS')" `
+                    -ForegroundColor DarkYellow
+            } catch {
+                Write-Host "  Aviso ao terminar PID $($z.ProcessId): $_" -ForegroundColor Yellow
+            }
+        }
+        $script:vfsProc = $null
+        Start-Sleep -Milliseconds 600   # aguarda OS liberar a porta
+    } else {
+        Write-Host "  Nenhum processo VFS encontrado no sistema." -ForegroundColor DarkGray
+    }
+}
+
 # ── Opcao 2 — Iniciar VFS Drive Z:\ ─────────────────────────────────────────
 
 function Start-VFSDrive {
     Write-Header "INICIAR VFS DRIVE ${VFSDrive}:\"
-
-    if ($script:vfsProc -and -not $script:vfsProc.HasExited) {
-        Write-Host "  VFS ja esta rodando nesta sessao (PID $($script:vfsProc.Id))." -ForegroundColor Yellow
-        Write-Host ''
-        return
-    }
 
     if (-not (Test-Path $VFSScript)) {
         Write-Host "  ERRO: Script VFS nao encontrado: $VFSScript" -ForegroundColor Red
         Write-Host ''
         return
     }
+
+    # Eliminar zumbis antes de subir — garante porta 8767 livre
+    Write-Host "  Verificando processos VFS orfaos..." -ForegroundColor DarkCyan
+    Invoke-ZombieHunt
 
     # Garantir WebClient ativo
     $wc = Get-Service -Name 'WebClient' -EA SilentlyContinue
@@ -133,10 +153,11 @@ function Start-VFSDrive {
 
     Write-Host "  Iniciando WebDAV daemon em background (porta $VFSPort)..." -ForegroundColor Cyan
     $script:vfsProc = Start-Process pwsh `
-        -ArgumentList "-ExecutionPolicy Bypass -NonInteractive -File `"$VFSScript`"" `
+        -ArgumentList "-ExecutionPolicy Bypass -NonInteractive -File `"$VFSScript`" -VFSRoot `"$WatchDir`"" `
         -PassThru -WindowStyle Hidden
 
     Write-Host "  PID do processo: $($script:vfsProc.Id)" -ForegroundColor DarkCyan
+    Write-Host "  VFSRoot injetado: $WatchDir" -ForegroundColor DarkCyan
     Write-Host "  Aguardando servidor inicializar (3s)..." -ForegroundColor DarkCyan
     Start-Sleep -Seconds 3
 
@@ -157,14 +178,9 @@ function Stop-VFSDrive {
     $deleteOut = & net use "${VFSDrive}:" /delete /yes 2>&1
     Write-Host "  net use /delete: $deleteOut" -ForegroundColor DarkYellow
 
-    if ($script:vfsProc -and -not $script:vfsProc.HasExited) {
-        $pid_ = $script:vfsProc.Id
-        $script:vfsProc.Kill()
-        $script:vfsProc = $null
-        Write-Host "  Processo VFS (PID $pid_) encerrado." -ForegroundColor DarkYellow
-    } else {
-        Write-Host "  Nenhum processo VFS desta sessao para encerrar." -ForegroundColor Yellow
-    }
+    # Eliminar zumbis via CIM (inclui processos de sessoes anteriores)
+    Write-Host "  Varredura CIM para processos VFS orfaos..." -ForegroundColor DarkCyan
+    Invoke-ZombieHunt
 
     # Cache Buster: reinicia WebClient para limpar cache de rede do Windows
     Write-Host "  Limpando cache WebDAV (Restart-Service WebClient)..." -ForegroundColor DarkCyan
@@ -297,7 +313,7 @@ function Show-EconomyReport {
 function Show-Menu {
     Write-Host ''
     Write-Sep
-    Write-Host '  TEIA-Omega  PAINEL DE CONTROLE  v0.80.4' -ForegroundColor Cyan
+    Write-Host '  TEIA-Omega  PAINEL DE CONTROLE  v0.80.5' -ForegroundColor Cyan
     Write-Sep
     Write-Host '  ATENCAO: Nunca abra os arquivos .teia_stub manualmente' -ForegroundColor Yellow
     Write-Host '  na pasta MyRealData! Sempre acesse, edite e assista seus' -ForegroundColor Yellow
@@ -318,7 +334,7 @@ function Show-Menu {
 Clear-Host
 Write-Host ('=' * 62) -ForegroundColor Green
 Write-Host '  TEIA-Omega  OMNI-GESTOR + VFS  PAINEL DE CONTROLE' -ForegroundColor Green
-Write-Host "  P11.4 — Cache Buster + Explorer  |  $(Get-Date -Format 'yyyy-MM-dd')" -ForegroundColor DarkGreen
+Write-Host "  P11.5 — Zombie Hunter + Hardening  |  $(Get-Date -Format 'yyyy-MM-dd')" -ForegroundColor DarkGreen
 Write-Host "  WatchDir : $WatchDir" -ForegroundColor DarkGreen
 Write-Host "  VFSScript: $VFSScript" -ForegroundColor DarkGreen
 Write-Host ('=' * 62) -ForegroundColor Green
