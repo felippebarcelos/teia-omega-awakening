@@ -97,11 +97,11 @@ function Test-HttpRange([long[]]$Offsets) {
     Write-Host '  ── PLANO 1: HTTP Range Direto (porta 8769) ──' -ForegroundColor Cyan
     $baseUrl = "http://${VfsHost}:${VfsPort}/lunatic/Syslog_Lunatic.log"
 
-    # Verificar conectividade
+    # Verificar conectividade (fechar resposta para não bloquear o connection pool)
     try {
-        $resp = [System.Net.HttpWebRequest]::Create($baseUrl)
-        $resp.Method = 'HEAD'; $resp.Timeout = 3000
-        [void]$resp.GetResponse()
+        $req = [System.Net.HttpWebRequest]::Create($baseUrl)
+        $req.Method = 'HEAD'; $req.Timeout = 3000
+        $res = $req.GetResponse(); $res.Close()
     } catch {
         Write-Host "  [SKIP] VFS nao acessivel em ${baseUrl}: $_" -ForegroundColor Yellow
         Write-Host "         Inicie TEIA-Global-VFS-v0900.ps1 primeiro." -ForegroundColor Yellow
@@ -166,7 +166,7 @@ function Test-HttpRange([long[]]$Offsets) {
     Write-Host ("  Resultado P1: {0}/{1} < {2}ms   avg={3:F1}ms  p90={4:F1}ms  max={5:F1}ms   verify={6}/{7}" -f `
         $pass, $HttpIterations, $MaxLatencyMs, $avg, $p90, $max, $verifyOk, $verify)
 
-    $verdict = if ($p90 -lt $MaxLatencyMs -and $verifyOk -eq $verify) { 'PASS' } else { 'FAIL' }
+    $verdict = if ($pass -gt 0 -and $p90 -lt $MaxLatencyMs -and $verifyOk -eq $verify) { 'PASS' } else { 'FAIL' }
     $vcol    = if ($verdict -eq 'PASS') { 'Green' } else { 'Red' }
     Write-Host "  Veredicto P1: $verdict" -ForegroundColor $vcol
 
@@ -243,7 +243,15 @@ $offsets = Build-OffsetTable
 $sw0.Stop()
 Write-Host " $($sw0.ElapsedMilliseconds)ms   total=$($offsets[$L_COUNT+1])B" -ForegroundColor DarkGray
 
-$r1 = Test-HttpRange    $offsets
+$r1 = Test-HttpRange $offsets
+
+# Auto-montar T:\ antes do Plano 2
+Write-Host ''
+Write-Host '  Montando T:\...' -ForegroundColor DarkGray -NoNewline
+Start-Service WebClient -ErrorAction SilentlyContinue
+net use $DriveT "\\${VfsHost}@${VfsPort}\DavWWWRoot\" /persistent:no 2>&1 | Out-Null
+Write-Host " ok (net use $DriveT \\${VfsHost}@${VfsPort}\DavWWWRoot\)" -ForegroundColor DarkGray
+
 $r2 = Test-FilestreamSeek
 
 # ── Relatório final ───────────────────────────────────────────────────────────
