@@ -472,7 +472,7 @@ function Handle-ReadOrHead([System.Net.HttpListenerContext]$Ctx, [hashtable]$VE,
         $resp.OutputStream.Flush()
         $mbps = if ($ms -gt 0) { [math]::Round($length / $ms * 1000 / 1MB, 2) } else { '∞' }
         Write-Log "GET $LogKey  off=$offset  len=$length  ${ms}ms  $mbps MB/s  [$($VE.final_strategy)]" $(if ($ms -lt 50) { 'Cyan' } else { 'Yellow' })
-    } catch { Write-Log "FALHA read $LogKey: $_" 'Red' }
+    } catch { Write-Log "FALHA read ${LogKey}: $_" 'Red' }
     finally { $resp.Close() }
 }
 
