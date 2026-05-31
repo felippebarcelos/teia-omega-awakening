@@ -179,7 +179,7 @@ function Test-HttpRange([long[]]$Offsets) {
 function Test-FilestreamSeek {
     Write-Host ''
     Write-Host '  ── PLANO 2: FileStream.Seek via T:\ ──' -ForegroundColor Cyan
-    $filePath = Join-Path $DriveT "lunatic\Syslog_Lunatic.log"
+    $filePath = "${DriveT}\lunatic\Syslog_Lunatic.log"
 
     if (-not (Test-Path -LiteralPath $filePath -ErrorAction SilentlyContinue)) {
         Write-Host "  [SKIP] Arquivo nao encontrado: $filePath" -ForegroundColor Yellow
@@ -245,12 +245,27 @@ Write-Host " $($sw0.ElapsedMilliseconds)ms   total=$($offsets[$L_COUNT+1])B" -Fo
 
 $r1 = Test-HttpRange $offsets
 
-# Auto-montar T:\ antes do Plano 2
+# Auto-montar T:\ antes do Plano 2 (com timeout para evitar hang no WebClient)
 Write-Host ''
 Write-Host '  Montando T:\...' -ForegroundColor DarkGray -NoNewline
-Start-Service WebClient -ErrorAction SilentlyContinue
-net use $DriveT "\\${VfsHost}@${VfsPort}\DavWWWRoot\" /persistent:no 2>&1 | Out-Null
-Write-Host " ok (net use $DriveT \\${VfsHost}@${VfsPort}\DavWWWRoot\)" -ForegroundColor DarkGray
+$wcSvc = Get-Service WebClient -ErrorAction SilentlyContinue
+if (-not $wcSvc) {
+    Write-Host " SKIP — WebClient nao disponivel (Plano 2 ignorado)" -ForegroundColor Yellow
+} else {
+    Start-Service WebClient -ErrorAction SilentlyContinue
+    $h = $VfsHost; $p = $VfsPort; $d = $DriveT
+    $mountJob = Start-Job -ScriptBlock { net use $using:d "\\${using:h}@${using:p}\DavWWWRoot\" /persistent:no 2>&1 }
+    $done = Wait-Job $mountJob -Timeout 8
+    if ($done) {
+        $nuOut = Receive-Job $mountJob
+        if ($LASTEXITCODE -eq 0) { Write-Host " ok" -ForegroundColor Green }
+        else { Write-Host " AVISO: $nuOut" -ForegroundColor Yellow }
+    } else {
+        Stop-Job $mountJob
+        Write-Host " TIMEOUT (>8s)" -ForegroundColor Yellow
+    }
+    Remove-Job $mountJob -Force
+}
 
 $r2 = Test-FilestreamSeek
 

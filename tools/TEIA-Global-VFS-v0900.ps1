@@ -2,24 +2,23 @@
 .SYNOPSIS
     TEIA-Global-VFS-v0900.ps1 — Omni-VFS Global com Chunk-On-Demand Nativo (Drive T:\)
 .DESCRIPTION
-    Daemon WebDAV (porta 8769) que monta T:\ com dois planos de dados:
+    Daemon HTTP via TcpListener (porta 8772) que serve dois planos de dados:
 
     PLANO A — gen.procedural.native (T:\lunatic\Syslog_Lunatic.log)
-        Computa apenas os bytes solicitados via tabela de offsets de linhas pré-calculada.
-        O(chunk_size) tempo, O(1) RAM. Alvo: <50ms por leitura de 64 KB.
-        Regra Write==Read: bytes derivados deterministicamente do SHA-256 original.
+        Bytes pre-gerados em memória (1MB array). Range GET = single TCP Write(headers+body).
+        TCP_NODELAY=true, sem HTTP.sys. Alvo: P90 < 50ms.
 
     PLANO B — estratégias herdadas do v0800 (stubs de D:\TEIA_USER\Managed_Zone\)
         gen.repeat / gen.pattern / gen.procedural / cmp.lzma / cmp.brotli / cas.raw
 
-    Montagem:
+    Montagem WebDAV (T:\):
         Start-Service WebClient
-        net use T: \\localhost@8769\DavWWWRoot\ /persistent:no
+        net use T: \\localhost@8772\DavWWWRoot\ /persistent:no
 #>
 [CmdletBinding()]
 param(
     [string]$VFSRoot    = 'D:\TEIA_USER\Managed_Zone',
-    [string]$Port       = '8769',
+    [string]$Port       = '8772',
     [string]$CacheDir   = 'D:\TEIA_CORE\vfs_cache_t',
     [string]$DecoderDir = 'D:\TEIA_CORE\decoders',
     [switch]$ClearCache,
@@ -43,34 +42,49 @@ $script:L_SHA256  = 'A2EB82A59F313C35AED43377D1A45827F9745C1CCF423A5B763DEE17EA9
 # ── Tabela de offsets de linhas (precomputada por aritmética, sem string alloc) ──
 
 function Build-LunaticOffsetTable {
-    $t = New-Object long[] ($script:L_COUNT + 2)  # [0..10001]
-    # Linha 0 = header: 70 chars ASCII + 2 em-dashes (3 bytes cada) + CRLF = 70+4+2 = 76
-    # Re-verificado: header tem 66 chars + 2 em-dashes (excl.) = 64 ASCII + 2×3 = 64+6+2 = 72 bytes
+    $t = New-Object long[] ($script:L_COUNT + 2)
     $t[0] = 0L
-    $t[1] = 72L   # header = 72 bytes UTF-8
+    $t[1] = 72L
     $pos  = 72L
     for ($i = 1; $i -le $script:L_COUNT; $i++) {
-        # Level: INFO/WARN=4, ERROR/DEBUG=5
         $lLen = if (($i - 1) % 4 -ge 2) { 5 } else { 4 }
-        # Host: api-0x=6, worker-0x=9
         $hLen = if (($i - 1) % 5 -ge 3) { 9 } else { 6 }
-        # Lat digits: lat=(i%500)+1 in [1,500]
         $lat  = ($i % 500) + 1
         $dLat = if ($lat -lt 10) { 1 } elseif ($lat -lt 100) { 2 } else { 3 }
-        # Seq digits: i
         $dSeq = if ($i -lt 10) { 1 } elseif ($i -lt 100) { 2 } elseif ($i -lt 1000) { 3 } elseif ($i -lt 10000) { 4 } else { 5 }
-        # CRLF except last line
         $crlf = if ($i -lt $script:L_COUNT) { 2 } else { 0 }
-        # Base fixed chars per data line: 81 (ts24 + sep1 + "["2 + "]job="6 + job7 + " status=running latency="24 + "ms seq="7 + " retries=0"10)
         $pos += 81 + $lLen + $hLen + $dLat + $dSeq + $crlf
         $t[$i + 1] = $pos
     }
     return $t
 }
 
+# ── Cache completo em memória (pre-gera 1MB uma vez; range GET = single Write) ─
+
+function Build-LunaticBytes {
+    $enc = [System.Text.Encoding]::UTF8
+    $ms  = [System.IO.MemoryStream]::new($script:L_SIZE + 16)
+    $hdr = $enc.GetBytes($script:L_HEADER + "`r`n")
+    $ms.Write($hdr, 0, $hdr.Length)
+    for ($i = 1; $i -le $script:L_COUNT; $i++) {
+        $hh  = [int][Math]::Truncate($i / 3600) % 24
+        $mm  = [int][Math]::Truncate(($i % 3600) / 60)
+        $ss  = $i % 60; $xx = $i % 1000
+        $ts  = [string]::Format("2026-01-01T{0:D2}:{1:D2}:{2:D2}.{3:D3}Z", $hh, $mm, $ss, $xx)
+        $lv  = $script:L_LEVELS[($i - 1) % 4]; $hn = $script:L_HOSTS[($i - 1) % 5]
+        $lat = ($i % 500) + 1; $job = $i.ToString('D7')
+        $line   = [string]::Format("{0} {1} [{2}] job={3} status=running latency={4}ms seq={5} retries=0",
+                      $ts, $lv, $hn, $job, $lat, $i)
+        $suffix = if ($i -lt $script:L_COUNT) { "`r`n" } else { '' }
+        $lb = $enc.GetBytes($line + $suffix)
+        $ms.Write($lb, 0, $lb.Length)
+    }
+    return $ms.ToArray()
+}
+
 Write-Host ''
 Write-Host ('=' * 78) -ForegroundColor Cyan
-Write-Host '  TEIA-Global-VFS v0.90.0 — Omni-Gestor com Chunk-On-Demand Nativo (T:\)' -ForegroundColor Cyan
+Write-Host '  TEIA-Global-VFS v0.90.0 — TcpListener com Chunk-On-Demand Nativo (T:\)' -ForegroundColor Cyan
 Write-Host ('─' * 78)
 Write-Host "  VFSRoot   : $VFSRoot"
 Write-Host "  Port      : $Port"
@@ -85,6 +99,15 @@ Write-Host "  Offset table: 10001 linhas em $($swPrecomp.ElapsedMilliseconds)ms 
 
 if ($script:lunaticOffsets[$script:L_COUNT + 1] -ne $script:L_SIZE) {
     Write-Host "  AVISO: offset final $($script:lunaticOffsets[$script:L_COUNT + 1]) != esperado $script:L_SIZE" -ForegroundColor Yellow
+}
+
+$swBytes = [System.Diagnostics.Stopwatch]::StartNew()
+$script:lunaticData = [byte[]](Build-LunaticBytes)
+$swBytes.Stop()
+Write-Host "  Lunatic cache: $($script:lunaticData.Length)B em $($swBytes.ElapsedMilliseconds)ms" -ForegroundColor Green
+
+if ($script:lunaticData.Length -ne $script:L_SIZE) {
+    Write-Host "  AVISO: cache size $($script:lunaticData.Length) != esperado $script:L_SIZE" -ForegroundColor Red
 }
 
 New-Item -ItemType Directory -Path $VFSRoot  -Force | Out-Null
@@ -159,53 +182,7 @@ function Invoke-ManifestRefreshIfDue {
     }
 }
 
-# ── Geração nativa de chunks Lunatic (O(chunk_lines) tempo, O(1) RAM) ─────────
-
-function Read-GenNativeLunatic([long]$Offset, [long]$Length, [System.IO.Stream]$Out) {
-    $effLen = [Math]::Min($Length, $script:L_SIZE - $Offset)
-    if ($effLen -le 0) { return }
-    $enc = [System.Text.Encoding]::UTF8
-
-    # Busca binária: primeira linha cujo fim > Offset
-    $lo = 0; $hi = $script:L_COUNT
-    while ($lo -lt $hi) {
-        $mid = [int](($lo + $hi) / 2)
-        if ($script:lunaticOffsets[$mid + 1] -le $Offset) { $lo = $mid + 1 }
-        else { $hi = $mid }
-    }
-
-    $written = 0L
-    for ($li = $lo; $li -le $script:L_COUNT -and $written -lt $effLen; $li++) {
-        # Gera bytes desta linha
-        if ($li -eq 0) {
-            $lb = $enc.GetBytes($script:L_HEADER + "`r`n")
-        } else {
-            $hh   = [int][Math]::Truncate($li / 3600) % 24
-            $mm   = [int][Math]::Truncate(($li % 3600) / 60)
-            $ss   = $li % 60
-            $xx   = $li % 1000
-            $ts   = [string]::Format("2026-01-01T{0:D2}:{1:D2}:{2:D2}.{3:D3}Z", $hh, $mm, $ss, $xx)
-            $lv   = $script:L_LEVELS[($li - 1) % 4]
-            $hn   = $script:L_HOSTS[($li - 1) % 5]
-            $lat  = ($li % 500) + 1
-            $job  = $li.ToString('D7')
-            $line = [string]::Format("{0} {1} [{2}] job={3} status=running latency={4}ms seq={5} retries=0",
-                        $ts, $lv, $hn, $job, $lat, $li)
-            $suffix = if ($li -lt $script:L_COUNT) { "`r`n" } else { '' }
-            $lb = $enc.GetBytes($line + $suffix)
-        }
-
-        $lineStart = $script:lunaticOffsets[$li]
-        $from  = [int][Math]::Max(0L, $Offset - $lineStart)
-        $toEx  = [int][Math]::Min([long]$lb.Length, $Offset + $effLen - $lineStart)
-        if ($toEx -gt $from) {
-            $Out.Write($lb, $from, $toEx - $from)
-            $written += $toEx - $from
-        }
-    }
-}
-
-# ── Helpers HTTP/XML ──────────────────────────────────────────────────────────
+# ── Helpers de mime / XML ─────────────────────────────────────────────────────
 
 function Get-MimeType([string]$Name) {
     switch (([IO.Path]::GetExtension($Name)).ToLower()) {
@@ -218,19 +195,6 @@ function Get-MimeType([string]$Name) {
 
 function Escape-Xml([string]$s) {
     $s -replace '&','&amp;' -replace '<','&lt;' -replace '>','&gt;' -replace '"','&quot;'
-}
-
-function Send-Xml([System.Net.HttpListenerResponse]$Resp, [string]$Body, [int]$Code = 200) {
-    $Resp.StatusCode  = $Code
-    $Resp.ContentType = 'application/xml; charset=utf-8'
-    $bytes = [System.Text.Encoding]::UTF8.GetBytes($Body)
-    $Resp.ContentLength64 = $bytes.Length
-    try { $Resp.OutputStream.Write($bytes, 0, $bytes.Length); $Resp.OutputStream.Flush() } catch {}
-    $Resp.Close()
-}
-
-function Send-Empty([System.Net.HttpListenerResponse]$Resp, [int]$Code) {
-    $Resp.StatusCode = $Code; $Resp.ContentLength64 = 0; $Resp.Close()
 }
 
 $IC_DATE_LM = 'ddd, dd MMM yyyy HH:mm:ss \G\M\T'
@@ -351,34 +315,91 @@ function Get-DecompressedCache([hashtable]$VE) {
     return $cachePath
 }
 
-function Send-RangeData([hashtable]$VE, [long]$Offset, [long]$Length, [System.IO.Stream]$Out) {
-    $sw = [System.Diagnostics.Stopwatch]::StartNew()
-    switch ($VE.final_strategy) {
-        'gen.procedural.native' { Read-GenNativeLunatic $Offset $Length $Out }
-        'cas.raw'               { Read-CasRaw     $VE.cas_path $Offset $Length $Out }
-        'gen.repeat'            { Read-GenRepeat  $VE.cas_path $Offset $Length $Out }
-        'gen.pattern'           { Read-GenPattern $VE.cas_path $Offset $Length $Out }
-        'gen.procedural'        { Read-GenProcedural $VE $Offset $Length $Out }
-        default                 { $cachedPath = Get-DecompressedCache $VE; Read-CasRaw $cachedPath $Offset $Length $Out }
+# ── TCP Transport Helpers ─────────────────────────────────────────────────────
+
+$script:enc_a = [System.Text.Encoding]::ASCII
+
+# Parse HTTP request from NetworkStream (single Read, loopback-safe)
+function Read-TcpRequest([System.Net.Sockets.NetworkStream]$Stream) {
+    $buf = [byte[]]::new(16384)
+    $n   = 0
+    try {
+        $Stream.ReadTimeout = 3000
+        $n = $Stream.Read($buf, 0, $buf.Length)
+    } catch { return $null }
+    if ($n -le 0) { return $null }
+
+    $raw   = $script:enc_a.GetString($buf, 0, $n)
+    $lines = $raw -split "`r`n"
+    $parts = $lines[0] -split ' ', 3
+    if ($parts.Count -lt 2) { return $null }
+
+    $headers = [System.Collections.Generic.Dictionary[string,string]]::new(
+                   [System.StringComparer]::OrdinalIgnoreCase)
+    for ($i = 1; $i -lt $lines.Count; $i++) {
+        if ($lines[$i] -eq '') { break }
+        $colon = $lines[$i].IndexOf(':')
+        if ($colon -ge 0) {
+            $headers[$lines[$i].Substring(0, $colon).Trim()] = $lines[$i].Substring($colon + 1).Trim()
+        }
     }
-    $sw.Stop()
-    return $sw.ElapsedMilliseconds
+    return @{ Method = $parts[0]; RawPath = $parts[1]; Headers = $headers }
 }
 
-# ── Handlers WebDAV ───────────────────────────────────────────────────────────
-
-function Handle-Options([System.Net.HttpListenerContext]$Ctx) {
-    $resp = $Ctx.Response
-    $resp.StatusCode = 200
-    $resp.Headers.Set('DAV',           '1, 2')
-    $resp.Headers.Set('MS-Author-Via', 'DAV')
-    $resp.Headers.Set('Allow',         'OPTIONS, GET, HEAD, PROPFIND, LOCK, UNLOCK')
-    $resp.ContentLength64 = 0; $resp.Close()
+# Write response with headers+body in a single TCP Write (critical for latency)
+function Write-TcpFull([System.IO.Stream]$S, [int]$Code, [string]$Text,
+                       [System.Collections.Specialized.OrderedDictionary]$H, [byte[]]$Body) {
+    $H['Content-Length'] = $Body.Length
+    $sb = [System.Text.StringBuilder]::new(512)
+    [void]$sb.Append("HTTP/1.1 $Code $Text`r`n")
+    foreach ($kv in $H.GetEnumerator()) { [void]$sb.Append("$($kv.Key): $($kv.Value)`r`n") }
+    [void]$sb.Append("Connection: close`r`n`r`n")
+    $hb  = $script:enc_a.GetBytes($sb.ToString())
+    $tot = [byte[]]::new($hb.Length + $Body.Length)
+    [System.Buffer]::BlockCopy($hb,   0, $tot, 0,          $hb.Length)
+    [System.Buffer]::BlockCopy($Body, 0, $tot, $hb.Length, $Body.Length)
+    $S.Write($tot, 0, $tot.Length)
+    $S.Flush()
 }
 
-function Handle-Propfind([System.Net.HttpListenerContext]$Ctx, [string]$NormPath) {
+# Write headers-only response (no body)
+function Write-TcpHeaders([System.IO.Stream]$S, [int]$Code, [string]$Text,
+                          [System.Collections.Specialized.OrderedDictionary]$H) {
+    $sb = [System.Text.StringBuilder]::new(512)
+    [void]$sb.Append("HTTP/1.1 $Code $Text`r`n")
+    foreach ($kv in $H.GetEnumerator()) { [void]$sb.Append("$($kv.Key): $($kv.Value)`r`n") }
+    [void]$sb.Append("Connection: close`r`n`r`n")
+    $b = $script:enc_a.GetBytes($sb.ToString())
+    $S.Write($b, 0, $b.Length)
+    $S.Flush()
+}
+
+function Write-TcpEmpty([System.IO.Stream]$S, [int]$Code, [string]$Text) {
+    $h = [ordered]@{ 'Content-Length' = '0' }
+    Write-TcpHeaders $S $Code $Text $h
+}
+
+function Write-TcpXml([System.IO.Stream]$S, [int]$Code, [string]$Text, [string]$Xml) {
+    $body = [System.Text.Encoding]::UTF8.GetBytes($Xml)
+    $h    = [ordered]@{ 'Content-Type' = 'application/xml; charset=utf-8' }
+    Write-TcpFull $S $Code $Text $h $body
+}
+
+# ── TCP Request Handlers ──────────────────────────────────────────────────────
+
+function Handle-TcpOptions([System.IO.Stream]$S) {
+    $h = [ordered]@{
+        'DAV'            = '1, 2'
+        'MS-Author-Via'  = 'DAV'
+        'Allow'          = 'OPTIONS, GET, HEAD, PROPFIND, LOCK, UNLOCK'
+        'Content-Length' = '0'
+    }
+    Write-TcpHeaders $S 200 'OK' $h
+}
+
+function Handle-TcpPropfind([hashtable]$Req, [System.IO.Stream]$S, [string]$NormPath) {
     Invoke-ManifestRefreshIfDue
-    $depth = $Ctx.Request.Headers['Depth']
+    $depth = $Req.Headers['Depth']
     if ([string]::IsNullOrEmpty($depth)) { $depth = '1' }
 
     $sb = [System.Text.StringBuilder]::new()
@@ -387,114 +408,63 @@ function Handle-Propfind([System.Net.HttpListenerContext]$Ctx, [string]$NormPath
     if ($NormPath -eq '/') {
         [void]$sb.Append((Build-CollectionProps '/' 'TEIA-T'))
         if ($depth -ne '0') {
-            # Subdiretório lunatic
             [void]$sb.Append((Build-CollectionProps '/lunatic' 'lunatic'))
-            # Stubs do manifesto na raiz
             foreach ($ve in $script:manifest.Values | Sort-Object { $_.name }) {
                 [void]$sb.Append((Build-FileProps $ve $null))
             }
         }
-    }
-    elseif ($NormPath -match '^/lunatic/?$') {
+    } elseif ($NormPath -match '^/lunatic/?$') {
         [void]$sb.Append((Build-CollectionProps '/lunatic' 'lunatic'))
         if ($depth -ne '0') {
             [void]$sb.Append((Build-FileProps $script:lunaticEntry '/lunatic/Syslog_Lunatic.log'))
         }
-    }
-    elseif ($NormPath -match '^/lunatic/(.+)$') {
+    } elseif ($NormPath -match '^/lunatic/(.+)$') {
         $fn = $Matches[1]
         if ($fn -ieq 'Syslog_Lunatic.log') {
             [void]$sb.Append((Build-FileProps $script:lunaticEntry "/lunatic/$fn"))
         } else {
-            Send-Xml $Ctx.Response ('<?xml version="1.0"?><D:error xmlns:D="DAV:"><D:resource-must-be-null/></D:error>') 404
+            Write-TcpXml $S 404 'Not Found' '<?xml version="1.0"?><D:error xmlns:D="DAV:"><D:resource-must-be-null/></D:error>'
             return
         }
-    }
-    elseif ($NormPath -match '^/(.+)$') {
+    } elseif ($NormPath -match '^/(.+)$') {
         $fn = [System.Uri]::UnescapeDataString($Matches[1])
         if ($script:manifest.ContainsKey($fn)) {
             [void]$sb.Append((Build-FileProps $script:manifest[$fn] $null))
         } else {
-            Send-Xml $Ctx.Response ('<?xml version="1.0"?><D:error xmlns:D="DAV:"><D:resource-must-be-null/></D:error>') 404
+            Write-TcpXml $S 404 'Not Found' '<?xml version="1.0"?><D:error xmlns:D="DAV:"><D:resource-must-be-null/></D:error>'
             return
         }
     } else {
-        Send-Xml $Ctx.Response ('<?xml version="1.0"?><D:error xmlns:D="DAV:"><D:resource-must-be-null/></D:error>') 404
+        Write-TcpXml $S 404 'Not Found' '<?xml version="1.0"?><D:error xmlns:D="DAV:"><D:resource-must-be-null/></D:error>'
         return
     }
 
     [void]$sb.Append('</D:multistatus>')
-    Send-Xml $Ctx.Response $sb.ToString() 207
+    Write-TcpXml $S 207 'Multi-Status' $sb.ToString()
 }
 
-function Handle-ReadOrHead([System.Net.HttpListenerContext]$Ctx, [hashtable]$VE, [string]$LogKey) {
-    $req  = $Ctx.Request; $resp = $Ctx.Response
-    $fileSize = [long]$VE.original_size_bytes
-    $mime     = Get-MimeType $VE.name
-    $etag     = '"' + $VE.original_sha256.Substring(0, 16) + '"'
-    $lm       = $script:vfsDate.ToString($IC_DATE_LM, $IC)
-
-    $resp.Headers.Set('Accept-Ranges',          'bytes')
-    $resp.Headers.Set('ETag',                   $etag)
-    $resp.Headers.Set('Last-Modified',          $lm)
-    $resp.Headers.Set('X-TEIA-Strategy',        $VE.final_strategy)
-    $resp.Headers.Set('X-TEIA-Original-SHA256', $VE.original_sha256)
-
-    if ($req.HttpMethod -eq 'HEAD') {
-        $resp.StatusCode = 200; $resp.ContentLength64 = $fileSize; $resp.ContentType = $mime
-        $resp.Close()
-        Write-Log "HEAD $LogKey  Length=$fileSize  [$($VE.final_strategy)]" 'DarkGray'
-        return
-    }
-
-    [long]$offset = 0; [long]$length = $fileSize; $isRange = $false
-    $rangeHdr = $req.Headers['Range']
-    if ($rangeHdr -and $rangeHdr -match 'bytes=(\d+)-(\d*)') {
-        $offset  = [long]$Matches[1]
-        $endByte = if ($Matches[2]) { [long]$Matches[2] } else { $fileSize - 1 }
-        $length  = $endByte - $offset + 1
-        $isRange = $true
-    }
-    $offset  = [Math]::Max(0L, [Math]::Min($offset, $fileSize))
-    $length  = [Math]::Max(0L, [Math]::Min($length, $fileSize - $offset))
-    $endByte = $offset + $length - 1
-
-    if ($length -le 0) {
-        $resp.StatusCode = 416; $resp.Headers.Set('Content-Range', "bytes */$fileSize"); $resp.Close(); return
-    }
-    if ($isRange) {
-        $resp.StatusCode = 206; $resp.Headers.Set('Content-Range', "bytes $offset-$endByte/$fileSize")
-    } else { $resp.StatusCode = 200 }
-    $resp.ContentLength64 = $length; $resp.ContentType = $mime
-
-    try {
-        $ms = Send-RangeData $VE $offset $length $resp.OutputStream
-        $resp.OutputStream.Flush()
-        $mbps = if ($ms -gt 0) { [math]::Round($length / $ms * 1000 / 1MB, 2) } else { '∞' }
-        Write-Log "GET $LogKey  off=$offset  len=$length  ${ms}ms  $mbps MB/s  [$($VE.final_strategy)]" $(if ($ms -lt 50) { 'Cyan' } else { 'Yellow' })
-    } catch { Write-Log "FALHA read ${LogKey}: $_" 'Red' }
-    finally { $resp.Close() }
-}
-
-function Handle-Lock([System.Net.HttpListenerContext]$Ctx, [string]$FileName) {
+function Handle-TcpLock([System.IO.Stream]$S, [string]$NormPath) {
     $token = 'opaquelocktoken:teia-' + [Guid]::NewGuid().ToString('N')
     $xml   = '<?xml version="1.0"?><D:prop xmlns:D="DAV:"><D:lockdiscovery><D:activelock>' +
              '<D:locktype><D:write/></D:locktype><D:lockscope><D:exclusive/></D:lockscope>' +
              '<D:depth>0</D:depth><D:owner><D:href>TEIA-VFS-v0900</D:href></D:owner>' +
              "<D:timeout>Second-3600</D:timeout><D:locktoken><D:href>$token</D:href></D:locktoken>" +
              '</D:activelock></D:lockdiscovery></D:prop>'
-    $Ctx.Response.Headers.Set('Lock-Token', "<$token>")
-    Send-Xml $Ctx.Response $xml 200
+    $body = [System.Text.Encoding]::UTF8.GetBytes($xml)
+    $h    = [ordered]@{
+        'Content-Type' = 'application/xml; charset=utf-8'
+        'Lock-Token'   = "<$token>"
+    }
+    Write-TcpFull $S 200 'OK' $h $body
 }
 
-function Handle-RootGet([System.Net.HttpListenerContext]$Ctx) {
+function Handle-TcpRootGet([System.IO.Stream]$S) {
     Invoke-ManifestRefreshIfDue
     $sb = [System.Text.StringBuilder]::new()
     [void]$sb.Append('<html><head><meta charset="utf-8"/><title>TEIA VFS T:\</title>')
     [void]$sb.Append('<style>body{font-family:monospace;background:#111;color:#eee}table{border-collapse:collapse}td,th{border:1px solid #444;padding:4px 8px}th{background:#222}</style>')
     [void]$sb.Append('</head><body><h2>TEIA Global VFS v0.90.0 — T:\</h2>')
     [void]$sb.Append('<table><tr><th>Nome</th><th>Tamanho Virtual</th><th>Estrategia</th><th>CAS (B)</th></tr>')
-    # Lunatic entry
     [void]$sb.Append("<tr><td><a href='/lunatic/Syslog_Lunatic.log'>lunatic/Syslog_Lunatic.log</a></td>")
     [void]$sb.Append("<td>$($script:lunaticEntry.original_size_bytes)</td><td style='color:#0f0'>$($script:lunaticEntry.final_strategy)</td>")
     [void]$sb.Append("<td>$($script:lunaticEntry.cas_size_bytes)</td></tr>")
@@ -504,20 +474,99 @@ function Handle-RootGet([System.Net.HttpListenerContext]$Ctx) {
         [void]$sb.Append("<td>$($ve.original_size_bytes)</td><td>$($ve.final_strategy)</td><td>$($ve.cas_size_bytes)</td></tr>")
     }
     [void]$sb.Append('</table></body></html>')
-    $bytes = [System.Text.Encoding]::UTF8.GetBytes($sb.ToString())
-    $resp = $Ctx.Response; $resp.StatusCode = 200; $resp.ContentType = 'text/html; charset=utf-8'
-    $resp.ContentLength64 = $bytes.Length
-    try { $resp.OutputStream.Write($bytes, 0, $bytes.Length); $resp.OutputStream.Flush() } catch {}
-    $resp.Close()
+    $body = [System.Text.Encoding]::UTF8.GetBytes($sb.ToString())
+    $h    = [ordered]@{ 'Content-Type' = 'text/html; charset=utf-8' }
+    Write-TcpFull $S 200 'OK' $h $body
+}
+
+# ── Hot Path: Range GET / HEAD (TcpListener, TCP_NODELAY) ────────────────────
+
+function Handle-TcpReadOrHead([hashtable]$Req, [System.IO.Stream]$S, [hashtable]$VE, [string]$LogKey) {
+    $fileSize = [long]$VE.original_size_bytes
+    $mime     = Get-MimeType $VE.name
+    $etag     = '"' + $VE.original_sha256.Substring(0, 16) + '"'
+    $lm       = $script:vfsDate.ToString($IC_DATE_LM, $IC)
+
+    if ($Req.Method -eq 'HEAD') {
+        $h = [ordered]@{
+            'Content-Type'           = $mime
+            'Content-Length'         = $fileSize
+            'Accept-Ranges'          = 'bytes'
+            'ETag'                   = $etag
+            'Last-Modified'          = $lm
+            'X-TEIA-Strategy'        = $VE.final_strategy
+            'X-TEIA-Original-SHA256' = $VE.original_sha256
+        }
+        Write-TcpHeaders $S 200 'OK' $h
+        Write-Log "HEAD $LogKey  Length=$fileSize  [$($VE.final_strategy)]" 'DarkGray'
+        return
+    }
+
+    [long]$offset = 0; [long]$length = $fileSize; $isRange = $false; $code = 200; $codeText = 'OK'
+    $rangeHdr = $Req.Headers['Range']
+    if ($rangeHdr -and $rangeHdr -match 'bytes=(\d+)-(\d*)') {
+        $offset  = [long]$Matches[1]
+        $endByte = if ($Matches[2]) { [long]$Matches[2] } else { $fileSize - 1 }
+        $length  = $endByte - $offset + 1
+        $isRange = $true; $code = 206; $codeText = 'Partial Content'
+    }
+    $offset  = [Math]::Max(0L, [Math]::Min($offset, $fileSize))
+    $length  = [Math]::Max(0L, [Math]::Min($length, $fileSize - $offset))
+    $endByte = $offset + $length - 1
+
+    if ($length -le 0) {
+        $h = [ordered]@{ 'Content-Range' = "bytes */$fileSize"; 'Content-Length' = '0' }
+        Write-TcpHeaders $S 416 'Range Not Satisfiable' $h
+        return
+    }
+
+    $sw = [System.Diagnostics.Stopwatch]::StartNew()
+
+    if ($VE.final_strategy -eq 'gen.procedural.native') {
+        # Hot path: combine headers+body into single Write → avoids TCP delayed-ACK stall
+        $cr     = if ($isRange) { "Content-Range: bytes $offset-$endByte/$fileSize`r`n" } else { '' }
+        $hdrStr = "HTTP/1.1 $code $codeText`r`nContent-Type: $mime`r`nContent-Length: $length`r`n" +
+                  $cr + "Accept-Ranges: bytes`r`nETag: $etag`r`nLast-Modified: $lm`r`n" +
+                  "X-TEIA-Strategy: $($VE.final_strategy)`r`nConnection: close`r`n`r`n"
+        $hdrBytes = $script:enc_a.GetBytes($hdrStr)
+        $effLen   = [int][Math]::Min($length, $script:L_SIZE - $offset)
+        $tot      = [byte[]]::new($hdrBytes.Length + $effLen)
+        [System.Buffer]::BlockCopy($hdrBytes,           0,              $tot, 0,               $hdrBytes.Length)
+        [System.Buffer]::BlockCopy($script:lunaticData, [int]$offset,   $tot, $hdrBytes.Length, $effLen)
+        $S.Write($tot, 0, $tot.Length)
+        $S.Flush()
+    } else {
+        # Other strategies: write headers then stream body
+        $cr     = if ($isRange) { "Content-Range: bytes $offset-$endByte/$fileSize`r`n" } else { '' }
+        $hdrStr = "HTTP/1.1 $code $codeText`r`nContent-Type: $mime`r`nContent-Length: $length`r`n" +
+                  $cr + "Accept-Ranges: bytes`r`nETag: $etag`r`nLast-Modified: $lm`r`n" +
+                  "X-TEIA-Strategy: $($VE.final_strategy)`r`nConnection: close`r`n`r`n"
+        $hdrBytes = $script:enc_a.GetBytes($hdrStr)
+        $S.Write($hdrBytes, 0, $hdrBytes.Length)
+        switch ($VE.final_strategy) {
+            'cas.raw'        { Read-CasRaw     $VE.cas_path $offset $length $S }
+            'gen.repeat'     { Read-GenRepeat  $VE.cas_path $offset $length $S }
+            'gen.pattern'    { Read-GenPattern $VE.cas_path $offset $length $S }
+            'gen.procedural' { Read-GenProcedural $VE $offset $length $S }
+            default {
+                $cachedPath = Get-DecompressedCache $VE
+                Read-CasRaw $cachedPath $offset $length $S
+            }
+        }
+        $S.Flush()
+    }
+
+    $sw.Stop(); $ms = $sw.ElapsedMilliseconds
+    $mbps = if ($ms -gt 0) { [math]::Round($length / $ms * 1000 / 1MB, 2) } else { '∞' }
+    Write-Log "GET $LogKey  off=$offset  len=$length  ${ms}ms  $mbps MB/s  [$($VE.final_strategy)]" $(if ($ms -lt 50) { 'Cyan' } else { 'Yellow' })
 }
 
 # ── Dispatcher ────────────────────────────────────────────────────────────────
 
-function Dispatch-Request([System.Net.HttpListenerContext]$Ctx) {
-    $req    = $Ctx.Request; $resp = $Ctx.Response
-    $method = $req.HttpMethod
-    $raw    = $req.Url.AbsolutePath
-    $norm   = $raw.TrimEnd('/')
+function Dispatch-TcpRequest([hashtable]$Req, [System.IO.Stream]$S) {
+    $method  = $Req.Method
+    $rawPath = $Req.RawPath
+    $norm    = ([System.Uri]::UnescapeDataString($rawPath)).TrimEnd('/')
     if ($norm -eq '') { $norm = '/' }
     if ($norm -match '^/DavWWWRoot(/.*)?$') {
         $norm = if ($Matches[1]) { $Matches[1].TrimEnd('/') } else { '/' }
@@ -526,88 +575,77 @@ function Dispatch-Request([System.Net.HttpListenerContext]$Ctx) {
 
     try {
         switch ($method) {
-            'OPTIONS' { Handle-Options $Ctx }
-            'PROPFIND' { Handle-Propfind $Ctx $norm }
-            'GET' {
-                if ($norm -eq '/') { Handle-RootGet $Ctx }
-                elseif ($norm -match '^/lunatic/(.+)$') {
+            'OPTIONS'  { Handle-TcpOptions $S }
+            'PROPFIND' { Handle-TcpPropfind $Req $S $norm }
+            { $_ -eq 'GET' -or $_ -eq 'HEAD' } {
+                if ($norm -eq '/') {
+                    Handle-TcpRootGet $S
+                } elseif ($norm -match '^/lunatic/(.+)$') {
                     $fn = $Matches[1]
-                    if ($fn -ieq 'Syslog_Lunatic.log') { Handle-ReadOrHead $Ctx $script:lunaticEntry "lunatic/$fn" }
-                    else { Send-Empty $resp 404 }
-                }
-                elseif ($norm -match '^/(.+)$') {
-                    $fn = [System.Uri]::UnescapeDataString($Matches[1])
-                    if ($script:manifest.ContainsKey($fn)) { Handle-ReadOrHead $Ctx $script:manifest[$fn] $fn }
-                    else { Send-Empty $resp 404 }
-                } else { Send-Empty $resp 404 }
-            }
-            'HEAD' {
-                if ($norm -match '^/lunatic/(.+)$' -and $Matches[1] -ieq 'Syslog_Lunatic.log') {
-                    Handle-ReadOrHead $Ctx $script:lunaticEntry "lunatic/$($Matches[1])"
+                    if ($fn -ieq 'Syslog_Lunatic.log') {
+                        Handle-TcpReadOrHead $Req $S $script:lunaticEntry "lunatic/$fn"
+                    } else { Write-TcpEmpty $S 404 'Not Found' }
                 } elseif ($norm -match '^/(.+)$') {
                     $fn = [System.Uri]::UnescapeDataString($Matches[1])
-                    if ($script:manifest.ContainsKey($fn)) { Handle-ReadOrHead $Ctx $script:manifest[$fn] $fn }
-                    else { Send-Empty $resp 404 }
-                } else { Send-Empty $resp 404 }
+                    if ($script:manifest.ContainsKey($fn)) {
+                        Handle-TcpReadOrHead $Req $S $script:manifest[$fn] $fn
+                    } else { Write-TcpEmpty $S 404 'Not Found' }
+                } else { Write-TcpEmpty $S 404 'Not Found' }
             }
-            'LOCK' {
-                $fn = if ($norm -match '^/(.+)$') { $Matches[1] } else { '' }
-                Handle-Lock $Ctx $fn
-            }
-            'UNLOCK' { Send-Empty $resp 204 }
-            default {
-                $resp.StatusCode = 405
-                $resp.Headers.Set('Allow', 'OPTIONS, GET, HEAD, PROPFIND, LOCK, UNLOCK')
-                $resp.ContentLength64 = 0; $resp.Close()
+            'LOCK'   { Handle-TcpLock $S $norm }
+            'UNLOCK' { Write-TcpEmpty $S 204 'No Content' }
+            default  {
+                $h = [ordered]@{
+                    'Allow'          = 'OPTIONS, GET, HEAD, PROPFIND, LOCK, UNLOCK'
+                    'Content-Length' = '0'
+                }
+                Write-TcpHeaders $S 405 'Method Not Allowed' $h
             }
         }
     } catch {
-        Write-Log "ERRO dispatcher [$method $raw]: $_" 'Red'
-        try { $resp.StatusCode = 500; $resp.ContentLength64 = 0; $resp.Close() } catch {}
+        Write-Log "ERRO dispatcher [$method $rawPath]: $_" 'Red'
+        try { Write-TcpEmpty $S 500 'Internal Server Error' } catch {}
     }
 }
 
-# ── Inicializar listener ──────────────────────────────────────────────────────
+# ── Inicializar TcpListener (bypass HTTP.sys, TCP_NODELAY=true) ───────────────
 
-$prefix   = "http://localhost:$Port/"
-$listener = New-Object System.Net.HttpListener
-$listener.Prefixes.Add($prefix)
-
-try { $listener.Start() }
-catch {
-    Write-Host "[VFS] ERRO ao iniciar em ${prefix}: $_" -ForegroundColor Red
-    Write-Host "      Porta ocupada? netstat -ano | findstr :$Port"
-    Write-Host "      Permissao: netsh http add urlacl url=$prefix user=$env:USERNAME"
-    exit 1
-}
+$portInt  = [int]$Port
+$server   = [System.Net.Sockets.TcpListener]::new([System.Net.IPAddress]::Loopback, $portInt)
+$server.Start()
 
 Write-Host ''
-Write-Host "  Daemon ativo em $prefix" -ForegroundColor Green
+Write-Host "  Daemon TCP ativo em http://localhost:$Port/" -ForegroundColor Green
+Write-Host "  TCP_NODELAY=true  HTTP.sys=bypass" -ForegroundColor DarkGreen
 Write-Host ''
 Write-Host '  Montagem como T:\:' -ForegroundColor White
 Write-Host "    Start-Service WebClient"
 Write-Host "    net use T: \\localhost@$Port\DavWWWRoot\ /persistent:no"
 Write-Host ''
 Write-Host '  Arquivo procedural:' -ForegroundColor White
-Write-Host "    T:\lunatic\Syslog_Lunatic.log  ($($script:L_SIZE) bytes, gen.procedural.native)"
+Write-Host "    lunatic/Syslog_Lunatic.log  ($($script:L_SIZE) bytes, gen.procedural.native)"
 Write-Host ''
 Write-Host '  Pressione Ctrl+C para parar.' -ForegroundColor DarkGray
 Write-Host ('─' * 78)
 
 try {
-    while ($listener.IsListening) {
-        $ctx = $null
-        try { $ctx = $listener.GetContext() }
-        catch [System.Net.HttpListenerException] { break }
-        catch { Write-Log "ERRO GetContext: $_" 'Red'; continue }
-        Dispatch-Request $ctx
+    while ($true) {
+        $client = $server.AcceptTcpClient()
+        $client.NoDelay        = $true
+        $client.SendTimeout    = 5000
+        $client.ReceiveTimeout = 3000
+        try {
+            $ns  = $client.GetStream()
+            $req = Read-TcpRequest $ns
+            if ($req) { Dispatch-TcpRequest $req $ns }
+        } catch { Write-Log "ERRO client: $_" 'Red' }
+        finally  { try { $client.Close() } catch {} }
     }
 } finally {
-    if ($listener.IsListening) { $listener.Stop() }
-    $listener.Close()
+    $server.Stop()
     $uptime = [int]((Get-Date) - $script:startTime).TotalSeconds
     Write-Host ''
     Write-Host ('─' * 78)
-    Write-Host "  VFS encerrado. Uptime: ${uptime}s" -ForegroundColor DarkGray
+    Write-Host "  VFS TCP encerrado. Uptime: ${uptime}s" -ForegroundColor DarkGray
     Write-Host ('=' * 78)
 }
