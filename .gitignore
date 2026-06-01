@@ -6,6 +6,7 @@ restored_test/
 # Backups e binários grandes (excedem limite GitHub 100MB)
 TEIA_CORE_GOLDEN_MASTER_v1.zip
 *.zip
+!release/TEIA_P19_CLAIM_SAFE_DEMO.zip
 *.M4V
 *.m4v
 *.mp4
