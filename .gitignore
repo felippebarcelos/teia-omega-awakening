@@ -42,3 +42,6 @@ sandbox/audit_p18/decoded/
 # Cache Python
 __pycache__/
 *.pyc
+
+# P22 — Dados reais purgados (regeneraveis via seeds+decoders)
+sandbox/crucible_p22/rebuilt/

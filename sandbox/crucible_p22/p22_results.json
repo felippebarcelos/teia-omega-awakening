@@ -1,0 +1,45 @@
+{
+  "protocol": "P22.0",
+  "timestamp": "2026-06-01 12:24:46",
+  "datasets": [
+    {
+      "name": "covid_countries_aggregated.csv",
+      "original": 5512931,
+      "gzip": 1307597,
+      "brotli": 661353,
+      "teia": 490583,
+      "seed": 489585,
+      "decoder": 998,
+      "delta": "25,8%",
+      "sha256": "PASS",
+      "hash_original": "fbd1738729a2ebac655e08fcd9562b5cf71573a8b9c03f809c2cf2c53faf047f",
+      "hash_rebuilt": "fbd1738729a2ebac655e08fcd9562b5cf71573a8b9c03f809c2cf2c53faf047f"
+    },
+    {
+      "name": "countries.json",
+      "original": 1398180,
+      "gzip": 145487,
+      "brotli": 104857,
+      "teia": 149095,
+      "seed": 148561,
+      "decoder": 534,
+      "delta": "-42,2%",
+      "sha256": "PASS",
+      "hash_original": "2e7584a7f48a13b35d4c4a98cd7d0bafcc6bda3322a9e6ff4c4edbbdad8ec1ec",
+      "hash_rebuilt": "2e7584a7f48a13b35d4c4a98cd7d0bafcc6bda3322a9e6ff4c4edbbdad8ec1ec"
+    },
+    {
+      "name": "worldbank_gdp.json",
+      "original": 1483709,
+      "gzip": 101234,
+      "brotli": 65037,
+      "teia": 79691,
+      "seed": 78093,
+      "decoder": 1598,
+      "delta": "-22,5%",
+      "sha256": "PASS",
+      "hash_original": "c9f06e0ad146aff1b6ff9e45297a5bb1d9078776c1c8757c830a91c7ea8a596a",
+      "hash_rebuilt": "c9f06e0ad146aff1b6ff9e45297a5bb1d9078776c1c8757c830a91c7ea8a596a"
+    }
+  ]
+}
