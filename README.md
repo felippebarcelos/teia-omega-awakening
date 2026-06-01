@@ -1,22 +1,25 @@
 # TEIA — Storage as Computation
 
 **Transcendência Epistêmica Integrada Autossintetizante**  
-**Versão atual:** v1.3.0-real-world-demo
+**Versão atual:** v2.0.1-aion-offline
 
 ---
 
-## O Que é a TEIA
+## O Que é a TEIA (Arquitetura AION RISPA NDC)
 
-A TEIA é um **Seletor/Forjador Computacional**. Em vez de armazenar bytes de um arquivo, ela armazena o **motor mínimo que sabe gerar esses bytes** — parâmetros procedurais (fórmulas de data, dicionários de categoria) e um blob comprimido com os dados de alta entropia irredutível.
+A TEIA é um **Seletor/Forjador Computacional Determinístico**. Na arquitetura **AION RISPA NDC**, ela opera de forma 100% offline e autônoma, sem dependência de nuvem, LLMs externos ou linguagens como Python.
+
+Ela armazena o **motor mínimo que sabe gerar esses bytes** — parâmetros procedurais (fórmulas de data, dicionários de categoria) e um blob comprimido com os dados de alta entropia irredutível via Brotli nativo do .NET.
 
 ```
-Armazenamento tradicional:  arquivo.csv  (5,26 MB)
-TEIA Híbrido:                seed_meta.json (2,5 KB) + seed_data.bin (476 KB) + decoder.ps1 (1 KB) = 479 KB
-Reconstrução:                decoder(seed_meta, seed_data) → arquivo.csv idêntico  (SHA-256 PASS)
-Delta (Ganho) vs Brotli:     +58,7% (Brotli Optimal) | +25,8% (Brotli SmallestSize)
+Armazenamento tradicional:  arquivo.csv  (5,51 MB)
+AION NDC Package:            seed.json (2,7 KB) + seed.bin (487 KB) + Decode.ps1 (1 KB) = 490 KB
+Reconstrução:                Decode(seed.json, seed.bin) → arquivo.csv idêntico (SHA-256 PASS)
+Delta Real de Ganho:         170.622 bytes sobre Brotli SmallestSize (.NET Native)
 ```
 
-**Não é mágica de compressão universal.** A TEIA atua onde os dados têm **overhead estrutural dominante** — timestamps repetidos em N linhas, categorias cíclicas, IDs sequenciais, campos constantes. Quando esses campos representam a maior parte dos bytes, TEIA supera Brotli. Quando os dados são principalmente entropia orgânica, TEIA recua e reconhece.
+**Soberania Determinística:** A TEIA atua onde os dados têm **overhead estrutural dominante**. Através de heurísticas estruturais puras em PowerShell, o motor analisa, decompõe e forja seu próprio decodificador dinamicamente.
+
 
 ---
 
