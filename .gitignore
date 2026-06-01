@@ -28,6 +28,12 @@ _tools/**/*.exe
 _bench_v6/tmp/*.7z
 _bench_v*/tmp/*.lzma
 
+# P17/P18 — Materia expurgada: datasets sinteticos sao regeneraveis via seeds+decoders
+sandbox/crucible_p17/datasets/
+sandbox/crucible_p17/validation/
+sandbox/audit_p18/generated/
+sandbox/audit_p18/decoded/
+
 # Logs e temporários
 *.log
 *.tmp

@@ -1,0 +1,109 @@
+{
+  "total": 10,
+  "results": [
+    {
+      "File": "json_api_events.json",
+      "Expected": "b0836bd4c35f74b4b7ab576c7d26990dba762d16f9d6a26fcba0403130e0d3af",
+      "ShaGen": "b0836bd4c35f74b4b7ab576c7d26990dba762d16f9d6a26fcba0403130e0d3af",
+      "ShaDec": "b0836bd4c35f74b4b7ab576c7d26990dba762d16f9d6a26fcba0403130e0d3af",
+      "GenMatch": true,
+      "DecMatch": true,
+      "CrossMatch": true,
+      "Status": "PASS"
+    },
+    {
+      "File": "json_products.json",
+      "Expected": "ead80b8b47bfeba61f23d812aaf91992706c74d0ae91caa9c6d56eac74f67658",
+      "ShaGen": "ead80b8b47bfeba61f23d812aaf91992706c74d0ae91caa9c6d56eac74f67658",
+      "ShaDec": "ead80b8b47bfeba61f23d812aaf91992706c74d0ae91caa9c6d56eac74f67658",
+      "GenMatch": true,
+      "DecMatch": true,
+      "CrossMatch": true,
+      "Status": "PASS"
+    },
+    {
+      "File": "json_metrics.json",
+      "Expected": "0f493d7d1ed57a35363291ef76db8e172202c07512bf31ca089de810a81139f4",
+      "ShaGen": "0f493d7d1ed57a35363291ef76db8e172202c07512bf31ca089de810a81139f4",
+      "ShaDec": "0f493d7d1ed57a35363291ef76db8e172202c07512bf31ca089de810a81139f4",
+      "GenMatch": true,
+      "DecMatch": true,
+      "CrossMatch": true,
+      "Status": "PASS"
+    },
+    {
+      "File": "csv_sensor_data.csv",
+      "Expected": "130632d0c2241ab21bf87a6292b9954a75e8fdb312659b5c51599ec3c476ccf2",
+      "ShaGen": "130632d0c2241ab21bf87a6292b9954a75e8fdb312659b5c51599ec3c476ccf2",
+      "ShaDec": "130632d0c2241ab21bf87a6292b9954a75e8fdb312659b5c51599ec3c476ccf2",
+      "GenMatch": true,
+      "DecMatch": true,
+      "CrossMatch": true,
+      "Status": "PASS"
+    },
+    {
+      "File": "csv_transactions.csv",
+      "Expected": "19fdc14681277ecc0299cc1c7f0c8c17a87d9f7ca1f7ba12ac78ad331b41c232",
+      "ShaGen": "19fdc14681277ecc0299cc1c7f0c8c17a87d9f7ca1f7ba12ac78ad331b41c232",
+      "ShaDec": "19fdc14681277ecc0299cc1c7f0c8c17a87d9f7ca1f7ba12ac78ad331b41c232",
+      "GenMatch": true,
+      "DecMatch": true,
+      "CrossMatch": true,
+      "Status": "PASS"
+    },
+    {
+      "File": "csv_server_logs.csv",
+      "Expected": "7c7a32e51aeebc08d4284edb30ce13af25bcc3d38b28c2f6100eba6c6b5fe281",
+      "ShaGen": "7c7a32e51aeebc08d4284edb30ce13af25bcc3d38b28c2f6100eba6c6b5fe281",
+      "ShaDec": "7c7a32e51aeebc08d4284edb30ce13af25bcc3d38b28c2f6100eba6c6b5fe281",
+      "GenMatch": true,
+      "DecMatch": true,
+      "CrossMatch": true,
+      "Status": "PASS"
+    },
+    {
+      "File": "csv_orders.csv",
+      "Expected": "2a7dbc90bd419f5465e86fdb2ddd9112a2d36c67abcb1f939b4848d1168e9664",
+      "ShaGen": "2a7dbc90bd419f5465e86fdb2ddd9112a2d36c67abcb1f939b4848d1168e9664",
+      "ShaDec": "2a7dbc90bd419f5465e86fdb2ddd9112a2d36c67abcb1f939b4848d1168e9664",
+      "GenMatch": true,
+      "DecMatch": true,
+      "CrossMatch": true,
+      "Status": "PASS"
+    },
+    {
+      "File": "svg_scatter_20k.svg",
+      "Expected": "37852a8dcd4f9a4ac66b932f9f7893911a067914cd7bab49236d9b15a49b9e41",
+      "ShaGen": "37852a8dcd4f9a4ac66b932f9f7893911a067914cd7bab49236d9b15a49b9e41",
+      "ShaDec": "37852a8dcd4f9a4ac66b932f9f7893911a067914cd7bab49236d9b15a49b9e41",
+      "GenMatch": true,
+      "DecMatch": true,
+      "CrossMatch": true,
+      "Status": "PASS"
+    },
+    {
+      "File": "svg_network_10k.svg",
+      "Expected": "17d44a6b6a940976cf34c28175a7f694b136d8925a3e6a85ab003af3ca96b61f",
+      "ShaGen": "17d44a6b6a940976cf34c28175a7f694b136d8925a3e6a85ab003af3ca96b61f",
+      "ShaDec": "17d44a6b6a940976cf34c28175a7f694b136d8925a3e6a85ab003af3ca96b61f",
+      "GenMatch": true,
+      "DecMatch": true,
+      "CrossMatch": true,
+      "Status": "PASS"
+    },
+    {
+      "File": "svg_heatmap_20k.svg",
+      "Expected": "363a9b05f383e48deb968bebc7b3c28e8dfafd1dec68bd842011b7db32282e92",
+      "ShaGen": "363a9b05f383e48deb968bebc7b3c28e8dfafd1dec68bd842011b7db32282e92",
+      "ShaDec": "363a9b05f383e48deb968bebc7b3c28e8dfafd1dec68bd842011b7db32282e92",
+      "GenMatch": true,
+      "DecMatch": true,
+      "CrossMatch": true,
+      "Status": "PASS"
+    }
+  ],
+  "date": "2026-06-01",
+  "protocol": "P18.0",
+  "passed": 10,
+  "failed": 0
+}
