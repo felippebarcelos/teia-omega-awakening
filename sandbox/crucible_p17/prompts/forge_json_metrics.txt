@@ -1,0 +1,62 @@
+═══ FORGE PROMPT P17.0: json_metrics ═══
+DOMAIN: JSON
+FILE: json_metrics.json
+SIZE_ORIGINAL: 4566328 bytes
+SHA256_ORIGINAL: 0f493d7d1ed57a35363291ef76db8e172202c07512bf31ca089de810a81139f4
+SIZE_GZIP: 326812 bytes
+SIZE_BROTLI: 200218 bytes
+SIZE_SEED: 957 bytes
+TARGET_BASELINE: 200218 bytes (min(gzip,brotli))
+
+SEED (salvar em: D:\TEIA_CLAUDE_AWAKENING\sandbox\crucible_p17\decoders\seed_json_metrics.json):
+{"domain":"json","file":"json_metrics.json","sha256_original":"0f493d7d1ed57a35363291ef76db8e172202c07512bf31ca089de810a81139f4","count":35000,"root_key":"metrics","fields":[{"name":"id","type":"seq","start":1,"step":1,"fmt":"int"},{"name":"ts","type":"ts_seq","step_sec":30,"fmt":"str"},{"name":"region","type":"cycle","period":5,"values":["us-east","us-west","eu-central","ap-south","ap-northeast"],"fmt":"str"},{"name":"service","type":"cycle","period":12,"values":["auth-svc","api-gw","db-primary","cache-redis","search-svc","billing-svc","mail-svc","media-svc","analytics-svc","storage-svc","queue-svc","monitor-svc"],"fmt":"str"},{"name":"metric","type":"cycle","period":6,"values":["cpu_percent","mem_percent","disk_io","net_rx","net_tx","req_rate"],"fmt":"str"},{"name":"value","type":"mc","m":23,"a":0,"mod":100,"min":0,"fmt":"int"},{"name":"unit","type":"cycle","period":6,"values":["percent","percent","MB/s","KB/s","KB/s","req/s"],"fmt":"str"}]}
+
+SKELETON SEMANTICO:
+FILE: json_metrics.json  SIZE: 4566328 bytes  SHA256: 0f493d7d1ed57a35363291ef76db8e172202c07512bf31ca089de810a81139f4
+
+TOP-LEVEL KEYS:
+  metrics: Array[35000]
+
+═══ ARRAY: metrics (35000 items) ═══
+FIELD SCHEMA:
+  id: Int unique=35000 min=1 max=35000 pattern=Arithmetic(step=1)
+  metric: String unique=6 ["cpu_percent", "disk_io", "mem_percent", "net_rx", "net_tx", "req_rate"]
+  region: String unique=5 ["ap-northeast", "ap-south", "eu-central", "us-east", "us-west"]
+  service: String unique=12 ["analytics-svc", "api-gw", "auth-svc", "billing-svc", "cache-redis", "db-primary", "mail-svc", "media-svc", "monitor-svc", "queue-svc"]
+  ts: DateTime unique=35000
+  unit: String unique=4 ["KB/s", "MB/s", "percent", "req/s"]
+  value: Int unique=100 min=0 max=99 pattern=Random
+DATA (35000 items):
+  {"id":1,"ts":"2024-01-01T00:00:00Z","region":"us-east","service":"auth-svc","metric":"cpu_percent","value":0,"unit":"percent"}
+  {"id":2,"ts":"2024-01-01T00:00:30Z","region":"us-west","service":"api-gw","metric":"mem_percent","value":23,"unit":"percent"}
+  {"id":3,"ts":"2024-01-01T00:01:00Z","region":"eu-central","service":"db-primary","metric":"disk_io","value":46,"unit":"MB/s"}
+  {"id":4,"ts":"2024-01-01T00:01:30Z","region":"ap-south","service":"cache-redis","metric":"net_rx","value":69,"unit":"KB/s"}
+  {"id":5,"ts":"2024-01-01T00:02:00Z","region":"ap-northeast","service":"search-svc","metric":"net_tx","value":92,"unit":"KB/s"}
+  ... (34990 items omitted) ...
+  {"id":34996,"ts":"2024-01-13T03:37:30Z","region":"us-east","service":"cache-redis","metric":"net_rx","value":85,"unit":"KB/s"}
+  {"id":34997,"ts":"2024-01-13T03:38:00Z","region":"us-west","service":"search-svc","metric":"net_tx","value":8,"unit":"KB/s"}
+  {"id":34998,"ts":"2024-01-13T03:38:30Z","region":"eu-central","service":"billing-svc","metric":"req_rate","value":31,"unit":"req/s"}
+  {"id":34999,"ts":"2024-01-13T03:39:00Z","region":"ap-south","service":"mail-svc","metric":"cpu_percent","value":54,"unit":"percent"}
+  {"id":35000,"ts":"2024-01-13T03:39:30Z","region":"ap-northeast","service":"media-svc","metric":"mem_percent","value":77,"unit":"percent"}
+
+
+
+
+TASK:
+Escreva D:\TEIA_CLAUDE_AWAKENING\sandbox\crucible_p17\decoders\Decode-json_metrics.ps1
+O decoder deve:
+  1. Ler seed (parametro -SeedFile) e reconstruir o arquivo original em -OutputFile
+  2. Usar Add-Type com C# para reconstrucao rapida (mesmo algoritmo do gerador)
+  3. Verificar SHA-256 e imprimir "SHA-256 PASS: <hash>" ou "SHA-256 FAIL"
+  4. Formulas: seq(i)=start+i*step | ts_seq(i)=BASE.AddSeconds(i*step_sec).ToString("yyyy-MM-ddTHH:mm:ssZ")
+             | ts_date(i)=BASE.AddSeconds(i*step_sec).ToString("yyyy-MM-dd")
+             | cycle(i)=values[i%period] | mc(i)=((long)i*m+a)%mod+min
+             | mc_pad(i)=prefix+(mc_value).ToString("D{digits}")
+             | sku_template(i)=prefix+(i+1).ToString("D{digits}")
+  5. Para JSON: {root_key}:[{field1:val1,...},{...},...]} sem espacos, virgula entre records
+  6. Para CSV: header\nrow\nrow\n... (LF apos cada linha incluindo ultima)
+  7. Para SVG: <?xml...?>\n<svg...>\n<element.../>\n...\n</svg>\n
+  BASE = new DateTime(2024,1,1,0,0,0,DateTimeKind.Utc)
+
+INVARIANTE: Hash(Reconstruido) == SHA256_ORIGINAL. Zero tolerancia para perda.
+DELTA esperado: (SeedSize + CodigoDecoder) versus 200218 bytes baseline.

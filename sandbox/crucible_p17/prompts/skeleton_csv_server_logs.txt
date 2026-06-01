@@ -1,0 +1,20 @@
+FILE: csv_server_logs.csv  SIZE: 4399604 bytes  SHA256: 7c7a32e51aeebc08d4284edb30ce13af25bcc3d38b28c2f6100eba6c6b5fe281
+ROWS: 80000  COLUMNS: 7
+
+COLUMN SCHEMA:
+  line_id: Numeric unique=80000 sample=["1", "10", "100", "1000", "10000", "10001", "10002", "10003" ...]
+  ts: String unique=80000 sample=["2024-01-01T00:00:00Z", "2024-01-01T00:00:30Z", "2024-01-01T00:01:00Z", "2024-01-01T00:01:30Z", "2024-01-01T00:02:00Z", "2024-01-01T00:02:30Z", "2024-01-01T00:03:00Z", "2024-01-01T00:03:30Z" ...]
+  server: String unique=8 sample=["srv-01", "srv-02", "srv-03", "srv-04", "srv-05", "srv-06", "srv-07", "srv-08" ]
+  level: String unique=4 sample=["DEBUG", "ERROR", "INFO", "WARN" ]
+  module: String unique=12 sample=["api", "auth", "cache", "db", "exporter", "importer", "notifier", "queue" ...]
+  duration_ms: Numeric unique=200 sample=["10", "100", "101", "102", "103", "104", "105", "106" ...]
+  status: Numeric unique=4 sample=["200", "202", "404", "500" ]
+
+FIRST 5 ROWS (raw CSV):
+  line_id,ts,server,level,module,duration_ms,status
+  1,2024-01-01T00:00:00Z,srv-01,INFO,auth,60,200
+  2,2024-01-01T00:00:30Z,srv-02,INFO,api,83,200
+  3,2024-01-01T00:01:00Z,srv-03,INFO,db,106,200
+  4,2024-01-01T00:01:30Z,srv-04,INFO,cache,129,200
+  5,2024-01-01T00:02:00Z,srv-05,WARN,queue,152,200
+

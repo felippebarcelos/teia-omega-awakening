@@ -1,0 +1,14 @@
+FILE: svg_scatter_20k.svg  SIZE: 995179 bytes  SHA256: 37852a8dcd4f9a4ac66b932f9f7893911a067914cd7bab49236d9b15a49b9e41
+DOMAIN: SVG
+  viewBox: 0 0 800 600  width: 800  height: 600
+
+ELEMENT DISTRIBUTION (total=20000):
+  circle: 20000
+
+═══ ELEMENT: <circle> (20000 instances) ═══
+  cx: Numeric unique=761 min=20 max=780 pattern=Arithmetic(step=37)
+  cy: Numeric unique=561 min=20 max=580 pattern=Random
+  fill: String unique=5 ["#2ecc71", "#3498db", "#9b59b6", "#e74c3c", "#f39c12"]
+  r: Numeric unique=3 [3, 5, 8] ENUM_CANDIDATE
+
+

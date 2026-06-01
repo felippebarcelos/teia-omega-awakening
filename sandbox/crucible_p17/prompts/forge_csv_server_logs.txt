@@ -1,0 +1,54 @@
+═══ FORGE PROMPT P17.0: csv_server_logs ═══
+DOMAIN: CSV
+FILE: csv_server_logs.csv
+SIZE_ORIGINAL: 4399604 bytes
+SHA256_ORIGINAL: 7c7a32e51aeebc08d4284edb30ce13af25bcc3d38b28c2f6100eba6c6b5fe281
+SIZE_GZIP: 667525 bytes
+SIZE_BROTLI: 428211 bytes
+SIZE_SEED: 889 bytes
+TARGET_BASELINE: 428211 bytes (min(gzip,brotli))
+
+SEED (salvar em: D:\TEIA_CLAUDE_AWAKENING\sandbox\crucible_p17\decoders\seed_csv_server_logs.json):
+{"domain":"csv","file":"csv_server_logs.csv","sha256_original":"7c7a32e51aeebc08d4284edb30ce13af25bcc3d38b28c2f6100eba6c6b5fe281","count":80000,"header":"line_id,ts,server,level,module,duration_ms,status","fields":[{"name":"line_id","type":"seq","start":1,"step":1},{"name":"ts","type":"ts_seq","step_sec":30},{"name":"server","type":"cycle","period":8,"values":["srv-01","srv-02","srv-03","srv-04","srv-05","srv-06","srv-07","srv-08"]},{"name":"level","type":"cycle","period":8,"values":["INFO","INFO","INFO","INFO","WARN","WARN","ERROR","DEBUG"]},{"name":"module","type":"cycle","period":12,"values":["auth","api","db","cache","queue","storage","scheduler","notifier","reporter","exporter","importer","validator"]},{"name":"duration_ms","type":"mc","m":23,"a":50,"mod":200,"min":10},{"name":"status","type":"cycle","period":8,"values":["200","200","200","200","200","404","500","202"]}]}
+
+SKELETON SEMANTICO:
+FILE: csv_server_logs.csv  SIZE: 4399604 bytes  SHA256: 7c7a32e51aeebc08d4284edb30ce13af25bcc3d38b28c2f6100eba6c6b5fe281
+ROWS: 80000  COLUMNS: 7
+
+COLUMN SCHEMA:
+  line_id: Numeric unique=80000 sample=["1", "10", "100", "1000", "10000", "10001", "10002", "10003" ...]
+  ts: String unique=80000 sample=["2024-01-01T00:00:00Z", "2024-01-01T00:00:30Z", "2024-01-01T00:01:00Z", "2024-01-01T00:01:30Z", "2024-01-01T00:02:00Z", "2024-01-01T00:02:30Z", "2024-01-01T00:03:00Z", "2024-01-01T00:03:30Z" ...]
+  server: String unique=8 sample=["srv-01", "srv-02", "srv-03", "srv-04", "srv-05", "srv-06", "srv-07", "srv-08" ]
+  level: String unique=4 sample=["DEBUG", "ERROR", "INFO", "WARN" ]
+  module: String unique=12 sample=["api", "auth", "cache", "db", "exporter", "importer", "notifier", "queue" ...]
+  duration_ms: Numeric unique=200 sample=["10", "100", "101", "102", "103", "104", "105", "106" ...]
+  status: Numeric unique=4 sample=["200", "202", "404", "500" ]
+
+FIRST 5 ROWS (raw CSV):
+  line_id,ts,server,level,module,duration_ms,status
+  1,2024-01-01T00:00:00Z,srv-01,INFO,auth,60,200
+  2,2024-01-01T00:00:30Z,srv-02,INFO,api,83,200
+  3,2024-01-01T00:01:00Z,srv-03,INFO,db,106,200
+  4,2024-01-01T00:01:30Z,srv-04,INFO,cache,129,200
+  5,2024-01-01T00:02:00Z,srv-05,WARN,queue,152,200
+
+
+
+TASK:
+Escreva D:\TEIA_CLAUDE_AWAKENING\sandbox\crucible_p17\decoders\Decode-csv_server_logs.ps1
+O decoder deve:
+  1. Ler seed (parametro -SeedFile) e reconstruir o arquivo original em -OutputFile
+  2. Usar Add-Type com C# para reconstrucao rapida (mesmo algoritmo do gerador)
+  3. Verificar SHA-256 e imprimir "SHA-256 PASS: <hash>" ou "SHA-256 FAIL"
+  4. Formulas: seq(i)=start+i*step | ts_seq(i)=BASE.AddSeconds(i*step_sec).ToString("yyyy-MM-ddTHH:mm:ssZ")
+             | ts_date(i)=BASE.AddSeconds(i*step_sec).ToString("yyyy-MM-dd")
+             | cycle(i)=values[i%period] | mc(i)=((long)i*m+a)%mod+min
+             | mc_pad(i)=prefix+(mc_value).ToString("D{digits}")
+             | sku_template(i)=prefix+(i+1).ToString("D{digits}")
+  5. Para JSON: {root_key}:[{field1:val1,...},{...},...]} sem espacos, virgula entre records
+  6. Para CSV: header\nrow\nrow\n... (LF apos cada linha incluindo ultima)
+  7. Para SVG: <?xml...?>\n<svg...>\n<element.../>\n...\n</svg>\n
+  BASE = new DateTime(2024,1,1,0,0,0,DateTimeKind.Utc)
+
+INVARIANTE: Hash(Reconstruido) == SHA256_ORIGINAL. Zero tolerancia para perda.
+DELTA esperado: (SeedSize + CodigoDecoder) versus 428211 bytes baseline.

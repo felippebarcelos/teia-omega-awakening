@@ -1,0 +1,54 @@
+═══ FORGE PROMPT P17.0: csv_transactions ═══
+DOMAIN: CSV
+FILE: csv_transactions.csv
+SIZE_ORIGINAL: 2500300 bytes
+SHA256_ORIGINAL: 19fdc14681277ecc0299cc1c7f0c8c17a87d9f7ca1f7ba12ac78ad331b41c232
+SIZE_GZIP: 545747 bytes
+SIZE_BROTLI: 361351 bytes
+SIZE_SEED: 741 bytes
+TARGET_BASELINE: 361351 bytes (min(gzip,brotli))
+
+SEED (salvar em: D:\TEIA_CLAUDE_AWAKENING\sandbox\crucible_p17\decoders\seed_csv_transactions.json):
+{"domain":"csv","file":"csv_transactions.csv","sha256_original":"19fdc14681277ecc0299cc1c7f0c8c17a87d9f7ca1f7ba12ac78ad331b41c232","count":55000,"header":"txn_id,date,cust_id,product_id,quantity,unit_price,region","fields":[{"name":"txn_id","type":"seq","start":1000001,"step":1},{"name":"date","type":"ts_date","step_sec":900},{"name":"cust_id","type":"mc_pad","m":41,"a":0,"mod":500,"min":1001,"prefix":"C","digits":4},{"name":"product_id","type":"mc_pad","m":13,"a":0,"mod":200,"min":1,"prefix":"P","digits":4},{"name":"quantity","type":"mc","m":3,"a":1,"mod":20,"min":1},{"name":"unit_price","type":"mc","m":37,"a":100,"mod":9900,"min":100},{"name":"region","type":"cycle","period":5,"values":["north","south","east","west","central"]}]}
+
+SKELETON SEMANTICO:
+FILE: csv_transactions.csv  SIZE: 2500300 bytes  SHA256: 19fdc14681277ecc0299cc1c7f0c8c17a87d9f7ca1f7ba12ac78ad331b41c232
+ROWS: 55000  COLUMNS: 7
+
+COLUMN SCHEMA:
+  txn_id: Numeric unique=55000 sample=["1000001", "1000002", "1000003", "1000004", "1000005", "1000006", "1000007", "1000008" ...]
+  date: String unique=573 sample=["2024-01-01", "2024-01-02", "2024-01-03", "2024-01-04", "2024-01-05", "2024-01-06", "2024-01-07", "2024-01-08" ...]
+  cust_id: String unique=500 sample=["C1001", "C1002", "C1003", "C1004", "C1005", "C1006", "C1007", "C1008" ...]
+  product_id: String unique=200 sample=["P0001", "P0002", "P0003", "P0004", "P0005", "P0006", "P0007", "P0008" ...]
+  quantity: Numeric unique=20 sample=["1", "10", "11", "12", "13", "14", "15", "16" ...]
+  unit_price: Numeric unique=9900 sample=["100", "1000", "1001", "1002", "1003", "1004", "1005", "1006" ...]
+  region: String unique=5 sample=["central", "east", "north", "south", "west" ]
+
+FIRST 5 ROWS (raw CSV):
+  txn_id,date,cust_id,product_id,quantity,unit_price,region
+  1000001,2024-01-01,C1001,P0001,2,200,north
+  1000002,2024-01-01,C1042,P0014,5,237,south
+  1000003,2024-01-01,C1083,P0027,8,274,east
+  1000004,2024-01-01,C1124,P0040,11,311,west
+  1000005,2024-01-01,C1165,P0053,14,348,central
+
+
+
+TASK:
+Escreva D:\TEIA_CLAUDE_AWAKENING\sandbox\crucible_p17\decoders\Decode-csv_transactions.ps1
+O decoder deve:
+  1. Ler seed (parametro -SeedFile) e reconstruir o arquivo original em -OutputFile
+  2. Usar Add-Type com C# para reconstrucao rapida (mesmo algoritmo do gerador)
+  3. Verificar SHA-256 e imprimir "SHA-256 PASS: <hash>" ou "SHA-256 FAIL"
+  4. Formulas: seq(i)=start+i*step | ts_seq(i)=BASE.AddSeconds(i*step_sec).ToString("yyyy-MM-ddTHH:mm:ssZ")
+             | ts_date(i)=BASE.AddSeconds(i*step_sec).ToString("yyyy-MM-dd")
+             | cycle(i)=values[i%period] | mc(i)=((long)i*m+a)%mod+min
+             | mc_pad(i)=prefix+(mc_value).ToString("D{digits}")
+             | sku_template(i)=prefix+(i+1).ToString("D{digits}")
+  5. Para JSON: {root_key}:[{field1:val1,...},{...},...]} sem espacos, virgula entre records
+  6. Para CSV: header\nrow\nrow\n... (LF apos cada linha incluindo ultima)
+  7. Para SVG: <?xml...?>\n<svg...>\n<element.../>\n...\n</svg>\n
+  BASE = new DateTime(2024,1,1,0,0,0,DateTimeKind.Utc)
+
+INVARIANTE: Hash(Reconstruido) == SHA256_ORIGINAL. Zero tolerancia para perda.
+DELTA esperado: (SeedSize + CodigoDecoder) versus 361351 bytes baseline.

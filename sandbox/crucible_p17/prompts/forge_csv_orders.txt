@@ -1,0 +1,54 @@
+═══ FORGE PROMPT P17.0: csv_orders ═══
+DOMAIN: CSV
+FILE: csv_orders.csv
+SIZE_ORIGINAL: 3057570 bytes
+SHA256_ORIGINAL: 2a7dbc90bd419f5465e86fdb2ddd9112a2d36c67abcb1f939b4848d1168e9664
+SIZE_GZIP: 321055 bytes
+SIZE_BROTLI: 210286 bytes
+SIZE_SEED: 909 bytes
+TARGET_BASELINE: 210286 bytes (min(gzip,brotli))
+
+SEED (salvar em: D:\TEIA_CLAUDE_AWAKENING\sandbox\crucible_p17\decoders\seed_csv_orders.json):
+{"domain":"csv","file":"csv_orders.csv","sha256_original":"2a7dbc90bd419f5465e86fdb2ddd9112a2d36c67abcb1f939b4848d1168e9664","count":50000,"header":"order_id,created_at,status,priority,customer_type,items_count,country","fields":[{"name":"order_id","type":"seq","start":5000001,"step":1},{"name":"created_at","type":"ts_seq","step_sec":120},{"name":"status","type":"cycle","period":5,"values":["pending","processing","shipped","delivered","cancelled"]},{"name":"priority","type":"cycle","period":5,"values":["normal","normal","normal","high","urgent"]},{"name":"customer_type","type":"cycle","period":4,"values":["individual","business","premium","enterprise"]},{"name":"items_count","type":"mc","m":7,"a":1,"mod":15,"min":1},{"name":"country","type":"cycle","period":25,"values":["US","CA","MX","BR","AR","GB","DE","FR","IT","ES","NL","SE","NO","DK","FI","PL","RU","JP","CN","KR","AU","NZ","IN","ZA","NG"]}]}
+
+SKELETON SEMANTICO:
+FILE: csv_orders.csv  SIZE: 3057570 bytes  SHA256: 2a7dbc90bd419f5465e86fdb2ddd9112a2d36c67abcb1f939b4848d1168e9664
+ROWS: 50000  COLUMNS: 7
+
+COLUMN SCHEMA:
+  order_id: Numeric unique=50000 sample=["5000001", "5000002", "5000003", "5000004", "5000005", "5000006", "5000007", "5000008" ...]
+  created_at: String unique=50000 sample=["2024-01-01T00:00:00Z", "2024-01-01T00:02:00Z", "2024-01-01T00:04:00Z", "2024-01-01T00:06:00Z", "2024-01-01T00:08:00Z", "2024-01-01T00:10:00Z", "2024-01-01T00:12:00Z", "2024-01-01T00:14:00Z" ...]
+  status: String unique=5 sample=["cancelled", "delivered", "pending", "processing", "shipped" ]
+  priority: String unique=3 sample=["high", "normal", "urgent" ]
+  customer_type: String unique=4 sample=["business", "enterprise", "individual", "premium" ]
+  items_count: Numeric unique=15 sample=["1", "10", "11", "12", "13", "14", "15", "2" ...]
+  country: String unique=25 sample=["AR", "AU", "BR", "CA", "CN", "DE", "DK", "ES" ...]
+
+FIRST 5 ROWS (raw CSV):
+  order_id,created_at,status,priority,customer_type,items_count,country
+  5000001,2024-01-01T00:00:00Z,pending,normal,individual,2,US
+  5000002,2024-01-01T00:02:00Z,processing,normal,business,9,CA
+  5000003,2024-01-01T00:04:00Z,shipped,normal,premium,1,MX
+  5000004,2024-01-01T00:06:00Z,delivered,high,enterprise,8,BR
+  5000005,2024-01-01T00:08:00Z,cancelled,urgent,individual,15,AR
+
+
+
+TASK:
+Escreva D:\TEIA_CLAUDE_AWAKENING\sandbox\crucible_p17\decoders\Decode-csv_orders.ps1
+O decoder deve:
+  1. Ler seed (parametro -SeedFile) e reconstruir o arquivo original em -OutputFile
+  2. Usar Add-Type com C# para reconstrucao rapida (mesmo algoritmo do gerador)
+  3. Verificar SHA-256 e imprimir "SHA-256 PASS: <hash>" ou "SHA-256 FAIL"
+  4. Formulas: seq(i)=start+i*step | ts_seq(i)=BASE.AddSeconds(i*step_sec).ToString("yyyy-MM-ddTHH:mm:ssZ")
+             | ts_date(i)=BASE.AddSeconds(i*step_sec).ToString("yyyy-MM-dd")
+             | cycle(i)=values[i%period] | mc(i)=((long)i*m+a)%mod+min
+             | mc_pad(i)=prefix+(mc_value).ToString("D{digits}")
+             | sku_template(i)=prefix+(i+1).ToString("D{digits}")
+  5. Para JSON: {root_key}:[{field1:val1,...},{...},...]} sem espacos, virgula entre records
+  6. Para CSV: header\nrow\nrow\n... (LF apos cada linha incluindo ultima)
+  7. Para SVG: <?xml...?>\n<svg...>\n<element.../>\n...\n</svg>\n
+  BASE = new DateTime(2024,1,1,0,0,0,DateTimeKind.Utc)
+
+INVARIANTE: Hash(Reconstruido) == SHA256_ORIGINAL. Zero tolerancia para perda.
+DELTA esperado: (SeedSize + CodigoDecoder) versus 210286 bytes baseline.

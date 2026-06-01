@@ -1,0 +1,63 @@
+═══ FORGE PROMPT P17.0: json_api_events ═══
+DOMAIN: JSON
+FILE: json_api_events.json
+SIZE_ORIGINAL: 5590766 bytes
+SHA256_ORIGINAL: b0836bd4c35f74b4b7ab576c7d26990dba762d16f9d6a26fcba0403130e0d3af
+SIZE_GZIP: 354929 bytes
+SIZE_BROTLI: 365522 bytes
+SIZE_SEED: 966 bytes
+TARGET_BASELINE: 354929 bytes (min(gzip,brotli))
+
+SEED (salvar em: D:\TEIA_CLAUDE_AWAKENING\sandbox\crucible_p17\decoders\seed_json_api_events.json):
+{"domain":"json","file":"json_api_events.json","sha256_original":"b0836bd4c35f74b4b7ab576c7d26990dba762d16f9d6a26fcba0403130e0d3af","count":40000,"root_key":"events","fields":[{"name":"id","type":"seq","start":1,"step":1,"fmt":"int"},{"name":"ts","type":"ts_seq","step_sec":60,"fmt":"str"},{"name":"level","type":"cycle","period":8,"values":["INFO","INFO","INFO","INFO","WARN","WARN","ERROR","DEBUG"],"fmt":"str"},{"name":"host","type":"cycle","period":5,"values":["web-01","web-02","db-01","cache-01","cache-02"],"fmt":"str"},{"name":"method","type":"cycle","period":4,"values":["GET","POST","PUT","DELETE"],"fmt":"str"},{"name":"endpoint","type":"cycle","period":8,"values":["/api/users","/api/orders","/api/products","/api/auth","/api/health","/api/metrics","/api/logs","/api/events"],"fmt":"str"},{"name":"status","type":"cycle","period":5,"values":[200,201,400,401,404],"fmt":"int"},{"name":"lat_ms","type":"mc","m":17,"a":1000,"mod":1999,"min":1,"fmt":"int"}]}
+
+SKELETON SEMANTICO:
+FILE: json_api_events.json  SIZE: 5590766 bytes  SHA256: b0836bd4c35f74b4b7ab576c7d26990dba762d16f9d6a26fcba0403130e0d3af
+
+TOP-LEVEL KEYS:
+  events: Array[40000]
+
+═══ ARRAY: events (40000 items) ═══
+FIELD SCHEMA:
+  endpoint: String unique=8 ["/api/auth", "/api/events", "/api/health", "/api/logs", "/api/metrics", "/api/orders", "/api/products", "/api/users"]
+  host: String unique=5 ["cache-01", "cache-02", "db-01", "web-01", "web-02"]
+  id: Int unique=40000 min=1 max=40000 pattern=Arithmetic(step=1)
+  lat_ms: Int unique=1999 min=1 max=1999 pattern=Arithmetic(step=17)
+  level: String unique=4 ["DEBUG", "ERROR", "INFO", "WARN"]
+  method: String unique=4 ["DELETE", "GET", "POST", "PUT"]
+  status: Int unique=5 min=200 max=404 pattern=Random
+  ts: DateTime unique=40000
+DATA (40000 items):
+  {"id":1,"ts":"2024-01-01T00:00:00Z","level":"INFO","host":"web-01","method":"GET","endpoint":"/api/users","status":200,"lat_ms":1001}
+  {"id":2,"ts":"2024-01-01T00:01:00Z","level":"INFO","host":"web-02","method":"POST","endpoint":"/api/orders","status":201,"lat_ms":1018}
+  {"id":3,"ts":"2024-01-01T00:02:00Z","level":"INFO","host":"db-01","method":"PUT","endpoint":"/api/products","status":400,"lat_ms":1035}
+  {"id":4,"ts":"2024-01-01T00:03:00Z","level":"INFO","host":"cache-01","method":"DELETE","endpoint":"/api/auth","status":401,"lat_ms":1052}
+  {"id":5,"ts":"2024-01-01T00:04:00Z","level":"WARN","host":"cache-02","method":"GET","endpoint":"/api/health","status":404,"lat_ms":1069}
+  ... (39990 items omitted) ...
+  {"id":39996,"ts":"2024-01-28T18:35:00Z","level":"INFO","host":"web-01","method":"DELETE","endpoint":"/api/auth","status":200,"lat_ms":1256}
+  {"id":39997,"ts":"2024-01-28T18:36:00Z","level":"WARN","host":"web-02","method":"GET","endpoint":"/api/health","status":201,"lat_ms":1273}
+  {"id":39998,"ts":"2024-01-28T18:37:00Z","level":"WARN","host":"db-01","method":"POST","endpoint":"/api/metrics","status":400,"lat_ms":1290}
+  {"id":39999,"ts":"2024-01-28T18:38:00Z","level":"ERROR","host":"cache-01","method":"PUT","endpoint":"/api/logs","status":401,"lat_ms":1307}
+  {"id":40000,"ts":"2024-01-28T18:39:00Z","level":"DEBUG","host":"cache-02","method":"DELETE","endpoint":"/api/events","status":404,"lat_ms":1324}
+
+
+
+
+TASK:
+Escreva D:\TEIA_CLAUDE_AWAKENING\sandbox\crucible_p17\decoders\Decode-json_api_events.ps1
+O decoder deve:
+  1. Ler seed (parametro -SeedFile) e reconstruir o arquivo original em -OutputFile
+  2. Usar Add-Type com C# para reconstrucao rapida (mesmo algoritmo do gerador)
+  3. Verificar SHA-256 e imprimir "SHA-256 PASS: <hash>" ou "SHA-256 FAIL"
+  4. Formulas: seq(i)=start+i*step | ts_seq(i)=BASE.AddSeconds(i*step_sec).ToString("yyyy-MM-ddTHH:mm:ssZ")
+             | ts_date(i)=BASE.AddSeconds(i*step_sec).ToString("yyyy-MM-dd")
+             | cycle(i)=values[i%period] | mc(i)=((long)i*m+a)%mod+min
+             | mc_pad(i)=prefix+(mc_value).ToString("D{digits}")
+             | sku_template(i)=prefix+(i+1).ToString("D{digits}")
+  5. Para JSON: {root_key}:[{field1:val1,...},{...},...]} sem espacos, virgula entre records
+  6. Para CSV: header\nrow\nrow\n... (LF apos cada linha incluindo ultima)
+  7. Para SVG: <?xml...?>\n<svg...>\n<element.../>\n...\n</svg>\n
+  BASE = new DateTime(2024,1,1,0,0,0,DateTimeKind.Utc)
+
+INVARIANTE: Hash(Reconstruido) == SHA256_ORIGINAL. Zero tolerancia para perda.
+DELTA esperado: (SeedSize + CodigoDecoder) versus 354929 bytes baseline.

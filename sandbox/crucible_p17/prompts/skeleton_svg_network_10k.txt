@@ -1,0 +1,23 @@
+FILE: svg_network_10k.svg  SIZE: 1678354 bytes  SHA256: 17d44a6b6a940976cf34c28175a7f694b136d8925a3e6a85ab003af3ca96b61f
+DOMAIN: SVG
+  viewBox: 0 0 800 600  width: 800  height: 600
+
+ELEMENT DISTRIBUTION (total=25000):
+  line: 15000
+  circle: 10000
+
+═══ ELEMENT: <line> (15000 instances) ═══
+  stroke: String unique=3 ["#7f8c8d", "#95a5a6", "#bdc3c7"]
+  stroke-width: Numeric unique=1 [1] ENUM_CANDIDATE
+  x1: Numeric unique=701 min=50 max=750 pattern=Random
+  x2: Numeric unique=701 min=50 max=750 pattern=Random
+  y1: Numeric unique=501 min=50 max=550 pattern=Random
+  y2: Numeric unique=501 min=50 max=550 pattern=Random
+
+═══ ELEMENT: <circle> (10000 instances) ═══
+  cx: Numeric unique=701 min=50 max=750 pattern=Random
+  cy: Numeric unique=501 min=50 max=550 pattern=Random
+  fill: String unique=4 ["#2ecc71", "#3498db", "#e74c3c", "#f39c12"]
+  r: Numeric unique=1 [6] ENUM_CANDIDATE
+
+

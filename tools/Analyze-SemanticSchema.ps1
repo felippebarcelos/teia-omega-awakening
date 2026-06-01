@@ -40,7 +40,7 @@ param(
     [Parameter(Mandatory)]
     [string]$InputFile,
 
-    [ValidateSet('JSON','CSV','AUTO')]
+    [ValidateSet('JSON','CSV','SVG','AUTO')]
     [string]$Mode           = 'AUTO',
 
     [int]$MaxUniqueDisplay  = 25,
@@ -220,6 +220,117 @@ function Build-JsonSkeleton {
     return $sb.ToString()
 }
 
+# ── Analise SVG ───────────────────────────────────────────────────────────────
+
+function Build-SvgSkeleton {
+    param([string]$FilePath, [long]$FileSize, [string]$Sha256,
+          [int]$MaxUniq, [int]$MaxInline)
+
+    $xmlStr = Get-Content -LiteralPath $FilePath -Raw -Encoding UTF8
+    $doc    = New-Object System.Xml.XmlDocument
+    $doc.LoadXml($xmlStr)
+    $svgEl  = $doc.DocumentElement
+
+    $skip = [System.Collections.Generic.HashSet[string]]@(
+        'svg','defs','g','style','title','desc','metadata',
+        'linearGradient','radialGradient','stop','symbol',
+        'use','marker','clipPath','mask','pattern',
+        'filter','feGaussianBlur','feMerge','feMergeNode')
+
+    $elemCounts = [System.Collections.Generic.Dictionary[string,int]]::new()
+    $allNodes   = $doc.GetElementsByTagName('*')
+    foreach ($node in $allNodes) {
+        $local = $node.LocalName
+        if ($skip.Contains($local)) { continue }
+        if (-not $elemCounts.ContainsKey($local)) { $elemCounts[$local] = 0 }
+        $elemCounts[$local]++
+    }
+
+    $totalEl = 0; foreach ($v in $elemCounts.Values) { $totalEl += $v }
+
+    $sb = [System.Text.StringBuilder]::new()
+    [void]$sb.AppendLine("FILE: $(Split-Path $FilePath -Leaf)  SIZE: $FileSize bytes  SHA256: $Sha256")
+    [void]$sb.AppendLine("DOMAIN: SVG")
+    [void]$sb.AppendLine("  viewBox: $($svgEl.GetAttribute('viewBox'))  width: $($svgEl.GetAttribute('width'))  height: $($svgEl.GetAttribute('height'))")
+    [void]$sb.AppendLine("")
+    [void]$sb.AppendLine("ELEMENT DISTRIBUTION (total=$totalEl):")
+    foreach ($kv in ($elemCounts.GetEnumerator() | Sort-Object Value -Descending)) {
+        [void]$sb.AppendLine("  $($kv.Key): $($kv.Value)")
+    }
+    [void]$sb.AppendLine("")
+
+    # Analyze top-3 element types in detail
+    $topTypes = $elemCounts.GetEnumerator() | Sort-Object Value -Descending | Select-Object -First 3
+    foreach ($typeKv in $topTypes) {
+        $tag   = $typeKv.Key
+        $count = $typeKv.Value
+        [void]$sb.AppendLine("═══ ELEMENT: <$tag> ($count instances) ═══")
+
+        $elements = [System.Collections.Generic.List[System.Xml.XmlElement]]::new()
+        foreach ($node in $allNodes) {
+            if ($node.LocalName -eq $tag) { $elements.Add([System.Xml.XmlElement]$node) }
+        }
+
+        # Collect unique attribute names across all elements of this type
+        $attrNames = [System.Collections.Generic.HashSet[string]]::new()
+        foreach ($el in $elements) {
+            foreach ($attr in $el.Attributes) { [void]$attrNames.Add($attr.LocalName) }
+        }
+
+        foreach ($attrName in ($attrNames | Sort-Object)) {
+            $vals = [System.Collections.Generic.List[string]]::new()
+            foreach ($el in $elements) {
+                $v = $el.GetAttribute($attrName)
+                if ($v -ne $null -and $v -ne '') { $vals.Add($v) }
+            }
+            if ($vals.Count -eq 0) { continue }
+
+            # Test numeric
+            $numSample = [System.Collections.Generic.List[double]]::new()
+            $allNum = $true
+            $probe  = [Math]::Min($vals.Count, 100)
+            for ($k = 0; $k -lt $probe; $k++) {
+                $d = 0.0
+                if ([double]::TryParse($vals[$k], [System.Globalization.NumberStyles]::Any, $IC, [ref]$d)) {
+                    $numSample.Add($d)
+                } else { $allNum = $false; break }
+            }
+
+            if ($allNum -and $numSample.Count -gt 0) {
+                $allNum2 = [System.Collections.Generic.List[double]]::new()
+                foreach ($v in $vals) {
+                    $d = 0.0
+                    if ([double]::TryParse($v, [System.Globalization.NumberStyles]::Any, $IC, [ref]$d)) { $allNum2.Add($d) }
+                }
+                $arr    = $allNum2.ToArray()
+                $mn     = ($arr | Measure-Object -Minimum).Minimum
+                $mx     = ($arr | Measure-Object -Maximum).Maximum
+                $uniqN  = ($vals | Sort-Object -Unique).Count
+                if ($uniqN -le 20) {
+                    $uVals = ($vals | Sort-Object -Unique) -join ', '
+                    [void]$sb.AppendLine("  ${attrName}: Numeric unique=$uniqN [$uVals] ENUM_CANDIDATE")
+                } else {
+                    $pattern = Detect-NumericPattern ($arr | Select-Object -First 50)
+                    [void]$sb.AppendLine("  ${attrName}: Numeric unique=$uniqN min=$mn max=$mx pattern=$pattern")
+                }
+            } else {
+                $uniq  = ($vals | Sort-Object -Unique)
+                $uCnt  = $uniq.Count
+                if ($uCnt -le $MaxUniq) {
+                    $sample = ($uniq | Select-Object -First 10 | ForEach-Object { "`"$_`"" }) -join ', '
+                    [void]$sb.AppendLine("  ${attrName}: String unique=$uCnt [$sample]")
+                } else {
+                    $sample = ($uniq | Select-Object -First 5 | ForEach-Object { "`"$_`"" }) -join ', '
+                    [void]$sb.AppendLine("  ${attrName}: String unique=$uCnt sample=[$sample ...]")
+                }
+            }
+        }
+        [void]$sb.AppendLine("")
+    }
+
+    return $sb.ToString()
+}
+
 # ── Analise CSV ───────────────────────────────────────────────────────────────
 
 function Build-CsvSkeleton {
@@ -277,6 +388,7 @@ $detectedMode = $Mode
 if ($Mode -eq 'AUTO') {
     if ($ext -in @('.json', '.jsonl'))    { $detectedMode = 'JSON' }
     elseif ($ext -in @('.csv', '.tsv'))   { $detectedMode = 'CSV'  }
+    elseif ($ext -eq '.svg')              { $detectedMode = 'SVG'  }
     else {
         # Try JSON parse
         try {
@@ -314,6 +426,16 @@ if ($detectedMode -eq 'JSON') {
         size      = $size
         sha256    = $sha256
         skeleton  = $skeleton
+    }
+} elseif ($detectedMode -eq 'SVG') {
+    $skeleton   = Build-SvgSkeleton -FilePath $InputFile -FileSize $size -Sha256 $sha256 `
+                                    -MaxUniq $MaxUniqueDisplay -MaxInline $MaxArrayInline
+    $jsonResult = [ordered]@{
+        mode     = 'SVG'
+        file     = $InputFile
+        size     = $size
+        sha256   = $sha256
+        skeleton = $skeleton
     }
 } else {
     Write-Error "Modo nao suportado: $detectedMode"; exit 1

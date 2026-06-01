@@ -1,0 +1,20 @@
+FILE: csv_sensor_data.csv  SIZE: 4331747 bytes  SHA256: 130632d0c2241ab21bf87a6292b9954a75e8fdb312659b5c51599ec3c476ccf2
+ROWS: 70000  COLUMNS: 7
+
+COLUMN SCHEMA:
+  id: Numeric unique=70000 sample=["1", "10", "100", "1000", "10000", "10001", "10002", "10003" ...]
+  timestamp: String unique=70000 sample=["2024-01-01T00:00:00Z", "2024-01-01T00:01:00Z", "2024-01-01T00:02:00Z", "2024-01-01T00:03:00Z", "2024-01-01T00:04:00Z", "2024-01-01T00:05:00Z", "2024-01-01T00:06:00Z", "2024-01-01T00:07:00Z" ...]
+  sensor_id: String unique=50 sample=["SENSOR-001", "SENSOR-002", "SENSOR-003", "SENSOR-004", "SENSOR-005", "SENSOR-006", "SENSOR-007", "SENSOR-008" ...]
+  location: String unique=20 sample=["basement", "floor_1", "floor_2", "floor_3", "floor_4", "lab_1", "lab_2", "lobby" ...]
+  type: String unique=5 sample=["co2", "humidity", "light", "pressure", "temperature" ]
+  reading: Numeric unique=1000 sample=["0", "1", "10", "100", "101", "102", "103", "104" ...]
+  status: String unique=2 sample=["OK", "WARN" ]
+
+FIRST 5 ROWS (raw CSV):
+  id,timestamp,sensor_id,location,type,reading,status
+  1,2024-01-01T00:00:00Z,SENSOR-001,room_a,temperature,0,OK
+  2,2024-01-01T00:01:00Z,SENSOR-012,room_b,humidity,19,OK
+  3,2024-01-01T00:02:00Z,SENSOR-023,room_c,pressure,38,OK
+  4,2024-01-01T00:03:00Z,SENSOR-034,room_d,co2,57,OK
+  5,2024-01-01T00:04:00Z,SENSOR-045,room_e,light,76,OK
+

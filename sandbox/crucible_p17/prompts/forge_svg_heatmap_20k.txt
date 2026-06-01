@@ -1,0 +1,49 @@
+═══ FORGE PROMPT P17.0: svg_heatmap_20k ═══
+DOMAIN: SVG
+FILE: svg_heatmap_20k.svg
+SIZE_ORIGINAL: 1214237 bytes
+SHA256_ORIGINAL: 363a9b05f383e48deb968bebc7b3c28e8dfafd1dec68bd842011b7db32282e92
+SIZE_GZIP: 85477 bytes
+SIZE_BROTLI: 59799 bytes
+SIZE_SEED: 508 bytes
+TARGET_BASELINE: 59799 bytes (min(gzip,brotli))
+
+SEED (salvar em: D:\TEIA_CLAUDE_AWAKENING\sandbox\crucible_p17\decoders\seed_svg_heatmap_20k.json):
+{"domain":"svg","file":"svg_heatmap_20k.svg","sha256_original":"363a9b05f383e48deb968bebc7b3c28e8dfafd1dec68bd842011b7db32282e92","cols":200,"rows":100,"element":"rect","x_formula":"col*4+10","y_formula":"row*5+10","width":3,"height":4,"fill_cycle":"i%24","palette":["#0d0221","#1a0442","#270663","#340884","#2e1a6e","#3829a5","#2255c8","#1a7fd4","#12aacc","#0acfc4","#05e8b0","#17f09a","#2aea7a","#4de050","#70d42a","#96c414","#bcb00e","#e09920","#f07832","#f95044","#ff2a55","#f20966","#cc0078","#99008a"]}
+
+SKELETON SEMANTICO:
+FILE: svg_heatmap_20k.svg  SIZE: 1214237 bytes  SHA256: 363a9b05f383e48deb968bebc7b3c28e8dfafd1dec68bd842011b7db32282e92
+DOMAIN: SVG
+  viewBox: 0 0 820 520  width: 820  height: 520
+
+ELEMENT DISTRIBUTION (total=20000):
+  rect: 20000
+
+═══ ELEMENT: <rect> (20000 instances) ═══
+  fill: String unique=24 ["#05e8b0", "#0acfc4", "#0d0221", "#12aacc", "#17f09a", "#1a0442", "#1a7fd4", "#2255c8", "#270663", "#2aea7a"]
+  height: Numeric unique=1 [4] ENUM_CANDIDATE
+  width: Numeric unique=1 [3] ENUM_CANDIDATE
+  x: Numeric unique=200 min=10 max=806 pattern=Arithmetic(step=4)
+  y: Numeric unique=100 min=10 max=505 pattern=Constant
+
+
+
+
+TASK:
+Escreva D:\TEIA_CLAUDE_AWAKENING\sandbox\crucible_p17\decoders\Decode-svg_heatmap_20k.ps1
+O decoder deve:
+  1. Ler seed (parametro -SeedFile) e reconstruir o arquivo original em -OutputFile
+  2. Usar Add-Type com C# para reconstrucao rapida (mesmo algoritmo do gerador)
+  3. Verificar SHA-256 e imprimir "SHA-256 PASS: <hash>" ou "SHA-256 FAIL"
+  4. Formulas: seq(i)=start+i*step | ts_seq(i)=BASE.AddSeconds(i*step_sec).ToString("yyyy-MM-ddTHH:mm:ssZ")
+             | ts_date(i)=BASE.AddSeconds(i*step_sec).ToString("yyyy-MM-dd")
+             | cycle(i)=values[i%period] | mc(i)=((long)i*m+a)%mod+min
+             | mc_pad(i)=prefix+(mc_value).ToString("D{digits}")
+             | sku_template(i)=prefix+(i+1).ToString("D{digits}")
+  5. Para JSON: {root_key}:[{field1:val1,...},{...},...]} sem espacos, virgula entre records
+  6. Para CSV: header\nrow\nrow\n... (LF apos cada linha incluindo ultima)
+  7. Para SVG: <?xml...?>\n<svg...>\n<element.../>\n...\n</svg>\n
+  BASE = new DateTime(2024,1,1,0,0,0,DateTimeKind.Utc)
+
+INVARIANTE: Hash(Reconstruido) == SHA256_ORIGINAL. Zero tolerancia para perda.
+DELTA esperado: (SeedSize + CodigoDecoder) versus 59799 bytes baseline.
