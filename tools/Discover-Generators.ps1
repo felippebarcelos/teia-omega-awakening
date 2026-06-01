@@ -1,9 +1,11 @@
 <#
 .SYNOPSIS
-    Discover-Generators.ps1 - P24.0 Law vs Noise Mapper
+    Discover-Generators.ps1 - P25.0 Representability Oracle
 
 .DESCRIPTION
     Scans local files and estimates where data is mostly law, hybrid, or noise.
+    P25 adds an Advantage Predictor: a pre-forge estimate of whether seed plus
+    decoder representation can beat Brotli Optimal.
     The script is read-only for the scanned corpus: it never compresses, ingests,
     deletes, rewrites, or stubs input files.
 
@@ -16,6 +18,9 @@
 .PARAMETER ReportPath
     Markdown matrix path. Defaults to D:\TEIA_CORE\docs\TEIA_LAW_VS_NOISE_MATRIX.md.
 
+.PARAMETER TheoryPath
+    Scientific report path. Defaults to D:\TEIA_CORE\docs\TEIA_REPRESENTABILITY_THEORY.md.
+
 .PARAMETER MaxFiles
     Optional cap for deterministic sampling. 0 means no cap.
 
@@ -23,7 +28,7 @@
     Maximum bytes read per file for heuristic analysis.
 
 .PARAMETER IncludeTeiaControl
-    Include .teia_stub and .teia_seed files. By default these are skipped.
+    Include TEIA control files and corpus manifests. By default these are skipped.
 
 .PARAMETER Quiet
     Suppress the final summary object.
@@ -32,6 +37,7 @@
 param(
     [string]$ScanRoot       = 'D:\TEIA_USER\MyRealData',
     [string]$ReportPath     = 'D:\TEIA_CORE\docs\TEIA_LAW_VS_NOISE_MATRIX.md',
+    [string]$TheoryPath     = 'D:\TEIA_CORE\docs\TEIA_REPRESENTABILITY_THEORY.md',
     [int]$MaxFiles          = 0,
     [int]$MaxSampleBytes    = 1048576,
     [switch]$IncludeTeiaControl,
@@ -187,6 +193,115 @@ function Get-MagicKind([byte[]]$Bytes) {
     if ($Bytes[0] -eq 0x50 -and $Bytes[1] -eq 0x4B) { return 'zip' }
     if ($Bytes[0] -eq 0x1F -and $Bytes[1] -eq 0x8B) { return 'gzip' }
     return 'unknown'
+}
+
+function Measure-BrotliOptimalBytes([string]$Path) {
+    $inStream = [System.IO.File]::Open($Path, [System.IO.FileMode]::Open, [System.IO.FileAccess]::Read, [System.IO.FileShare]::ReadWrite)
+    $outStream = [System.IO.MemoryStream]::new()
+    try {
+        $level = [System.IO.Compression.CompressionLevel]::Optimal
+        $br = [System.IO.Compression.BrotliStream]::new($outStream, $level, $true)
+        try {
+            $inStream.CopyTo($br, 65536)
+        } finally {
+            $br.Dispose()
+        }
+        return [int64]$outStream.Length
+    } finally {
+        $outStream.Dispose()
+        $inStream.Dispose()
+    }
+}
+
+function Get-EvidenceNumber([string]$Evidence, [string]$Name, [double]$Default = 0.0) {
+    $pattern = [regex]::Escape($Name) + '=([0-9.]+)'
+    $m = [regex]::Match($Evidence, $pattern)
+    if ($m.Success) {
+        return [double]::Parse($m.Groups[1].Value, $IC)
+    }
+    return $Default
+}
+
+function Get-EstimatedTeiaBytes([string]$Kind, [int64]$OriginalBytes, [int64]$BrotliBytes, [double]$Law, [double]$Noise, [string]$Evidence) {
+    $base = switch ($Kind) {
+        'csv-table'          { 2800 }
+        'structured-log'     { 3400 }
+        'json-schema'        { 4200 }
+        'xml-svg-tree'       { 3600 }
+        'repetition-pattern' { 1800 }
+        default              { 6400 }
+    }
+
+    $residualFactor = switch ($Kind) {
+        'csv-table'          { [Math]::Pow($Noise, 2.2) * 0.42 }
+        'structured-log'     { [Math]::Pow($Noise, 2.0) * 0.48 }
+        'json-schema'        { [Math]::Pow($Noise, 1.15) * 0.92 }
+        'xml-svg-tree'       { [Math]::Pow($Noise, 1.45) * 0.70 }
+        'repetition-pattern' { [Math]::Pow($Noise, 2.6) * 0.20 }
+        default              { 1.05 }
+    }
+
+    $complexity = 0
+    if ($Kind -eq 'json-schema') {
+        $keys = Get-EvidenceNumber $Evidence 'json_keys'
+        $unique = Get-EvidenceNumber $Evidence 'unique_keys'
+        $uniqueRatio = if ($keys -gt 0) { $unique / $keys } else { 1.0 }
+        $complexity += [int64](120 * $unique)
+        $complexity += [int64]($BrotliBytes * [Math]::Min(0.35, $uniqueRatio * 1.50))
+    } elseif ($Kind -eq 'csv-table') {
+        $columns = Get-EvidenceNumber $Evidence 'columns'
+        $complexity += [int64](160 * $columns)
+    } elseif ($Kind -eq 'structured-log') {
+        $shapeRepeat = Get-EvidenceNumber $Evidence 'shape_repeat'
+        $complexity += [int64]($BrotliBytes * (0.20 * (1.0 - [Math]::Min(1.0, $shapeRepeat))))
+    } elseif ($Kind -eq 'xml-svg-tree') {
+        $uniqueTags = Get-EvidenceNumber $Evidence 'unique_tags'
+        $attrs = Get-EvidenceNumber $Evidence 'attrs'
+        $complexity += [int64](120 * $uniqueTags)
+        $complexity += [int64](12 * [Math]::Min($attrs, 2000))
+    }
+
+    $lawCredit = [Math]::Max(0.12, 1.05 - (0.45 * $Law))
+    $estimate = [int64]($base + $complexity + ($BrotliBytes * $residualFactor * $lawCredit))
+    if ($Kind -eq 'repetition-pattern' -and $Law -gt 0.85) {
+        $estimate = [int64][Math]::Min($estimate, 2048 + ($OriginalBytes * 0.002))
+    }
+    return [int64][Math]::Max(256, $estimate)
+}
+
+function Get-RepresentabilityClass([string]$Kind, [double]$Law, [double]$Noise, [double]$Advantage, [string]$Evidence) {
+    $periodScore = Get-EvidenceNumber $Evidence 'period_score'
+    if (($Kind -eq 'repetition-pattern') -and ($periodScore -ge 0.80) -and ($Noise -ge 0.45)) {
+        return 'CLASSE D'
+    }
+    if (($Law -lt 0.62) -and ($Advantage -ge 0.15)) {
+        return 'CLASSE D'
+    }
+    if (($Law -ge 0.62) -and ($Advantage -ge 0.15)) {
+        return 'CLASSE A'
+    }
+    if ($Law -ge 0.62) {
+        return 'CLASSE B'
+    }
+    return 'CLASSE C'
+}
+
+function Get-TeiaPrediction([string]$Class) {
+    switch ($Class) {
+        'CLASSE A' { return 'TEIA VENCE' }
+        'CLASSE D' { return 'TEIA INVESTIGA' }
+        default { return 'TEIA RECUA' }
+    }
+}
+
+function Get-RepresentabilityMeaning([string]$Class) {
+    switch ($Class) {
+        'CLASSE A' { return 'Alta lei e alta vantagem procedural. Estruturas N x M ou logs com gramatica forte.' }
+        'CLASSE B' { return 'Alta lei e baixa vantagem procedural. Brotli ja captura quase todo o ganho disponivel.' }
+        'CLASSE C' { return 'Baixa lei e baixa vantagem. Entropia organica domina.' }
+        'CLASSE D' { return 'Falsa entropia. Parece ruido, mas ha indicio de gerador matematico.' }
+        default { return 'Classe desconhecida.' }
+    }
 }
 
 function New-Signal([string]$Kind, [double]$Law, [string[]]$Evidence) {
@@ -355,11 +470,13 @@ function Get-Category([double]$Law, [double]$Noise, [double]$Ratio) {
     return 'DOMINIO ENTROPICO'
 }
 
-function Get-NextAction([string]$Category, [string]$Kind) {
-    switch ($Category) {
-        'DOMINIO PROCEDURAL' { return "Forja: sintetizar gerador $Kind e provar Write == Read" }
-        'DOMINIO HIBRIDO'    { return "Roteador: extrair gramatica para codigo e isolar residuo" }
-        default              { return "Indexacao: preservar por CAS/hash e evitar forja especulativa" }
+function Get-NextAction([string]$RepresentabilityClass, [string]$Kind) {
+    switch ($RepresentabilityClass) {
+        'CLASSE A' { return "Forja: sintetizar gerador $Kind e provar Delta real por SHA-256" }
+        'CLASSE B' { return "Recuo: manter Brotli/CAS; lei estrutural sem vantagem suficiente" }
+        'CLASSE C' { return "Indexacao: preservar por CAS/hash e evitar forja especulativa" }
+        'CLASSE D' { return "Investigacao: testar gerador matematico antes de classificar como ruido" }
+        default    { return "Auditoria: classe ausente" }
     }
 }
 
@@ -417,19 +534,31 @@ function Analyze-File([System.IO.FileInfo]$File, [string]$Root) {
         "printable=$((Format-Score $printable))",
         "sample_bytes=$($bytes.Length)"
     )) -join '; ')
+    $brotliBytes = Measure-BrotliOptimalBytes $File.FullName
+    $brotliRatio = if ($File.Length -gt 0) { $brotliBytes / [double]$File.Length } else { 1.0 }
+    $estimatedTeiaBytes = Get-EstimatedTeiaBytes $best.Kind $File.Length $brotliBytes $law $noise $evidence
+    $advantage = if ($brotliBytes -gt 0) { ($brotliBytes - $estimatedTeiaBytes) / [double]$brotliBytes } else { 0.0 }
+    $reprClass = Get-RepresentabilityClass $best.Kind $law $noise $advantage $evidence
+    $prediction = Get-TeiaPrediction $reprClass
 
     return [pscustomobject]@{
         RelativePath = $relative
         Extension = if ([string]::IsNullOrWhiteSpace($ext)) { '[none]' } else { $ext }
         Bytes = [int64]$File.Length
         SampleBytes = [int]$bytes.Length
+        BrotliBytes = [int64]$brotliBytes
+        BrotliRatio = Round4 $brotliRatio
         SignalKind = $best.Kind
         LawIndex = Round4 $law
         NoiseIndex = Round4 $noise
         LawToNoiseRatio = Round4 $ratio
+        EstimatedTeiaBytes = [int64]$estimatedTeiaBytes
+        AdvantagePredictor = Round4 $advantage
+        RepresentabilityClass = $reprClass
+        TeiaPrediction = $prediction
         Category = $category
         Evidence = $evidence
-        NextAction = Get-NextAction $category $best.Kind
+        NextAction = Get-NextAction $reprClass $best.Kind
     }
 }
 
@@ -453,8 +582,9 @@ function Build-Report([object[]]$Rows, [object[]]$Errors, [int]$Skipped, [string
     $avgLaw = if ($Rows.Count -gt 0) { (($Rows | Measure-Object LawIndex -Average).Average) } else { 0.0 }
     $avgNoise = if ($Rows.Count -gt 0) { (($Rows | Measure-Object NoiseIndex -Average).Average) } else { 0.0 }
     $groups = @($Rows | Group-Object Category | Sort-Object Name)
+    $classGroups = @($Rows | Group-Object RepresentabilityClass | Sort-Object Name)
 
-    [void]$sb.AppendLine('# TEIA P24.0 - Law vs Noise Matrix')
+    [void]$sb.AppendLine('# TEIA P25.0 - Law vs Noise and Representability Matrix')
     [void]$sb.AppendLine('')
     [void]$sb.AppendLine('Status: deterministic discovery report for Storage as Computation.')
     [void]$sb.AppendLine('')
@@ -463,7 +593,7 @@ function Build-Report([object[]]$Rows, [object[]]$Errors, [int]$Skipped, [string
     [void]$sb.AppendLine('- P0 Core remains read-only: no file is compressed, stubbed, deleted, or moved.')
     [void]$sb.AppendLine('- Write == Read is preserved: the mapper reads samples and writes only this matrix.')
     [void]$sb.AppendLine('- The report contains no wall-clock timestamp, so identical input produces identical output.')
-    [void]$sb.AppendLine('- TEIA control files are skipped by default because stubs are pointers, not organic samples.')
+    [void]$sb.AppendLine('- TEIA control files and corpus manifests are skipped by default because they are pointers or inventory, not organic samples.')
     [void]$sb.AppendLine('')
     [void]$sb.AppendLine('## Scan Scope')
     [void]$sb.AppendLine('')
@@ -471,7 +601,7 @@ function Build-Report([object[]]$Rows, [object[]]$Errors, [int]$Skipped, [string
     [void]$sb.AppendLine("|---|---:|")
     [void]$sb.AppendLine("| Scan root | $(Sanitize-MarkdownCell $Root) |")
     [void]$sb.AppendLine("| Files analyzed | $($Rows.Count) |")
-    [void]$sb.AppendLine("| TEIA control files skipped | $Skipped |")
+    [void]$sb.AppendLine("| Control files skipped | $Skipped |")
     [void]$sb.AppendLine("| Read errors | $($Errors.Count) |")
     [void]$sb.AppendLine("| Total bytes represented | $totalBytes |")
     [void]$sb.AppendLine("| Max sample bytes per file | $SampleLimit |")
@@ -494,26 +624,43 @@ function Build-Report([object[]]$Rows, [object[]]$Errors, [int]$Skipped, [string
         [void]$sb.AppendLine('| [none] | 0 | No eligible organic files found. |')
     }
     [void]$sb.AppendLine('')
+    [void]$sb.AppendLine('## Scientific Representability Classes')
+    [void]$sb.AppendLine('')
+    [void]$sb.AppendLine('| Class | Count | Prediction | Meaning |')
+    [void]$sb.AppendLine('|---|---:|---|---|')
+    foreach ($g in $classGroups) {
+        $prediction = Get-TeiaPrediction $g.Name
+        $meaning = Get-RepresentabilityMeaning $g.Name
+        [void]$sb.AppendLine("| $($g.Name) | $($g.Count) | $prediction | $meaning |")
+    }
+    if ($classGroups.Count -eq 0) {
+        [void]$sb.AppendLine('| [none] | 0 | [none] | No eligible organic files found. |')
+    }
+    [void]$sb.AppendLine('')
     [void]$sb.AppendLine('## Candidate Matrix')
     [void]$sb.AppendLine('')
-    [void]$sb.AppendLine('| Path | Class | Signal | Bytes | Law | Noise | Ratio | Evidence | Next action |')
-    [void]$sb.AppendLine('|---|---|---|---:|---:|---:|---:|---|---|')
+    [void]$sb.AppendLine('| Path | Domain | Rep Class | Prediction | Signal | Bytes | Brotli | TEIA estimate | Law | Noise | Advantage | Evidence | Next action |')
+    [void]$sb.AppendLine('|---|---|---|---|---|---:|---:|---:|---:|---:|---:|---|---|')
     foreach ($r in $ordered) {
         [void]$sb.AppendLine((
-            '| {0} | {1} | {2} | {3} | {4} | {5} | {6} | {7} | {8} |' -f
+            '| {0} | {1} | {2} | {3} | {4} | {5} | {6} | {7} | {8} | {9} | {10} | {11} | {12} |' -f
             (Sanitize-MarkdownCell $r.RelativePath),
             $r.Category,
+            $r.RepresentabilityClass,
+            $r.TeiaPrediction,
             $r.SignalKind,
             $r.Bytes,
+            $r.BrotliBytes,
+            $r.EstimatedTeiaBytes,
             (Format-Score $r.LawIndex),
             (Format-Score $r.NoiseIndex),
-            (Format-Score $r.LawToNoiseRatio),
+            (Format-Score $r.AdvantagePredictor),
             (Sanitize-MarkdownCell $r.Evidence),
             (Sanitize-MarkdownCell $r.NextAction)
         ))
     }
     if ($ordered.Count -eq 0) {
-        [void]$sb.AppendLine('| [none] | [none] | [none] | 0 | 0.00 | 0.00 | 0.00 | No eligible file. | Provide organic samples or include TEIA control explicitly. |')
+        [void]$sb.AppendLine('| [none] | [none] | [none] | [none] | [none] | 0 | 0 | 0 | 0.00 | 0.00 | 0.00 | No eligible file. | Provide organic samples or include TEIA control explicitly. |')
     }
     if ($Errors.Count -gt 0) {
         [void]$sb.AppendLine('')
@@ -531,6 +678,97 @@ function Build-Report([object[]]$Rows, [object[]]$Errors, [int]$Skipped, [string
     [void]$sb.AppendLine('- Procedural: synthesize a domain generator and prove byte identity by SHA-256.')
     [void]$sb.AppendLine('- Hybrid: encode stable grammar as code, then preserve residual entropy with classical storage.')
     [void]$sb.AppendLine('- Entropic: index and preserve; do not spend synthesis cycles where noise dominates.')
+    [void]$sb.AppendLine('- Class A predicts real Delta gain before forging; Class B and Class C predict retreat; Class D requires a mathematical generator probe.')
+    return $sb.ToString()
+}
+
+function Build-TheoryReport([object[]]$Rows, [object[]]$Errors, [int]$Skipped, [string]$Root, [int]$SampleLimit) {
+    $sb = [System.Text.StringBuilder]::new()
+    $ordered = @($Rows | Sort-Object RepresentabilityClass, RelativePath)
+    $total = $Rows.Count
+    $classA = @($Rows | Where-Object { $_.RepresentabilityClass -eq 'CLASSE A' })
+    $classB = @($Rows | Where-Object { $_.RepresentabilityClass -eq 'CLASSE B' })
+    $classC = @($Rows | Where-Object { $_.RepresentabilityClass -eq 'CLASSE C' })
+    $classD = @($Rows | Where-Object { $_.RepresentabilityClass -eq 'CLASSE D' })
+    $aConfirmed = @($classA | Where-Object { $_.EstimatedTeiaBytes -lt $_.BrotliBytes })
+    $aPct = if ($classA.Count -gt 0) { [Math]::Round(100.0 * $aConfirmed.Count / $classA.Count, 1) } else { 0.0 }
+    $predictedWins = @($Rows | Where-Object { $_.TeiaPrediction -in @('TEIA VENCE', 'TEIA INVESTIGA') })
+    $predictedRetreat = @($Rows | Where-Object { $_.TeiaPrediction -eq 'TEIA RECUA' })
+    $sumOrig = [int64](($Rows | Measure-Object Bytes -Sum).Sum)
+    $sumBrotli = [int64](($Rows | Measure-Object BrotliBytes -Sum).Sum)
+    $sumTeia = [int64](($Rows | Measure-Object EstimatedTeiaBytes -Sum).Sum)
+    $portfolioAdv = if ($sumBrotli -gt 0) { [Math]::Round(100.0 * ($sumBrotli - $sumTeia) / $sumBrotli, 2) } else { 0.0 }
+
+    [void]$sb.AppendLine('# TEIA P25.0 - Theory of Representability')
+    [void]$sb.AppendLine('')
+    [void]$sb.AppendLine('## Abstract')
+    [void]$sb.AppendLine('')
+    [void]$sb.AppendLine('This document tests a falsifiable hypothesis: high structural law does not necessarily imply high procedural advantage. The oracle estimates whether Storage as Computation should beat Brotli Optimal before any code forge is attempted.')
+    [void]$sb.AppendLine('')
+    [void]$sb.AppendLine('## Corpus and Method')
+    [void]$sb.AppendLine('')
+    [void]$sb.AppendLine("| Field | Value |")
+    [void]$sb.AppendLine("|---|---:|")
+    [void]$sb.AppendLine("| Scan root | $(Sanitize-MarkdownCell $Root) |")
+    [void]$sb.AppendLine("| Files analyzed | $total |")
+    [void]$sb.AppendLine("| Control files skipped | $Skipped |")
+    [void]$sb.AppendLine("| Read errors | $($Errors.Count) |")
+    [void]$sb.AppendLine("| Max sample bytes per file | $SampleLimit |")
+    [void]$sb.AppendLine("| Original bytes represented | $sumOrig |")
+    [void]$sb.AppendLine("| Brotli Optimal bytes | $sumBrotli |")
+    [void]$sb.AppendLine("| TEIA pre-forge estimate bytes | $sumTeia |")
+    [void]$sb.AppendLine("| Portfolio predicted Delta gain pct | $($portfolioAdv.ToString('0.00', $IC)) |")
+    [void]$sb.AppendLine('')
+    [void]$sb.AppendLine('Method: for each file, the mapper reads a bounded sample, estimates Law and Noise, measures Brotli Optimal with .NET BrotliStream, estimates seed plus decoder size, and emits a pre-forge prediction.')
+    [void]$sb.AppendLine('')
+    [void]$sb.AppendLine('## Representability Classes')
+    [void]$sb.AppendLine('')
+    [void]$sb.AppendLine('| Class | Count | Prediction | Criterion |')
+    [void]$sb.AppendLine('|---|---:|---|---|')
+    [void]$sb.AppendLine("| CLASSE A | $($classA.Count) | TEIA VENCE | High law plus estimated seed and decoder below Brotli by a material margin. |")
+    [void]$sb.AppendLine("| CLASSE B | $($classB.Count) | TEIA RECUA | High law, but dictionaries or organic residue make Brotli already competitive. |")
+    [void]$sb.AppendLine("| CLASSE C | $($classC.Count) | TEIA RECUA | Low law and low advantage. |")
+    [void]$sb.AppendLine("| CLASSE D | $($classD.Count) | TEIA INVESTIGA | Apparent noise with possible mathematical generator. |")
+    [void]$sb.AppendLine('')
+    [void]$sb.AppendLine('## Statistical Claim')
+    [void]$sb.AppendLine('')
+    [void]$sb.AppendLine("Em $($aPct.ToString('0.0', $IC))% dos arquivos de Classe A, a TEIA confirma a viabilidade pre-forge do Storage as Computation contra Brotli Optimal.")
+    [void]$sb.AppendLine('')
+    [void]$sb.AppendLine("Predicoes de vitoria ou investigacao: $($predictedWins.Count). Predicoes de recuo: $($predictedRetreat.Count).")
+    [void]$sb.AppendLine('')
+    [void]$sb.AppendLine('## Evidence Table')
+    [void]$sb.AppendLine('')
+    [void]$sb.AppendLine('| File | Class | Prediction | Original | Brotli Optimal | TEIA estimate | Advantage | Law | Noise | Signal |')
+    [void]$sb.AppendLine('|---|---|---|---:|---:|---:|---:|---:|---:|---|')
+    foreach ($r in $ordered) {
+        [void]$sb.AppendLine((
+            '| {0} | {1} | {2} | {3} | {4} | {5} | {6} | {7} | {8} | {9} |' -f
+            (Sanitize-MarkdownCell $r.RelativePath),
+            $r.RepresentabilityClass,
+            $r.TeiaPrediction,
+            $r.Bytes,
+            $r.BrotliBytes,
+            $r.EstimatedTeiaBytes,
+            (Format-Score $r.AdvantagePredictor),
+            (Format-Score $r.LawIndex),
+            (Format-Score $r.NoiseIndex),
+            $r.SignalKind
+        ))
+    }
+    if ($ordered.Count -eq 0) {
+        [void]$sb.AppendLine('| [none] | [none] | [none] | 0 | 0 | 0 | 0.00 | 0.00 | 0.00 | [none] |')
+    }
+    [void]$sb.AppendLine('')
+    [void]$sb.AppendLine('## Interpretation')
+    [void]$sb.AppendLine('')
+    [void]$sb.AppendLine('- Class A is the forge queue: tabular matrices, structured logs, and repeated grammars where structural overhead exceeds what LZ77-style windows exploit.')
+    [void]$sb.AppendLine('- Class B is the important negative result: high Law can still lose when dictionaries and residual values dominate representation cost.')
+    [void]$sb.AppendLine('- Class C is preservation territory: the Core should index, hash, and avoid speculative synthesis.')
+    [void]$sb.AppendLine('- Class D is a research queue: the mapper must test for hidden mathematical generators before calling the data entropic.')
+    [void]$sb.AppendLine('')
+    [void]$sb.AppendLine('## Operational Boundary')
+    [void]$sb.AppendLine('')
+    [void]$sb.AppendLine('This is a predictor, not a forged proof. Final victory still requires a decoder, a seed, and SHA-256 Write == Read verification.')
     return $sb.ToString()
 }
 
@@ -549,7 +787,7 @@ $skipped = 0
 if (-not $IncludeTeiaControl) {
     $eligible = @()
     foreach ($f in $files) {
-        if ($f.Extension -in @('.teia_stub', '.teia_seed')) {
+        if (($f.Extension -in @('.teia_stub', '.teia_seed')) -or ($f.Name -in @('corpus30_manifest.json', 'ingestion_manifest.json'))) {
             $skipped++
         } else {
             $eligible += $f
@@ -577,14 +815,18 @@ foreach ($f in $files) {
 
 $report = Build-Report $rows $errors $skipped $rootItem.FullName $MaxSampleBytes
 $changed = Write-TextIfChanged $ReportPath $report
+$theory = Build-TheoryReport $rows $errors $skipped $rootItem.FullName $MaxSampleBytes
+$theoryChanged = Write-TextIfChanged $TheoryPath $theory
 
 if (-not $Quiet) {
     [pscustomobject]@{
         ScanRoot = $rootItem.FullName
         ReportPath = $ReportPath
+        TheoryPath = $TheoryPath
         FilesAnalyzed = $rows.Count
-        TeiaControlSkipped = $skipped
+        ControlSkipped = $skipped
         Errors = $errors.Count
         ReportChanged = $changed
+        TheoryChanged = $theoryChanged
     }
 }
