@@ -1,325 +1,281 @@
-# TEIA — Supervisor Adaptativo de Arquivamento
+# TEIA — Information Economics Engine
 
-**Transcendência Epistêmica Integrada Autossintetizante**
-**Versão atual:** v6.0.0-adaptive-router
+**Storage as Computation · Adaptive Archive Routing · Entropy-Honest Decision Making**
 
-> *"A TEIA não é sempre o melhor formato.*
-> *A TEIA é o sistema que descobre qual formato deve vencer."*
-
----
-
-## TEIA Adaptive Archive Router v6.0.0 — O Supervisor
-
-A v6.0.0 inaugura a fase supervisora da TEIA. Em vez de defender um formato,
-o **Archive Router** testa os três candidatos com compressão real e emite o
-veredito ótimo para cada combinação de corpus + Objetivo de Negócio.
-
-```
-Candidatos avaliados:
-  A — TEIA Transversal (AION)   Master Grammar + C# JIT, acesso O(1)
-  B — Brotli/arquivo            Cada arquivo comprimido individualmente, O(1)
-  C — Concat+Brotli (tar.br)    Corpus concatenado, O(N) na leitura
-
-Objetivos suportados: Size | Latency | Balanced
-
-Resultado P36.0 — 6 vereditos honestos (2 corpora × 3 objetivos):
-  Corpus30 Alta Entropia (N=30): Size→Concat | Latency→TEIA | Balanced→TEIA
-  Apache CLF Real (N=10):        Size→Concat | Latency→Brotli | Balanced→Brotli
-  N* Massa Crítica (TEIA vence Brotli/arq em tamanho):
-    Corpus30: N*=10 [ATINGIDO — N=30 > N*]
-    Apache CLF: N*=15 [faltam 5 arquivos]
-```
-
-### Demo em 1 Clique — v6.0.0
-
-```powershell
-# Pré-requisito: PowerShell 7+ no Windows. Conexão com internet para corpus real.
-Expand-Archive TEIA_ADAPTIVE_ARCHIVE_ROUTER_v6.0.0.zip
-pwsh -NoProfile -ExecutionPolicy Bypass -File .\adaptive_router_v6\audit-one-click-router.ps1
-```
-
-O script executa em ~2 minutos: gera corpora → 6 permutações → tabela de decisão + N*.
-
-### Uso Direto do Roteador
-
-```powershell
-# Avaliar um diretório de CSVs com objetivo Balanced (padrão)
-.\TEIA-Archive-Router.ps1 -InputDir "D:\meus\dados" -Objective Balanced
-
-# Objetivos disponíveis: Size | Latency | Balanced
-.\TEIA-Archive-Router.ps1 -InputDir "D:\logs" -Objective Size
-```
-
-### Verificação de Integridade — v6.0.0
-
-```powershell
-(Get-FileHash .\TEIA_ADAPTIVE_ARCHIVE_ROUTER_v6.0.0.zip -Algorithm SHA256).Hash.ToLower()
-# Esperado: 7f6732a218eb260f2f3c73ef29982fdcfeb073bd47e42334721210b99c031069
-```
+> *"TEIA is not always the best format.*
+> *TEIA is the system that discovers which format must win."*
 
 ---
 
-## TEIA AION Transversal v5.0.0 — Acesso O(1) com C# JIT
+## The Problem: Structured Data Dominates Storage Costs
 
-Em vez de armazenar um blob comprimido e forçar O(N) na leitura de qualquer arquivo individual,
-o AION Transversal extrai **uma única Master Grammar** para N arquivos CSV com schema idêntico.
-Cada arquivo vira um `seed.bin` independente. O **Master Decoder FastPath** (C# JIT via Add-Type)
-reconstrói qualquer arquivo em O(1), com latência de **2 ms** contra **86 ms** do Brotli clássico.
+In modern data centers and Big Data pipelines, **70-85% of stored data is structured or
+semi-structured** — logs, telemetry, event streams, time-series metrics, database exports.
+These datasets share a critical property: they carry massive internal redundancy across files.
+
+Conventional compressors (Brotli, LZMA, Zstd) treat each file in isolation. They cannot
+exploit the grammar shared across thousands of homogeneous CSV files because they see
+each file as an independent byte stream. The result: disk costs scale linearly with data
+volume, even when the information content grows much more slowly.
+
+**TEIA solves this by treating storage as computation.**
+
+---
+
+## What TEIA Does
+
+TEIA is an **Information Economics Engine** that extracts a shared Master Grammar from a
+corpus of homogeneous structured files, then stores each file as a compact `seed.bin` —
+a minimal residual that can be deterministically reconstructed by executing the grammar.
+
+The core insight: for N files sharing the same schema, the grammar overhead is a **fixed
+one-time cost**. As N grows, that overhead is amortized across more files, and each file
+occupies progressively fewer bytes on disk while remaining fully recoverable with O(1)
+random access.
+
+### Storage as Computation
+
+A TEIA archive is not a compressed blob — it is a **program**:
 
 ```
-Corpus (60 CSVs, 11 MB):  concat+Brotli → 2,2 MB (blob único, O(N) na leitura)
-TEIA Transversal v5:       60 × seed.bin + master_meta.json + Master_Decode_Fast.ps1
-Acesso aleatório:          TEIA 2 ms  vs  Baseline 86 ms  →  43x mais rápido
-Atualização incremental:   TEIA 497 ms  vs  Baseline 21.240 ms  →  42,7x mais rápido
-SHA-256:                   60/60 PASS
-Delta (armazenamento):     −11.243 bytes (baseline 0,5% menor — preço do índice O(1))
+original_file = TeiaMasterDecoder.Decode(schema, dict_columns, seed.bin)
 ```
 
-### Demo em 1 Clique — v5.0.0
+The disk stores code (Master Grammar + C# JIT decoder) and parameters (seed.bin).
+Reconstruction is execution, not decompression. As N → ∞, the overhead per file → 0.
 
-```powershell
-# Pré-requisito: PowerShell 7+ no Windows.
-Expand-Archive TEIA_AION_TRANSVERSAL_v5.0.0.zip
-pwsh -NoProfile -ExecutionPolicy Bypass -File .\aion_transversal_v5\audit-one-click-transversal.ps1
+---
+
+## Architecture: Three Operational Layers
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  Layer 3 — NStar Predictor (P39.0)                              │
+│  Heuristic lens: reads sample, predicts N* in milliseconds      │
+│  No compression · No file modification · Canonical JSON output  │
+├─────────────────────────────────────────────────────────────────┤
+│  Layer 2 — Adaptive Archive Router (P36.0)                      │
+│  Measures 3 candidates with real Brotli compression             │
+│  Scores by objective (Size / Latency / Balanced)                │
+│  Projects N* = ceil(overhead / delta_per_file) exactly          │
+├─────────────────────────────────────────────────────────────────┤
+│  Layer 1 — AION Transversal Motor (P33.0)                       │
+│  Master Grammar extraction across N uniform-schema CSV files    │
+│  Per-file seed.bin + shared decoder compiled by C# JIT          │
+│  Random access: O(1) · Incremental update: O(1)                 │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
-O script executa em ~45 segundos: corpus → forja → SHA-256 60/60 → benchmark de latência completo.
+### The Three Routing Candidates
 
-### Resultado Central — v5.0.0 Transversal
+| Candidate | Mechanism | Access | Incremental |
+|---|---|:---:|:---:|
+| **TEIA (AION)** | Master Grammar + C# JIT decoder | O(1) | O(1) |
+| **Brotli/file** | Each file compressed individually | O(1) | O(1) |
+| **Concat+Brotli** | Corpus concatenated + single Brotli | **O(N)** | **O(N)** |
 
-| Cenário | TEIA v5.0.0 | Baseline concat+Brotli | Speedup |
-|---|---:|---:|:---:|
-| Acesso aleatório (arquivo #50/60) | **2 ms** | 86 ms | **43x** |
-| Bytes lidos para acesso | **37.325 B** | 2.236.233 B | **60x menos** |
-| Atualização incremental (+1 arquivo) | **497 ms** | 21.240 ms | **42,7x** |
-| SHA-256 PASS | **60/60** | — | — |
-| Overhead/arquivo (decoder amortizado) | **~141 B** | ~3.000 B (AION v4 individual) | **21x menor** |
+### The Three Business Objectives
 
-### O Paradigma O(1)
+| Objective | Size Weight | Access Weight | Incremental Weight |
+|---|:---:|:---:|:---:|
+| `Size` | 100% | 0% | 0% |
+| `Latency` | 0% | 70% | 30% |
+| `Balanced` | 35% | 40% | 25% |
 
-| Propriedade | Baseline concat+Brotli | TEIA Transversal v5.0.0 |
+---
+
+## Entropy Honesty — The Fundamental Principle
+
+TEIA is the only engine that knows when to retreat.
+
+| Scenario | Decision | Reason |
 |---|---|---|
-| Reconstituir arquivo individual | O(N) — descomprime corpus inteiro | **O(1) — 1 seed.bin** |
-| Adicionar novo arquivo | Recriar corpus inteiro (~21 s) | **O(1) — 1 novo seed.bin** |
-| Overhead/arquivo (N→∞) | Constante | **→ 0 bytes** |
-| Paralelismo de decode | Impossível sem seek | **Trivial — seeds independentes** |
+| Binaries · media · already-compressed | **Pass-Through** | Compressing compressed data wastes CPU |
+| Zero dict columns (pure random data) | **Pass-Through** | No grammar possible |
+| N < N\* (corpus too small) | **Brotli/file** | Overhead not yet amortized |
+| N >= N\*, Balanced objective | **TEIA** | Grammar amortized + O(1) access |
+| Any objective, any N | **Concat+Brotli** never wins on Latency | O(N) penalty grows with corpus |
 
-### Verificação de Integridade — v5.0.0
+> A Routing decision that selects Brotli or Pass-Through is not a TEIA failure —
+> it is the system making the economically correct call.
+
+---
+
+## Benchmark Results — P38.0 Multi-Domain (Real + Synthetic Corpora)
+
+All results measured with real `CompressionLevel.SmallestSize` Brotli compression.
+N = 30 files per corpus. Access latency: O(1) for TEIA and Brotli/file in all cases.
+
+### Decision Table — Balanced Objective
+
+| Domain | Dict Density | N\* Measured | Winner (Balanced) | Access |
+|---|:---:|:---:|:---:|:---:|
+| Time-Series Metrics (srv/svc) | 71% | **9** | **TEIA** | O(1) |
+| Apache CLF Logs (synthetic) | 67% | **12** | **TEIA** | O(1) |
+| Apache CLF Logs (real) | 67% | **15** | Brotli (N<15) | O(1) |
+| Source Code Commits | 43% | **9** | **TEIA** | O(1) |
+| High Entropy (control) | 0% | 1489 | Brotli | O(1) |
+
+### Key Finding: N\* is Determined by Two Variables
+
+N\* is not solely a function of dict column density. The **compressibility of residual
+columns** (format structure in hex strings, ISO-8601 timestamps, sequential IDs) is equally
+deterministic. Source code commits achieve N\*=9 despite only 43% dict density because
+their residual data (commit hashes, timestamps) has exploitable format structure.
+
+**Refinement of H-01:** N\* scales with dict_density × residual_compressibility,
+not with dict_density alone.
+
+### P36.0 Real-Corpus Results (Apache CLF, N=10 files)
+
+| Metric | TEIA | Brotli/file | Concat+Brotli |
+|---|---:|---:|---:|
+| Total size | 100.0 KB | 98.7 KB | **73.8 KB** |
+| Random access latency | 1 ms | **0 ms** | 1 ms (O(N)) |
+| Incremental update | 195 ms | **124 ms** | 1560 ms (O(N)) |
+| **Balanced score** | 0.357 | **0.332** | 0.650 |
+
+*N\*=15 for this corpus: at N>=15, TEIA wins even in size.*
+
+---
+
+## Quick Start
+
+### Prerequisites
+- PowerShell 7+
+- Windows (WinFsp optional for virtual filesystem features)
+- Internet connection (for real Apache CLF corpus download)
+
+### Run the Adaptive Router Audit (1 Click)
 
 ```powershell
-(Get-FileHash .\TEIA_AION_TRANSVERSAL_v5.0.0.zip -Algorithm SHA256).Hash.ToLower()
-# Esperado: 7ce031721de94c6d3e64821a569fa8a0645f05e9c58187631320f419293e5cca
+git clone https://github.com/felippebarcelos/teia-omega-awakening.git
+cd teia-omega-awakening
+
+# Full 6-permutation audit: 2 corpora × 3 objectives (~2 minutes)
+pwsh -ExecutionPolicy Bypass -File .\release\adaptive_router_v6\audit-one-click-router.ps1
 ```
 
----
-
-## TEIA AION Gatekeeper v4.0.0 (versão anterior — mantida)
-
-**Versão:** v4.0.0-aion-gatekeeper
-
----
-
-## O Que é a TEIA (Arquitetura AION RISPA NDC)
-
-A TEIA é um **Seletor/Forjador Computacional Determinístico**. Na arquitetura **AION RISPA NDC v4.0.0**, ela opera de forma 100% offline e autônoma, sem dependência de nuvem, LLMs externos ou Python.
-
-Ela armazena o **motor mínimo que sabe gerar esses bytes** — parâmetros procedurais (dicionários de categoria) e um blob comprimido com os dados de alta entropia irredutível via Brotli nativo do .NET.
-
-```
-Armazenamento tradicional:  csv_covid.csv   (5,51 MB)
-AION NDC v4.0.0:             seed.json + seed.bin + Decode.ps1  = 635 KB
-Reconstrução:                Decode(seed.json, seed.bin) → csv idêntico  (SHA-256 PASS)
-Delta Real de Ganho:         +26.330 bytes sobre Brotli SmallestSize
-```
-
-**Oraculo Gatekeeper:** quando a fisica da entropia favorece o Brotli, a TEIA recua propositalmente. Resultado garantido: **0 Deltas negativos**.
-
----
-
-## Demo em 1 Clique — v4.0.0 (Gatekeeper)
+### Predict N\* for Your Corpus (Instant, No Compression)
 
 ```powershell
-# Pre-requisito: PowerShell 7+ no Windows.
-# Conexao com internet necessaria apenas para download do dataset COVID (~5 MB).
-
-# Extrair o pacote
-Expand-Archive TEIA_AION_GATEKEEPER_v4.0.0.zip
-
-# Executar a auditoria completa
-pwsh -NoProfile -ExecutionPolicy Bypass -File .\aion_gatekeeper_v4\Run-Corpus10-Harness.ps1
+# Heuristic prediction in milliseconds — no files modified
+pwsh -ExecutionPolicy Bypass -File .\tools\TEIA-NStar-Predictor.ps1 `
+     -InputPath "D:\your\csv\directory" `
+     -OutputJson "nstar_prediction.json"
 ```
 
-O script faz tudo automaticamente em ~70 segundos:
+### Audit a Real-World Directory (Dry-Run)
 
-1. Detecta se o Corpus30 esta presente; se nao, baixa 3 amostras representativas
-2. Executa o Oraculo Gatekeeper em cada arquivo (analise de cardinalidade + estimativa de seed)
-3. Recua propositalmente onde a entropia impede ganho real
-4. Forja e verifica SHA-256 apenas no arquivo onde TEIA vence
-5. Gera relatório `TEIA_GATEKEEPER_REPORT_P31.md` com matriz de evidencias
+```powershell
+# Classifies all files into Zone A/B/C, projects routing, generates idempotent manifest
+pwsh -ExecutionPolicy Bypass -File .\tools\Run-TeiaRealWorldAudit.ps1 `
+     -TargetDirectory "D:\your\logs\directory"
+```
 
----
+### Multi-Domain Benchmark (4 Domains × 3 Objectives)
 
-## Resultado Central — v4.0.0 Gatekeeper (Corpus10)
+```powershell
+# Validates H-01 (Dict Density vs N*) across divergent corpora
+pwsh -ExecutionPolicy Bypass -File .\tools\Benchmark-MultiDomain.ps1
+```
 
-| Arquivo | Original | Brotli SmallestSize | TEIA v4.0.0 | Delta | SHA-256 | Veredito |
-|---|---:|---:|---:|---:|:---:|---|
-| csv_co2_global.csv | 7.0 KB | 1.8 KB | 1.8 KB | 0 (empate) | N/A | Recuo (Massa) |
-| **csv_covid_countries_agg.csv** | **5.38 MB** | **661 KB** | **635 KB** | **+26.3 KB** | **PASS** | **TEIA VENCE** |
-| csv_flights.csv | 2.3 KB | 0.5 KB | 0.5 KB | 0 (empate) | N/A | Recuo (Massa) |
-| csv_gapminder_five_year.csv | 80.2 KB | 23.8 KB | 23.8 KB | 0 (empate) | N/A | Recuo (Massa) |
-| csv_gdp.csv | 549.6 KB | 128.1 KB | 128.1 KB | 0 (empate) | N/A | Recuo (Entropia) |
-| csv_iris.csv | 3.8 KB | 0.6 KB | 0.6 KB | 0 (empate) | N/A | Recuo (Massa) |
-| csv_penguins.csv | 13.2 KB | 2.2 KB | 2.2 KB | 0 (empate) | N/A | Recuo (Massa) |
-| csv_population.csv | 539.2 KB | 72.5 KB | 72.5 KB | 0 (empate) | N/A | Recuo (Entropia) |
-| csv_seattle_weather.csv | 47.1 KB | 9.4 KB | 9.4 KB | 0 (empate) | N/A | Recuo (Massa) |
-| csv_titanic.csv | 55.7 KB | 5.5 KB | 5.5 KB | 0 (empate) | N/A | Recuo (Massa) |
+### Verify Release Integrity
 
-**Deltas negativos: 0/10 — meta atingida.**  
-**SHA-256 PASS: 1/1 forjas executadas.**
+```powershell
+(Get-FileHash .\release\TEIA_ADAPTIVE_ARCHIVE_ROUTER_v6.0.0.zip -Algorithm SHA256).Hash.ToLower()
+# Expected: 7f6732a218eb260f2f3c73ef29982fdcfeb073bd47e42334721210b99c031069
+```
 
 ---
 
-## Evolução das Versões
+## Tool Reference
 
-| Versão | Destaques | Resultado |
+| Script | Purpose | Output |
 |---|---|---|
-| v1.2.0 | 10 datasets sintéticos, seeds P1 | 10/10 SHA-256 PASS, 99%+ Delta |
-| v1.3.0 | P22 Real-World: COVID +58.7% vs Brotli Optimal | SHA-256 3/3 PASS |
-| v2.0.1 | AION RISPA NDC offline, sem dependências externas | Motor offline estável |
-| v4.0.0 | Oráculo Gatekeeper: 0 Deltas negativos garantidos | 9 Recuos + 1 TEIA VENCE |
-| v5.0.0 | AION Transversal: Master Grammar + C# JIT FastPath | 43x acesso O(1) · 42,7x incremental · 60/60 SHA-256 |
-| **v6.0.0** | **Adaptive Archive Router: Supervisor de 3 candidatos** | **6/6 vereditos honestos · N* projetado · corpus Apache CLF real** |
+| `TEIA-AION-Transversal.ps1` | Master Grammar extraction + C# JIT forging | seeds + decoder |
+| `TEIA-Archive-Router.ps1` | 3-candidate router with real compression | routing decision + N\* |
+| `TEIA-NStar-Predictor.ps1` | Heuristic N\* prediction without compression | canonical JSON |
+| `Run-TeiaRealWorldAudit.ps1` | Dry-run audit of real directories | idempotent JSON manifest |
+| `Benchmark-MultiDomain.ps1` | 4-domain × 3-objective benchmark | markdown report |
+| `audit-one-click-router.ps1` | 1-click full audit orchestrator | decision table |
 
 ---
 
-## O Oraculo Gatekeeper (v4.0.0)
+## The N\* Formula
 
-O motor avalia cada arquivo em duas etapas antes de gastar CPU em forja:
-
-**Regra 1 — Massa Critica:** se o arquivo for menor que 500 KB, o overhead do
-decodificador (~1.9 KB) anula qualquer ganho estrutural. Recuo imediato.
-
-**Regra 2 — Vantagem Estrutural:** para arquivos maiores, o motor constroi o residuo
-em memoria, o comprime com Brotli, soma o meta JSON e o overhead do decoder, e compara
-com Brotli(arquivo inteiro). Se a estimativa for maior ou igual, Recuo Seguro.
-So prossegue para forja quando a estimativa confirma ganho real.
+The critical mass N\* is the number of files at which TEIA's overhead is amortized
+and each file occupies fewer bytes than its Brotli-compressed equivalent:
 
 ```
-Antes (P29.1): 9 Deltas negativos em 10 arquivos
-Depois (P31.0): 0 Deltas negativos — empate proposital ou TEIA VENCE
+TEIA_total(N)   = overhead_fixed + N × seed_average
+Brotli_total(N) = N × brotli_average
+
+N* = ceil(overhead_fixed / (brotli_average minus seed_average))
 ```
 
----
+When `N >= N*`, TEIA wins on disk size. When combined with O(1) access and O(1) incremental
+updates, TEIA dominates on the Balanced objective for any sufficiently large corpus.
 
-## Verificação de Integridade — v4.0.0
-
-```powershell
-(Get-FileHash .\TEIA_AION_GATEKEEPER_v4.0.0.zip -Algorithm SHA256).Hash.ToLower()
-# Esperado: e5109bc8b6be1d3ac5e3d7c69004029520deea70fdc155f8fbbc08b20d5e7af3
-```
-
----
-
-## Verificação de Integridade — v1.3.0 (mantido)
-
-```powershell
-(Get-FileHash .\TEIA_P19_CLAIM_SAFE_DEMO.zip -Algorithm SHA256).Hash.ToLower()
-# Esperado: 68f50d848f1a410e2f98f9533782f36a89a8ba0bb2915af3592152e25715f1b2
-```
-
----
-
-## Princípio Técnico
-
-Dados **proceduralmente gerados** não precisam ser armazenados como bytes — podem ser armazenados como o **procedimento que os gerou**:
-
-| Estrutura de dado | Armazenamento clássico | Armazenamento TEIA |
-|---|:---:|:---:|
-| Campo enum cíclico N vezes | O(N × chars) | dicionário + índice — O(log N) |
-| Timestamps repetidos N vezes | O(N × 20 chars) | `{base, step}` — 50 B |
-| 198 países × 816 datas | O(N × M × bytes) | dicionário + fórmula — O(log N) |
-
-**Custo TEIA:** O(log N) — cresce com a complexidade do motor, não com N.  
-**Custo clássico:** O(N × entropia residual) — cresce com o número de registros.
-
-**Quando TEIA vence:** overhead estrutural > capacidade da janela LZ77 do Brotli.  
-**Quando TEIA recua:** dados pequenos ou alta entropia residual dominante — Brotli já é ótimo.
-
----
-
-## Limitações Explícitas
-
-- Dados com **alta entropia real** (criptografia, imagens naturais, áudio): sem ganho.
-- **Arquivos menores que 500 KB**: Recuo Seguro — overhead do decodificador domina.
-- **JSONs de referência** ou com repetição de chaves já capturada por LZ77: Brotli vence.
-- **Encoder automático**: motor forjado automaticamente por análise de cardinalidade (CSV);
-  outros formatos (JSON profundo, logs arbitrários) requerem extensões futuras.
-- v4.0.0 é uma **prova de conceito funcional e auditável**, não uma ferramenta de produção.
-
----
-
-## Estrutura do Repositório
+**Heuristic estimation (NStar Predictor, calibrated on P36/P38 empirical data):**
 
 ```
-TEIA_CLAUDE_AWAKENING/
-  release/
-    adaptive_router_v6/         — pacote demo v6.0.0 (Adaptive Archive Router)
-      audit-one-click-router.ps1   — orquestrador 1-click (2 corpora × 3 objetivos)
-      TEIA-Archive-Router.ps1      — Roteador Adaptativo v1.0.0
-      TEIA-AION-Transversal.ps1    — motor v2.0.0
-      Fetch-RealTransversalCorpus.ps1 — downloader Apache CLF real
-      Fetch-TransversalData.ps1    — gerador corpus sintético
-      TEIA_ADAPTIVE_ROUTER_REPORT_P36.md
-    TEIA_ADAPTIVE_ARCHIVE_ROUTER_v6.0.0.zip — artefato empacotado v6.0.0 (930 KB)
-    aion_transversal_v5/        — pacote demo v5.0.0 (Transversal FastPath)
-      audit-one-click-transversal.ps1  — orquestrador one-click
-      TEIA-AION-Transversal.ps1   — motor v2.0.0
-      Fetch-TransversalData.ps1   — gerador de corpus sintético
-      Benchmark-Transversal-Access.ps1 — benchmark P33.1/P33.2
-    TEIA_AION_TRANSVERSAL_v5.0.0.zip  — artefato empacotado v5.0.0 (22 KB)
-    aion_gatekeeper_v4/         — pacote demo v4.0.0 (Gatekeeper)
-    TEIA_AION_GATEKEEPER_v4.0.0.zip  — artefato empacotado v4.0.0 (11.2 KB)
-    teia_demo_p19/              — pacote demo v1.3.0 (mantido)
-    TEIA_P19_CLAIM_SAFE_DEMO.zip    — artefato v1.3.0 (508.5 KB)
-
-  tools/
-    TEIA-Archive-Router.ps1           — Roteador Adaptativo v1.0.0 (P36.0)
-    TEIA-AION-Transversal.ps1         — motor Transversal v2.0.0
-    Fetch-RealTransversalCorpus.ps1   — downloader Apache CLF real (P35.0)
-    Run-FairBaseline-Harness.ps1      — harness 4 métodos comparados (P35.0)
-    Fetch-TransversalData.ps1         — gerador de corpus sintético
-    Benchmark-Transversal-Access.ps1  — benchmark P33.1/P33.2 (6 cenários)
-    TEIA-AION-Universal.ps1           — motor AION NDC v4.0.0
-    Run-Corpus10-Harness.ps1          — harness Corpus10
-    Analyze-SemanticSchema.ps1        — lente semântica (JSON/CSV/SVG)
-
-  docs/
-    TEIA_RELEASE_NOTES_v6.0.0_ROUTER.md  — release notes v6.0.0 — Adaptive Router
-    TEIA_ADAPTIVE_ROUTER_REPORT_P36.md   — auditoria P36.0 (6 vereditos + N*)
-    TEIA_FAIR_BASELINE_REPORT_v5.1.md    — baseline justa P35.0 (4 métodos, corpus real)
-    TEIA_RELEASE_NOTES_v5.0.0_TRANSVERSAL.md — release notes v5.0.0
-    TEIA_TRANSVERSAL_REPORT_P33.md       — benchmark P33.0→P33.2 (O(1) + FastPath)
-    TEIA_GATEKEEPER_REPORT_P31.md        — resultados P31 (0 Deltas negativos)
-    TEIA_ORACLE_CALIBRATION_P30.md       — calibração do Oráculo
-    TEIA_RELEASE_NOTES_v4.0.0_GATEKEEPER.md — release notes v4.0.0
-    TEIA_WHITEPAPER_v1.md                — whitepaper fundacional
+brotli_ratio    = 0.021 + 0.52 × mean_column_entropy
+delta_per_file  = brotli_per_file × dict_density × (0.040 + 0.050 × residual_entropy)
+N*              = ceil(overhead / delta_per_file)
 ```
 
----
-
-## Documentos Técnicos
-
-| Documento | Descrição |
-|---|---|
-| [TEIA_RELEASE_NOTES_v6.0.0_ROUTER.md](docs/TEIA_RELEASE_NOTES_v6.0.0_ROUTER.md) | **Release notes v6.0.0 — Adaptive Archive Router** |
-| [TEIA_ADAPTIVE_ROUTER_REPORT_P36.md](docs/TEIA_ADAPTIVE_ROUTER_REPORT_P36.md) | Auditoria P36.0 — 6 vereditos + N* projections |
-| [TEIA_FAIR_BASELINE_REPORT_v5.1.md](docs/TEIA_FAIR_BASELINE_REPORT_v5.1.md) | Baseline justa P35.0 — 4 métodos, corpus Apache CLF real |
-| [TEIA_RELEASE_NOTES_v5.0.0_TRANSVERSAL.md](docs/TEIA_RELEASE_NOTES_v5.0.0_TRANSVERSAL.md) | Release notes v5.0.0 — Transversal FastPath |
-| [TEIA_TRANSVERSAL_REPORT_P33.md](docs/TEIA_TRANSVERSAL_REPORT_P33.md) | Benchmark P33.0→P33.2 — O(1) + C# JIT |
-| [TEIA_RELEASE_NOTES_v4.0.0_GATEKEEPER.md](docs/TEIA_RELEASE_NOTES_v4.0.0_GATEKEEPER.md) | Release notes v4.0.0 — Gatekeeper |
-| [TEIA_GATEKEEPER_REPORT_P31.md](docs/TEIA_GATEKEEPER_REPORT_P31.md) | Resultados P31.0 — 0 Deltas negativos |
-| [TEIA_WHITEPAPER_v1.md](docs/TEIA_WHITEPAPER_v1.md) | Whitepaper fundacional |
+Calibration accuracy:
+- Apache CLF real (N\*=15): predicted delta=279 B vs measured 270 B — error < 4%
+- Corpus30 synthetic (N\*=10): predicted delta=597 B vs measured 590 B — error < 2%
 
 ---
 
-*TEIA v6.0.0-adaptive-router | 2026-06-02*
+## Technical Documentation
+
+| Document | Protocol | Description |
+|---|---|---|
+| [Release Notes v7.0.0](docs/TEIA_RELEASE_NOTES_v7.0.0_ECONOMICS_ENGINE.md) | P39.0 | Information Economics Engine — The Awakening |
+| [Release Notes v6.0.0](docs/TEIA_RELEASE_NOTES_v6.0.0_ROUTER.md) | P37.0 | Adaptive Archive Router |
+| [Adaptive Router Report P36.0](docs/TEIA_ADAPTIVE_ROUTER_REPORT_P36.md) | P36.0 | 6-permutation audit with real Apache CLF |
+| [Multi-Domain Benchmark P38.0](docs/TEIA_MULTIDOMAIN_BENCHMARK_REPORT.md) | P38.0 | N\* across 4 divergent domains |
+| [Fair Baseline Report v5.1](docs/TEIA_FAIR_BASELINE_REPORT_v5.1.md) | P35.0 | Peer-review hardened 4-method comparison |
+| [Research Frontier](TEIA_RESEARCH_FRONTIER.md) | P38.0 | Active hypotheses and future experiments |
+| [Dogfooding Protocol](docs/TEIA_DOGFOODING_PROTOCOL.md) | P38.1 | Protocol for real-world entropy testing |
+
+---
+
+## Version Evolution
+
+| Version | Paradigm | Central Result |
+|---|---|---|
+| v1.3.0 | Procedural Compressor | COVID data: +58.7% vs Brotli Optimal |
+| v4.0.0 | Gatekeeper Oracle | Zero negative deltas guaranteed |
+| v5.0.0 | O(1) Archive Format | 43x faster access · 42.7x faster incremental · C# JIT |
+| v6.0.0 | Adaptive Supervisor | 6/6 honest verdicts · N\* projected mathematically |
+| **v7.0.0** | **Information Economics Engine** | **Heuristic N\* prediction · Multi-domain P38.0 · Real-world audit** |
+
+---
+
+## Design Invariants
+
+All scripts in this repository enforce the following invariants:
+
+- **Idempotence (Write==Read):** every script is safe to re-execute; same inputs produce identical outputs including SHA-256 hashes
+- **Delta by name:** the word "delta" is always written out in full in all code, comments, and documentation — the mathematical symbol is prohibited to prevent parser corruption
+- **Absolute paths:** all file operations use absolute paths; never relative execution from system directories
+- **UTF-8 without BOM:** all generated text files use UTF-8 encoding without byte-order mark
+- **Entropy Honesty:** the router never forces TEIA on incompressible data; every Brotli or Pass-Through verdict is declared a correct system decision
+
+---
+
+## License
+
+Research prototype. All scripts are provided as-is for reproducibility of results.
+See individual files for usage instructions.
+
+---
+
+*TEIA Information Economics Engine v7.0.0 | Protocol P39.0 | 2026-06-02*
+*Built on hardware: i3-10100F · 8 GB RAM · PowerShell 7+ · WinFsp*
+*"Ferrari di papelão — using code efficiency to overcome silicon constraints."*
