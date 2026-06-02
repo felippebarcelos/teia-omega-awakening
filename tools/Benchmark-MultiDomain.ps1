@@ -19,7 +19,6 @@ param(
     [string]$RouterPath = (Join-Path $PSScriptRoot 'TEIA-Archive-Router.ps1')
 )
 
-Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 $ProgressPreference = 'SilentlyContinue'
