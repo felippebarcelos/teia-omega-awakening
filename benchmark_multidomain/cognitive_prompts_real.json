@@ -1,0 +1,86 @@
+[
+  {
+    "id": "T01",
+    "label": "Formatar string de versão",
+    "prompt": "Convert the string 'v1.2.3-beta' to format '1.2.3 (beta)'. Extract major, minor, patch and tag.",
+    "expected_route": "Local",
+    "category": "formatting"
+  },
+  {
+    "id": "T02",
+    "label": "Extrair metadados de filename",
+    "prompt": "Extract date, resolution and extension from filename '2026-05-31_1920x1080_recording.mp4'. List each field.",
+    "expected_route": "Local",
+    "category": "extraction"
+  },
+  {
+    "id": "T03",
+    "label": "Comando terminal Git log",
+    "prompt": "Show the git command to list the last 5 commits with date, author and short hash in one line each.",
+    "expected_route": "Local",
+    "category": "terminal"
+  },
+  {
+    "id": "T04",
+    "label": "Converter CSV para JSON simples",
+    "prompt": "Convert this CSV to JSON array: name,age\\nAlice,30\\nBob,25. Format each row as an object.",
+    "expected_route": "Local",
+    "category": "conversion"
+  },
+  {
+    "id": "T05",
+    "label": "Traduzir erro de PowerShell",
+    "prompt": "Translate this PowerShell error to plain Portuguese: 'The term is not recognized as a cmdlet, function, script file, or operable program.'",
+    "expected_route": "Local",
+    "category": "translation"
+  },
+  {
+    "id": "T06",
+    "label": "Refatorar função de validação",
+    "prompt": "Refactor this Python function to remove duplication and improve readability. The function validates email and phone fields, but duplicates the null-check and logging logic for each field. Consider how to extract a shared validator pattern.",
+    "expected_route": "Hybrid",
+    "category": "refactoring"
+  },
+  {
+    "id": "T07",
+    "label": "Organizar transcrição de vídeo",
+    "prompt": "Organize this raw video transcript into sections with timestamps. The transcript has 8 minutes of content about Docker networking, with the speaker jumping between concepts. Group related topics, remove filler words, and add section headers.",
+    "expected_route": "Hybrid",
+    "category": "organization"
+  },
+  {
+    "id": "T08",
+    "label": "Explicar diferença entre conceitos",
+    "prompt": "Compare and contrast REST and GraphQL APIs. Explain the trade-offs considering latency, over-fetching, schema evolution, and client complexity. Provide guidance on when to choose each given a microservices context with mobile clients.",
+    "expected_route": "Hybrid",
+    "category": "explanation"
+  },
+  {
+    "id": "T09",
+    "label": "Analisar logs de sistema complexos",
+    "prompt": "Analyze these 500 lines of production logs from a distributed system. Identify the root cause of a cascade failure that started at 03:47 UTC. The logs contain interleaved output from 6 services: API gateway, auth service, cache layer, database, message queue, and CDN. Correlate the timestamps, deduce the failure propagation sequence, and differentiate between cause and symptom. Justify each inference step and explain why alternative hypotheses are less likely given the evidence.",
+    "expected_route": "Cloud",
+    "category": "analysis"
+  },
+  {
+    "id": "T10",
+    "label": "Arquitetar sistema de armazenamento distribuído",
+    "prompt": "Design a distributed storage architecture for a data center handling 50TB/day of structured telemetry data from IoT devices. The system must guarantee sub-100ms read latency for the last 24 hours of any device, cost-efficient cold storage for data older than 30 days, horizontal scalability to 10x volume without re-architecture, and fault tolerance across 3 availability zones. Evaluate and compare at least three architectural approaches, reconcile their trade-offs against the constraints, and synthesize a final recommendation with an explicit justification for each major design decision.",
+    "expected_route": "Cloud",
+    "category": "architecture"
+  },
+  {
+    "id": "T11",
+    "label": "Síntese criativa de longo contexto",
+    "prompt": "Synthesize a comprehensive technical whitepaper section on the economic implications of entropy-aware storage routing in modern data centers. The section must argue from first principles, differentiate between information-theoretic entropy and operational complexity, extrapolate current trends in GPU cost curves to project 5-year ROI scenarios, contrast three competing paradigms (raw compression, semantic deduplication, procedural generation), and conclude with a falsifiable hypothesis that distinguishes the proposed approach from existing art. Target audience: senior engineers and technical investors.",
+    "expected_route": "Cloud",
+    "category": "synthesis"
+  },
+  {
+    "id": "T12",
+    "label": "Renomear variáveis em script",
+    "prompt": "In the following PowerShell script, rename all variables from camelCase to snake_case. List each substitution. Script has 15 variables: inputFile, outputDir, tokenCount, wordList, uniqueRatio.",
+    "expected_route": "Local",
+    "category": "formatting"
+  }
+]
