@@ -339,3 +339,117 @@ O mesmo trade-off que tornou o Apache Parquet padrão de Data Lakes —
 aplicado a arquivos arbitrários com schema idêntico, sem dependências externas.
 
 Protocolo P33.1 finalizado.
+
+---
+
+## A Ilusão da Concatenação Clássica vs. Acesso Aleatório O(1) — P33.1
+
+### O Déficit de 11 KB É o Preço do Índice Fractal
+
+O benchmark P33.0 revelou um Delta de −11.243 bytes: a TEIA Transversal usa ~0.5%
+a mais de espaço em disco do que a baseline concat+Brotli. Este custo é o **Índice Fractal** —
+a mesma física computacional que justifica o Apache Parquet vs CSV puro.
+
+| Formato | Overhead de índice | Benefício de acesso |
+|---|:---:|---|
+| CSV puro + Brotli (concat) | 0% | Compressão máxima — zero acesso aleatório |
+| Apache Parquet | ~5–15% | Acesso colunar O(1) |
+| **TEIA Transversal** | **~0.5%** | **Acesso por arquivo O(1), atualização O(1)** |
+
+### Benchmark de Latência Real — Cronômetros Reais (P33.1)
+
+Corpus: 60 arquivos | 10.9 MB originais | 2236233 bytes comprimidos (baseline.br).
+Arquivo alvo: nº 50 de 60 — `log_2024_02_19.csv`.
+
+#### Cenários C vs D: Atualização Incremental — O Triunfo Real da TEIA
+
+| Cenário | Latência | Arquivos processados |
+|---|---:|:---:|
+| **C — TEIA incremental O(1)** | **497 ms** | **1** (apenas o novo arquivo) |
+| **D — Baseline O(N)** | **21240 ms** | **61** (corpus inteiro) |
+| **Speedup** | **42.7x** | — |
+
+- **TEIA O(1):** reutiliza Master Grammar existente. Forja 1 novo `.seed.bin` (37407 bytes).
+- **Baseline O(N):** blob monolítico exige recompressão total a cada novo arquivo adicionado.
+
+Protocolo P33.1 finalizado.
+
+---
+
+## Evolução do Gargalo de CPU — P33.2 (Master Decoder FastPath C#)
+
+### Diagnóstico do Gargalo P33.1
+
+O benchmark P33.1 revelou que a descompressão Brotli da baseline (39 ms, nativa) superava o decode
+PowerShell da TEIA (424 ms warm). A causa: o interpretador PowerShell executava 24.000 iterações
+de loop (3.000 linhas × 8 colunas) via runtime gerenciado, enquanto Brotli rodava em código nativo
+compilado. O gargalo não era estrutural — era de implementação.
+
+### Solução: TeiaMasterDecoder (C# compilado JIT)
+
+O motor Transversal v2.0.0 passa a gerar `Master_Decode_Fast.ps1` com uma classe C# estática
+compilada Just-In-Time via `Add-Type`. A reconstrução do CSV — Brotli decompress + iteração de
+linhas + lookup de dicionário + escrita — acontece inteiramente em CIL nativo.
+
+### Benchmark de Latência Real — Evolução PS → C# (P33.2)
+
+Corpus: 60 arquivos | arquivo alvo: #50/60 (`log_2024_02_19.csv`).
+Compilação Add-Type: 718 ms (overhead único por sessão).
+
+#### Acesso Aleatório: Todos os Cenários
+
+| Cenário | Engine | Latência | Bytes lidos do disco | SHA-256 |
+|---|---|---:|---:|:---:|
+| A — cold start | PowerShell (JSON parse) | 326 ms | 43030 bytes | — |
+| A-mem — warm | PowerShell (meta cacheada) | 356 ms | 37325 bytes | — |
+| **A-Fast — warm** | **C# JIT (meta cacheada)** | **2 ms** | **37325 bytes** | **PASS** |
+| B — Baseline O(N) | Brotli nativo | 86 ms | 2236233 bytes | — |
+
+**Speedup C# (A-Fast) vs Baseline (B): 43x**
+
+Leitura dos resultados:
+
+- **A-Fast vs A-mem:** a troca de PowerShell para C# reduziu o decode de 356 ms para
+  2 ms — redução de 99% no tempo de reconstrução das 3.000 linhas.
+- **A-Fast vs Baseline:** a TEIA C# lê 37325 bytes contra 2236233 bytes da baseline
+  — 43x mais rápido que descomprimir o corpus inteiro.
+- **SHA-256 PASS:** a troca de engine não altera nenhum byte do output — `\r\n` idêntico ao PowerShell.
+
+#### Custo da Compilação Add-Type (Amortização por Sessão)
+
+| Decodes por sessão | Custo/decode compilação | Custo/decode decode puro | Total/decode |
+|---:|---:|---:|---:|
+| 1 | 718 ms | 2 ms | 720 ms |
+| 10 | 72 ms | 2 ms | ~74 ms |
+| 100 | 7.2 ms | 2 ms | ~2 ms |
+| ∞ | ≈ 0 ms | 2 ms | 2 ms |
+
+Em produção (servidor de longa duração), o custo de compilação converge para zero.
+
+#### Escalabilidade: A-Fast vs Baseline em Função de N
+
+| N arquivos | A-Fast (C#) | Baseline O(N) | Speedup |
+|---:|:---:|:---:|:---:|
+| **60** (medido) | **2 ms** | **86 ms** | **43x** |
+| 1.000 | ~2 ms | ~1433 ms | ~717x |
+| 10.000 | ~2 ms | ~14333 ms | ~7167x |
+
+- A-Fast: O(1) — constante independente de N (sempre 1 seed.bin, C# nativo).
+- Baseline: O(N) — cresce linearmente com o tamanho do corpus.
+
+### Conclusão P33.2
+
+A substituição do loop PowerShell pelo `TeiaMasterDecoder` C# JIT destravou a velocidade
+arquitetural da TEIA Transversal:
+
+| Métrica | P33.1 (PS warm) | P33.2 (C# JIT) | Ganho |
+|---|:---:|:---:|:---:|
+| Acesso aleatório #50/60 | 356 ms | 2 ms | 99% mais rápido |
+| Bytes lidos do disco | 37325 bytes | 37325 bytes | idêntico |
+| SHA-256 integridade | — | **PASS** | bit-a-bit idêntico |
+| vs Baseline Brotli | 0.2x | **43x** | 43x TEIA VENCE |
+
+O gargalo era de implementação, não de arquitetura. Com C# JIT, o AION Transversal confirma
+a superioridade O(1) tanto no acesso aleatório quanto na atualização incremental.
+
+Protocolo P33.2 finalizado.

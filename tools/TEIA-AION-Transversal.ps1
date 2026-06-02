@@ -211,22 +211,122 @@ for ($i = 1; $i -lt $lines.Count; $i++) {
     [System.IO.File]::WriteAllText($decoderFile, $decoderScript, $utf8NoBom)
     $decoderSize = (Get-Item $decoderFile).Length
 
+    # FASE 7 — Master_Decode_Fast.ps1 (decoder C# nativo JIT — FastPath v2.0.0)
+    Write-Host "    [Fase 7] Forjando decoder C# FastPath..." -ForegroundColor Yellow
+    $fastDecoderScript = @'
+#Requires -Version 7
+# Master_Decode_Fast.ps1 — TEIA AION Transversal FastPath Decoder v2.0.0
+# Reconstrói CSV via C# nativo: Brotli + StringBuilder compilados JIT
+#
+# Uso:
+#   pwsh -NoProfile -File Master_Decode_Fast.ps1 `
+#        -MasterMetaFile master_seed_meta.json `
+#        -SeedBinFile    log_2024_01_01.seed.bin `
+#        -OutputFile     output.csv
+
+param(
+    [Parameter(Mandatory)][string]$MasterMetaFile,
+    [Parameter(Mandatory)][string]$SeedBinFile,
+    [Parameter(Mandatory)][string]$OutputFile
+)
+
+$ErrorActionPreference = "Stop"
+
+if (-not ([System.Management.Automation.PSTypeName]'TeiaMasterDecoder').Type) {
+    Add-Type -TypeDefinition @"
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.IO.Compression;
+using System.Text;
+
+public static class TeiaMasterDecoder
+{
+    public static void Decode(
+        string[] schema,
+        Dictionary<string, string[]> dictCols,
+        byte[] seedBytes,
+        string outputFile)
+    {
+        byte[] residueBytes;
+        using (var msIn   = new MemoryStream(seedBytes))
+        using (var brotli = new BrotliStream(msIn, CompressionMode.Decompress))
+        using (var msOut  = new MemoryStream())
+        {
+            brotli.CopyTo(msOut);
+            residueBytes = msOut.ToArray();
+        }
+
+        string residue = Encoding.UTF8.GetString(residueBytes);
+        string[] lines = residue.Split('\n');
+        int colCount   = schema.Length;
+        var sb         = new StringBuilder(lines.Length * 80);
+        sb.AppendLine(lines[0].TrimEnd('\r'));
+
+        for (int i = 1; i < lines.Length; i++)
+        {
+            string line = lines[i].TrimEnd('\r');
+            if (line.Length == 0) continue;
+            string[] parts = line.Split(',');
+            for (int c = 0; c < colCount; c++)
+            {
+                if (c > 0) sb.Append(',');
+                string col = schema[c];
+                string raw = (c < parts.Length) ? parts[c] : "";
+                string[] vals;
+                if (dictCols.TryGetValue(col, out vals))
+                    sb.Append(vals[int.Parse(raw)]);
+                else
+                    sb.Append(raw);
+            }
+            sb.AppendLine();
+        }
+
+        File.WriteAllText(outputFile, sb.ToString(), new UTF8Encoding(false));
+    }
+}
+"@
+}
+
+$meta      = Get-Content -Path $MasterMetaFile -Raw | ConvertFrom-Json
+$schemaArr = [string[]]@($meta.schema)
+
+$dictCols = [System.Collections.Generic.Dictionary[string, string[]]]::new()
+foreach ($prop in $meta.dictionaryColumns.PSObject.Properties) {
+    $dictCols[$prop.Name] = [string[]]@($prop.Value)
+}
+
+[TeiaMasterDecoder]::Decode(
+    $schemaArr,
+    $dictCols,
+    [System.IO.File]::ReadAllBytes($SeedBinFile),
+    $OutputFile
+)
+'@
+
+    $fastDecoderFile = Join-Path $OutputDir "Master_Decode_Fast.ps1"
+    [System.IO.File]::WriteAllText($fastDecoderFile, $fastDecoderScript, $utf8NoBom)
+    $fastDecoderSize = (Get-Item $fastDecoderFile).Length
+    Write-Host "      FastDecoder: $fastDecoderSize bytes (C# JIT)" -ForegroundColor DarkGreen
+
     $teiaTotalSize = $totalSeedBins + $masterMetaSize + $decoderSize
 
     return [PSCustomObject]@{
-        FileCount      = $files.Count
-        TotalOrigSize  = [long]($files | Measure-Object -Property Length -Sum).Sum
-        BaselineSize   = $baselineSize
-        TeiaTotalSize  = $teiaTotalSize
-        TotalSeedBins  = $totalSeedBins
-        MasterMetaSize = $masterMetaSize
-        DecoderSize    = $decoderSize
-        Delta          = $baselineSize - $teiaTotalSize
-        DictColumns    = @($dictColName)
-        Header         = $header
-        OutputDir      = $OutputDir
-        MasterMetaFile = $masterMetaFile
-        DecoderFile    = $decoderFile
+        FileCount       = $files.Count
+        TotalOrigSize   = [long]($files | Measure-Object -Property Length -Sum).Sum
+        BaselineSize    = $baselineSize
+        TeiaTotalSize   = $teiaTotalSize
+        TotalSeedBins   = $totalSeedBins
+        MasterMetaSize  = $masterMetaSize
+        DecoderSize     = $decoderSize
+        FastDecoderSize = $fastDecoderSize
+        Delta           = $baselineSize - $teiaTotalSize
+        DictColumns     = @($dictColName)
+        Header          = $header
+        OutputDir       = $OutputDir
+        MasterMetaFile  = $masterMetaFile
+        DecoderFile     = $decoderFile
+        FastDecoderFile = $fastDecoderFile
     }
 }
 
