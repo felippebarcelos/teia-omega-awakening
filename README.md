@@ -1,95 +1,110 @@
 # TEIA — Storage as Computation
 
 **Transcendência Epistêmica Integrada Autossintetizante**  
-**Versão atual:** v2.0.1-aion-offline
+**Versão atual:** v4.0.0-aion-gatekeeper
 
 ---
 
 ## O Que é a TEIA (Arquitetura AION RISPA NDC)
 
-A TEIA é um **Seletor/Forjador Computacional Determinístico**. Na arquitetura **AION RISPA NDC**, ela opera de forma 100% offline e autônoma, sem dependência de nuvem, LLMs externos ou linguagens como Python.
+A TEIA é um **Seletor/Forjador Computacional Determinístico**. Na arquitetura **AION RISPA NDC v4.0.0**, ela opera de forma 100% offline e autônoma, sem dependência de nuvem, LLMs externos ou Python.
 
-Ela armazena o **motor mínimo que sabe gerar esses bytes** — parâmetros procedurais (fórmulas de data, dicionários de categoria) e um blob comprimido com os dados de alta entropia irredutível via Brotli nativo do .NET.
+Ela armazena o **motor mínimo que sabe gerar esses bytes** — parâmetros procedurais (dicionários de categoria) e um blob comprimido com os dados de alta entropia irredutível via Brotli nativo do .NET.
 
 ```
-Armazenamento tradicional:  arquivo.csv  (5,51 MB)
-AION NDC Package:            seed.json (2,7 KB) + seed.bin (487 KB) + Decode.ps1 (1 KB) = 490 KB
-Reconstrução:                Decode(seed.json, seed.bin) → arquivo.csv idêntico (SHA-256 PASS)
-Delta Real de Ganho:         170.622 bytes sobre Brotli SmallestSize (.NET Native)
+Armazenamento tradicional:  csv_covid.csv   (5,51 MB)
+AION NDC v4.0.0:             seed.json + seed.bin + Decode.ps1  = 635 KB
+Reconstrução:                Decode(seed.json, seed.bin) → csv idêntico  (SHA-256 PASS)
+Delta Real de Ganho:         +26.330 bytes sobre Brotli SmallestSize
 ```
 
-**Soberania Determinística:** A TEIA atua onde os dados têm **overhead estrutural dominante**. Através de heurísticas estruturais puras em PowerShell, o motor analisa, decompõe e forja seu próprio decodificador dinamicamente.
-
+**Oraculo Gatekeeper:** quando a fisica da entropia favorece o Brotli, a TEIA recua propositalmente. Resultado garantido: **0 Deltas negativos**.
 
 ---
 
-## Demo em 1 Clique
+## Demo em 1 Clique — v4.0.0 (Gatekeeper)
 
 ```powershell
-# Pré-requisito: PowerShell 7+ no Windows.
-# Fases 1-4 (sintético): sem dependências externas.
-# Fase 5 (real): requer internet (download do COVID-19 CSV do GitHub).
+# Pre-requisito: PowerShell 7+ no Windows.
+# Conexao com internet necessaria apenas para download do dataset COVID (~5 MB).
 
-# Extrair o pacote demo
-Expand-Archive TEIA_P19_CLAIM_SAFE_DEMO.zip
+# Extrair o pacote
+Expand-Archive TEIA_AION_GATEKEEPER_v4.0.0.zip
 
 # Executar a auditoria completa
-pwsh -ExecutionPolicy Bypass -File .\teia_demo_p19\audit-one-click.ps1
+pwsh -NoProfile -ExecutionPolicy Bypass -File .\aion_gatekeeper_v4\Run-Corpus10-Harness.ps1
 ```
 
-O script faz tudo automaticamente em menos de 30 segundos (+ tempo de download):
+O script faz tudo automaticamente em ~70 segundos:
 
-1. Gera 10 datasets estruturados do zero (JSON/CSV/SVG, até 5 MB cada)
-2. Reconstrói os mesmos arquivos a partir das seeds e decoders armazenados (3 KB por arquivo)
-3. Mede GZip e Brotli para comparação
-4. Verifica `SHA-256(Reconstruído) == SHA-256(Original)` para cada arquivo
-5. **[NOVO]** Baixa o dataset COVID-19 Aggregated CSV (5,26 MB) ao vivo do GitHub, reconstrói do seed híbrido e verifica SHA-256 bit-a-bit
-6. Apaga todos os arquivos temporários
-
----
-
-## Resultados — Sintéticos (v1.2.0, mantidos)
-
-| Arquivo | Original | Melhor Clássico | TEIA (Seed+Decoder) | Delta (Ganho) | SHA-256 |
-|---------|:--------:|:---------------:|:-------------------:|:-------------:|:-------:|
-| json_api_events.json | 5,33 MB | 346,6 KB | 3,14 KB | 99,1% ganhos | PASS |
-| json_products.json | 2,79 MB | 215,8 KB | 3,30 KB | 98,5% ganhos | PASS |
-| json_metrics.json | 4,35 MB | 195,5 KB | 3,14 KB | 98,4% ganhos | PASS |
-| csv_sensor_data.csv | 4,13 MB | 403,5 KB | 3,16 KB | 99,2% ganhos | PASS |
-| csv_transactions.csv | 2,38 MB | 352,9 KB | 2,62 KB | 99,3% ganhos | PASS |
-| csv_server_logs.csv | 4,20 MB | 418,2 KB | 3,04 KB | 99,3% ganhos | PASS |
-| csv_orders.csv | 2,92 MB | 205,4 KB | 3,05 KB | 98,5% ganhos | PASS |
-| svg_scatter_20k.svg | 971,9 KB | 108,1 KB | 2,22 KB | 97,9% ganhos | PASS |
-| svg_network_10k.svg | 1,60 MB | 201,4 KB | 2,73 KB | 98,6% ganhos | PASS |
-| svg_heatmap_20k.svg | 1,16 MB | 58,4 KB | 2,40 KB | 95,8% ganhos | PASS |
-
-**10/10 SHA-256 PASS** | Delta acumulado: **2,42 MB economizados** vs. melhor clássico
+1. Detecta se o Corpus30 esta presente; se nao, baixa 3 amostras representativas
+2. Executa o Oraculo Gatekeeper em cada arquivo (analise de cardinalidade + estimativa de seed)
+3. Recua propositalmente onde a entropia impede ganho real
+4. Forja e verifica SHA-256 apenas no arquivo onde TEIA vence
+5. Gera relatório `TEIA_GATEKEEPER_REPORT_P31.md` com matriz de evidencias
 
 ---
 
-## Veredito P22: O Teste do Mundo Real (v1.3.0)
+## Resultado Central — v4.0.0 Gatekeeper (Corpus10)
 
-Três datasets **orgânicos e reais** baixados da internet sem preparação prévia:
+| Arquivo | Original | Brotli SmallestSize | TEIA v4.0.0 | Delta | SHA-256 | Veredito |
+|---|---:|---:|---:|---:|:---:|---|
+| csv_co2_global.csv | 7.0 KB | 1.8 KB | 1.8 KB | 0 (empate) | N/A | Recuo (Massa) |
+| **csv_covid_countries_agg.csv** | **5.38 MB** | **661 KB** | **635 KB** | **+26.3 KB** | **PASS** | **TEIA VENCE** |
+| csv_flights.csv | 2.3 KB | 0.5 KB | 0.5 KB | 0 (empate) | N/A | Recuo (Massa) |
+| csv_gapminder_five_year.csv | 80.2 KB | 23.8 KB | 23.8 KB | 0 (empate) | N/A | Recuo (Massa) |
+| csv_gdp.csv | 549.6 KB | 128.1 KB | 128.1 KB | 0 (empate) | N/A | Recuo (Entropia) |
+| csv_iris.csv | 3.8 KB | 0.6 KB | 0.6 KB | 0 (empate) | N/A | Recuo (Massa) |
+| csv_penguins.csv | 13.2 KB | 2.2 KB | 2.2 KB | 0 (empate) | N/A | Recuo (Massa) |
+| csv_population.csv | 539.2 KB | 72.5 KB | 72.5 KB | 0 (empate) | N/A | Recuo (Entropia) |
+| csv_seattle_weather.csv | 47.1 KB | 9.4 KB | 9.4 KB | 0 (empate) | N/A | Recuo (Massa) |
+| csv_titanic.csv | 55.7 KB | 5.5 KB | 5.5 KB | 0 (empate) | N/A | Recuo (Massa) |
 
-| Dataset | Original | Brotli | TEIA Hybrid | Delta (Ganho) | SHA-256 |
-|---------|:--------:|:------:|:-----------:|:-------------:|:-------:|
-| **covid_countries_aggregated.csv** | **5,26 MB** | **1,13 MB** | **479 KB** | **+58,7% ganhos** | **PASS** |
-| countries.json | 1,33 MB | 102,4 KB | 145,6 KB | -42,2% (Brotli vence) | PASS |
-| worldbank_gdp.json | 1,41 MB | 63,5 KB | 77,8 KB | -22,5% (Brotli vence) | PASS |
-
-**SHA-256: 3/3 PASS** — todos os arquivos reais foram reconstruídos bit-a-bit.
-
-### Por Que TEIA Vence no CSV e Recua nos JSONs
-
-O CSV de COVID tem estrutura `198 países × 816 datas = 161.568 linhas`. Os campos `Date` e `Country` representam ~74% dos bytes — overhead estrutural que o LZ77 do Brotli não consegue capturar ao longo de 5 MB. TEIA elimina esse overhead inteiramente via fórmula + dicionário.
-
-Os JSONs de referência (`countries.json`, `worldbank_gdp.json`) têm ou alta entropia por objeto (traduções únicas) ou repetição de chaves que o LZ77 já captura perfeitamente. Nesses casos, Brotli é o algoritmo correto e TEIA reconhece.
-
-> **A TEIA não é um zip universal. É um seletor: usa a ferramenta certa para cada tipo de dado.**
+**Deltas negativos: 0/10 — meta atingida.**  
+**SHA-256 PASS: 1/1 forjas executadas.**
 
 ---
 
-## Verificação de Integridade do Pacote
+## Evolução das Versões
+
+| Versão | Destaques | Resultado |
+|---|---|---|
+| v1.2.0 | 10 datasets sintéticos, seeds P1 | 10/10 SHA-256 PASS, 99%+ Delta |
+| v1.3.0 | P22 Real-World: COVID +58.7% vs Brotli Optimal | SHA-256 3/3 PASS |
+| v2.0.1 | AION RISPA NDC offline, sem dependências externas | Motor offline estável |
+| v4.0.0 | **Oraculo Gatekeeper: 0 Deltas negativos garantidos** | **9 Recuos + 1 TEIA VENCE** |
+
+---
+
+## O Oraculo Gatekeeper (v4.0.0)
+
+O motor avalia cada arquivo em duas etapas antes de gastar CPU em forja:
+
+**Regra 1 — Massa Critica:** se o arquivo for menor que 500 KB, o overhead do
+decodificador (~1.9 KB) anula qualquer ganho estrutural. Recuo imediato.
+
+**Regra 2 — Vantagem Estrutural:** para arquivos maiores, o motor constroi o residuo
+em memoria, o comprime com Brotli, soma o meta JSON e o overhead do decoder, e compara
+com Brotli(arquivo inteiro). Se a estimativa for maior ou igual, Recuo Seguro.
+So prossegue para forja quando a estimativa confirma ganho real.
+
+```
+Antes (P29.1): 9 Deltas negativos em 10 arquivos
+Depois (P31.0): 0 Deltas negativos — empate proposital ou TEIA VENCE
+```
+
+---
+
+## Verificação de Integridade — v4.0.0
+
+```powershell
+(Get-FileHash .\TEIA_AION_GATEKEEPER_v4.0.0.zip -Algorithm SHA256).Hash.ToLower()
+# Esperado: e5109bc8b6be1d3ac5e3d7c69004029520deea70fdc155f8fbbc08b20d5e7af3
+```
+
+---
+
+## Verificação de Integridade — v1.3.0 (mantido)
 
 ```powershell
 (Get-FileHash .\TEIA_P19_CLAIM_SAFE_DEMO.zip -Algorithm SHA256).Hash.ToLower()
@@ -103,26 +118,27 @@ Os JSONs de referência (`countries.json`, `worldbank_gdp.json`) têm ou alta en
 Dados **proceduralmente gerados** não precisam ser armazenados como bytes — podem ser armazenados como o **procedimento que os gerou**:
 
 | Estrutura de dado | Armazenamento clássico | Armazenamento TEIA |
-|-------------------|:----------------------:|:------------------:|
-| IDs 1, 2, 3 … N | O(N × dígitos) | `{"start":1,"step":1}` — 30 B |
-| Timestamps a cada 60s | O(N × 20 chars) | `{"base":"…","step_sec":60}` — 50 B |
-| Campo enum cíclico | O(N × comprimento) | lista de valores + período — 100–200 B |
-| 198 países × 816 datas | O(N × M × bytes) | dicionário + fórmula de data — O(log N) |
+|---|:---:|:---:|
+| Campo enum cíclico N vezes | O(N × chars) | dicionário + índice — O(log N) |
+| Timestamps repetidos N vezes | O(N × 20 chars) | `{base, step}` — 50 B |
+| 198 países × 816 datas | O(N × M × bytes) | dicionário + fórmula — O(log N) |
 
 **Custo TEIA:** O(log N) — cresce com a complexidade do motor, não com N.  
 **Custo clássico:** O(N × entropia residual) — cresce com o número de registros.
 
-Para N suficientemente grande e overhead estrutural dominante, TEIA sempre vence em dados procedurais.
+**Quando TEIA vence:** overhead estrutural > capacidade da janela LZ77 do Brotli.  
+**Quando TEIA recua:** dados pequenos ou alta entropia residual dominante — Brotli já é ótimo.
 
 ---
 
 ## Limitações Explícitas
 
-- Dados com **alta entropia real** (ruído, criptografia, imagens naturais): sem ganho.
-- **JSONs de referência** com objetos únicos (ex: countries.json): Brotli já é ótimo.
-- **JSONs com chaves repetidas** (ex: World Bank API): LZ77 do Brotli captura a repetição.
-- **Encoder automático** ainda não disponível — motor forjado manualmente (ou por LLM Scientist).
-- A versão v1.3.0 é uma **prova de conceito funcional e auditável**, não uma ferramenta de produção.
+- Dados com **alta entropia real** (criptografia, imagens naturais, áudio): sem ganho.
+- **Arquivos menores que 500 KB**: Recuo Seguro — overhead do decodificador domina.
+- **JSONs de referência** ou com repetição de chaves já capturada por LZ77: Brotli vence.
+- **Encoder automático**: motor forjado automaticamente por análise de cardinalidade (CSV);
+  outros formatos (JSON profundo, logs arbitrários) requerem extensões futuras.
+- v4.0.0 é uma **prova de conceito funcional e auditável**, não uma ferramenta de produção.
 
 ---
 
@@ -131,46 +147,29 @@ Para N suficientemente grande e overhead estrutural dominante, TEIA sempre vence
 ```
 TEIA_CLAUDE_AWAKENING/
   release/
-    teia_demo_p19/          — pacote demo auto-contido
-      audit-one-click.ps1   — script da verdade (v1.3.0, 5 fases)
-      seeds/                — 10 seeds sintéticos + seed_covid_meta.json + seed_covid_data.bin
-      decoders/             — 10 decoders sintéticos + Decode-covid.ps1
+    aion_gatekeeper_v4/         — pacote demo v4.0.0 (Gatekeeper)
+      TEIA-AION-Universal.ps1   — motor v4.0.0
+      Run-Corpus10-Harness.ps1  — harness one-click com fallback de download
+      TEIA_GATEKEEPER_REPORT_P31.md
+      TEIA_ORACLE_CALIBRATION_P30.md
       README_DEMO.md
-    TEIA_P19_CLAIM_SAFE_DEMO.zip  — artefato empacotado v1.3.0
+    TEIA_AION_GATEKEEPER_v4.0.0.zip  — artefato empacotado v4.0.0 (11.2 KB)
+    teia_demo_p19/              — pacote demo v1.3.0 (mantido)
+    TEIA_P19_CLAIM_SAFE_DEMO.zip    — artefato v1.3.0 (508.5 KB)
 
   tools/
-    Analyze-SemanticSchema.ps1    — lente semântica (JSON/CSV/SVG)
-    Fetch-RealWorldData.ps1       — ingestão P22 (3 datasets orgânicos)
-    Run-P22-RealWorldCrucible.ps1 — crucible P22 completo
-
-  sandbox/
-    crucible_p17/   — 10 P1 Patches sintéticos + seeds + decoders
-    crucible_p22/   — 3 motores híbridos reais + seeds + decoders + p22_results.json
+    TEIA-AION-Universal.ps1    — motor AION NDC v4.0.0 (desenvolvimento)
+    Run-Corpus10-Harness.ps1   — harness Corpus10 (desenvolvimento)
+    Analyze-SemanticSchema.ps1 — lente semântica (JSON/CSV/SVG)
+    Discover-Generators.ps1    — mapeador Law vs Noise
 
   docs/
-    TEIA_P17_DOMAIN_RANKING_v1.md     — benchmark P17 (sintético)
-    TEIA_P18_CLAIM_SAFE_AUDIT.md      — auditoria reprodutibilidade P18
-    TEIA_P22_REALWORLD_CRUCIBLE.md    — crucible P22 (mundo real)
-    TEIA_RELEASE_NOTES_v1.2.0.md      — release notes v1.2.0
-    TEIA_RELEASE_NOTES_v1.3.0.md      — release notes v1.3.0 (esta versão)
-```
-
----
-
-## Auditoria Manual — Decoder COVID-19 Real
-
-```powershell
-cd release\teia_demo_p19
-
-# Reconstruir o COVID-19 CSV a partir do seed híbrido
-.\decoders\Decode-covid.ps1 `
-    -SeedMetaFile .\seeds\seed_covid_meta.json `
-    -SeedBinFile  .\seeds\seed_covid_data.bin  `
-    -OutputFile   .\covid_rebuilt.csv
-
-# Verificar SHA-256 (deve ser idêntico ao original baixado do GitHub em 2026-06-01)
-(Get-FileHash .\covid_rebuilt.csv -Algorithm SHA256).Hash.ToLower()
-# Esperado: fbd1738729a2ebac655e08fcd9562b5cf71573a8b9c03f809c2cf2c53faf047f
+    TEIA_GATEKEEPER_REPORT_P31.md       — resultados P31 (0 Deltas negativos)
+    TEIA_ORACLE_CALIBRATION_P30.md      — calibração do Oraculo
+    TEIA_RELEASE_NOTES_v4.0.0_GATEKEEPER.md — release notes v4.0.0
+    TEIA_P22_REALWORLD_CRUCIBLE.md      — crucible P22 (mundo real)
+    TEIA_RELEASE_NOTES_v1.3.0.md        — release notes v1.3.0
+    TEIA_WHITEPAPER_v1.md               — whitepaper fundacional
 ```
 
 ---
@@ -178,13 +177,14 @@ cd release\teia_demo_p19
 ## Documentos Técnicos
 
 | Documento | Descrição |
-|-----------|-----------|
-| [TEIA_P17_DOMAIN_RANKING_v1.md](docs/TEIA_P17_DOMAIN_RANKING_v1.md) | Benchmark completo: 10 domínios, 24,3x a 140,8x de ganho |
-| [TEIA_P18_CLAIM_SAFE_AUDIT.md](docs/TEIA_P18_CLAIM_SAFE_AUDIT.md) | Auditoria de reprodutibilidade — prova tripla SHA-256 |
-| [TEIA_P22_REALWORLD_CRUCIBLE.md](docs/TEIA_P22_REALWORLD_CRUCIBLE.md) | Real-World Crucible — COVID +58,7% Delta, honestidade nos JSONs |
-| [TEIA_RELEASE_NOTES_v1.3.0.md](docs/TEIA_RELEASE_NOTES_v1.3.0.md) | Release notes desta versão |
-| [release/teia_demo_p19/README_DEMO.md](release/teia_demo_p19/README_DEMO.md) | Guia completo do pacote demo |
+|---|---|
+| [TEIA_RELEASE_NOTES_v4.0.0_GATEKEEPER.md](docs/TEIA_RELEASE_NOTES_v4.0.0_GATEKEEPER.md) | Release notes v4.0.0 — Gatekeeper |
+| [TEIA_GATEKEEPER_REPORT_P31.md](docs/TEIA_GATEKEEPER_REPORT_P31.md) | Resultados P31.0 — 0 Deltas negativos |
+| [TEIA_ORACLE_CALIBRATION_P30.md](docs/TEIA_ORACLE_CALIBRATION_P30.md) | Calibração do Oraculo (derivação de limiares) |
+| [TEIA_P22_REALWORLD_CRUCIBLE.md](docs/TEIA_P22_REALWORLD_CRUCIBLE.md) | Real-World Crucible — COVID +58.7% Delta |
+| [TEIA_RELEASE_NOTES_v1.3.0.md](docs/TEIA_RELEASE_NOTES_v1.3.0.md) | Release notes v1.3.0 |
+| [TEIA_WHITEPAPER_v1.md](docs/TEIA_WHITEPAPER_v1.md) | Whitepaper fundacional |
 
 ---
 
-*TEIA v1.3.0-real-world-demo | 2026-06-01*
+*TEIA v4.0.0-aion-gatekeeper | 2026-06-01*
