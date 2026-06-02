@@ -1,7 +1,61 @@
-# TEIA — Formato Arquivístico Computável de Alta Velocidade
+# TEIA — Supervisor Adaptativo de Arquivamento
 
 **Transcendência Epistêmica Integrada Autossintetizante**
-**Versão atual:** v5.0.0-aion-transversal
+**Versão atual:** v6.0.0-adaptive-router
+
+> *"A TEIA não é sempre o melhor formato.*
+> *A TEIA é o sistema que descobre qual formato deve vencer."*
+
+---
+
+## TEIA Adaptive Archive Router v6.0.0 — O Supervisor
+
+A v6.0.0 inaugura a fase supervisora da TEIA. Em vez de defender um formato,
+o **Archive Router** testa os três candidatos com compressão real e emite o
+veredito ótimo para cada combinação de corpus + Objetivo de Negócio.
+
+```
+Candidatos avaliados:
+  A — TEIA Transversal (AION)   Master Grammar + C# JIT, acesso O(1)
+  B — Brotli/arquivo            Cada arquivo comprimido individualmente, O(1)
+  C — Concat+Brotli (tar.br)    Corpus concatenado, O(N) na leitura
+
+Objetivos suportados: Size | Latency | Balanced
+
+Resultado P36.0 — 6 vereditos honestos (2 corpora × 3 objetivos):
+  Corpus30 Alta Entropia (N=30): Size→Concat | Latency→TEIA | Balanced→TEIA
+  Apache CLF Real (N=10):        Size→Concat | Latency→Brotli | Balanced→Brotli
+  N* Massa Crítica (TEIA vence Brotli/arq em tamanho):
+    Corpus30: N*=10 [ATINGIDO — N=30 > N*]
+    Apache CLF: N*=15 [faltam 5 arquivos]
+```
+
+### Demo em 1 Clique — v6.0.0
+
+```powershell
+# Pré-requisito: PowerShell 7+ no Windows. Conexão com internet para corpus real.
+Expand-Archive TEIA_ADAPTIVE_ARCHIVE_ROUTER_v6.0.0.zip
+pwsh -NoProfile -ExecutionPolicy Bypass -File .\adaptive_router_v6\audit-one-click-router.ps1
+```
+
+O script executa em ~2 minutos: gera corpora → 6 permutações → tabela de decisão + N*.
+
+### Uso Direto do Roteador
+
+```powershell
+# Avaliar um diretório de CSVs com objetivo Balanced (padrão)
+.\TEIA-Archive-Router.ps1 -InputDir "D:\meus\dados" -Objective Balanced
+
+# Objetivos disponíveis: Size | Latency | Balanced
+.\TEIA-Archive-Router.ps1 -InputDir "D:\logs" -Objective Size
+```
+
+### Verificação de Integridade — v6.0.0
+
+```powershell
+(Get-FileHash .\TEIA_ADAPTIVE_ARCHIVE_ROUTER_v6.0.0.zip -Algorithm SHA256).Hash.ToLower()
+# Esperado: 7f6732a218eb260f2f3c73ef29982fdcfeb073bd47e42334721210b99c031069
+```
 
 ---
 
@@ -132,8 +186,9 @@ O script faz tudo automaticamente em ~70 segundos:
 | v1.2.0 | 10 datasets sintéticos, seeds P1 | 10/10 SHA-256 PASS, 99%+ Delta |
 | v1.3.0 | P22 Real-World: COVID +58.7% vs Brotli Optimal | SHA-256 3/3 PASS |
 | v2.0.1 | AION RISPA NDC offline, sem dependências externas | Motor offline estável |
-| v4.0.0 | Oraculo Gatekeeper: 0 Deltas negativos garantidos | 9 Recuos + 1 TEIA VENCE |
-| **v5.0.0** | **AION Transversal: Master Grammar + C# JIT FastPath** | **43x acesso O(1) · 42,7x incremental · 60/60 SHA-256** |
+| v4.0.0 | Oráculo Gatekeeper: 0 Deltas negativos garantidos | 9 Recuos + 1 TEIA VENCE |
+| v5.0.0 | AION Transversal: Master Grammar + C# JIT FastPath | 43x acesso O(1) · 42,7x incremental · 60/60 SHA-256 |
+| **v6.0.0** | **Adaptive Archive Router: Supervisor de 3 candidatos** | **6/6 vereditos honestos · N* projetado · corpus Apache CLF real** |
 
 ---
 
@@ -208,40 +263,46 @@ Dados **proceduralmente gerados** não precisam ser armazenados como bytes — p
 ```
 TEIA_CLAUDE_AWAKENING/
   release/
+    adaptive_router_v6/         — pacote demo v6.0.0 (Adaptive Archive Router)
+      audit-one-click-router.ps1   — orquestrador 1-click (2 corpora × 3 objetivos)
+      TEIA-Archive-Router.ps1      — Roteador Adaptativo v1.0.0
+      TEIA-AION-Transversal.ps1    — motor v2.0.0
+      Fetch-RealTransversalCorpus.ps1 — downloader Apache CLF real
+      Fetch-TransversalData.ps1    — gerador corpus sintético
+      TEIA_ADAPTIVE_ROUTER_REPORT_P36.md
+    TEIA_ADAPTIVE_ARCHIVE_ROUTER_v6.0.0.zip — artefato empacotado v6.0.0 (930 KB)
     aion_transversal_v5/        — pacote demo v5.0.0 (Transversal FastPath)
-      TEIA-AION-Transversal.ps1   — motor v2.0.0 (Master Grammar + FastPath decoder)
+      audit-one-click-transversal.ps1  — orquestrador one-click
+      TEIA-AION-Transversal.ps1   — motor v2.0.0
       Fetch-TransversalData.ps1   — gerador de corpus sintético
       Benchmark-Transversal-Access.ps1 — benchmark P33.1/P33.2
-      TEIA_TRANSVERSAL_REPORT_P33.md
-      audit-one-click-transversal.ps1  — orquestrador one-click
     TEIA_AION_TRANSVERSAL_v5.0.0.zip  — artefato empacotado v5.0.0 (22 KB)
     aion_gatekeeper_v4/         — pacote demo v4.0.0 (Gatekeeper)
-      TEIA-AION-Universal.ps1   — motor v4.0.0
-      Run-Corpus10-Harness.ps1  — harness one-click com fallback de download
-      TEIA_GATEKEEPER_REPORT_P31.md
-      TEIA_ORACLE_CALIBRATION_P30.md
-      README_DEMO.md
     TEIA_AION_GATEKEEPER_v4.0.0.zip  — artefato empacotado v4.0.0 (11.2 KB)
     teia_demo_p19/              — pacote demo v1.3.0 (mantido)
     TEIA_P19_CLAIM_SAFE_DEMO.zip    — artefato v1.3.0 (508.5 KB)
 
   tools/
-    TEIA-AION-Transversal.ps1         — motor Transversal v2.0.0 (desenvolvimento)
-    Fetch-TransversalData.ps1         — gerador de corpus
+    TEIA-Archive-Router.ps1           — Roteador Adaptativo v1.0.0 (P36.0)
+    TEIA-AION-Transversal.ps1         — motor Transversal v2.0.0
+    Fetch-RealTransversalCorpus.ps1   — downloader Apache CLF real (P35.0)
+    Run-FairBaseline-Harness.ps1      — harness 4 métodos comparados (P35.0)
+    Fetch-TransversalData.ps1         — gerador de corpus sintético
     Benchmark-Transversal-Access.ps1  — benchmark P33.1/P33.2 (6 cenários)
-    TEIA-AION-Universal.ps1           — motor AION NDC v4.0.0 (desenvolvimento)
-    Run-Corpus10-Harness.ps1          — harness Corpus10 (desenvolvimento)
+    TEIA-AION-Universal.ps1           — motor AION NDC v4.0.0
+    Run-Corpus10-Harness.ps1          — harness Corpus10
     Analyze-SemanticSchema.ps1        — lente semântica (JSON/CSV/SVG)
 
   docs/
+    TEIA_RELEASE_NOTES_v6.0.0_ROUTER.md  — release notes v6.0.0 — Adaptive Router
+    TEIA_ADAPTIVE_ROUTER_REPORT_P36.md   — auditoria P36.0 (6 vereditos + N*)
+    TEIA_FAIR_BASELINE_REPORT_v5.1.md    — baseline justa P35.0 (4 métodos, corpus real)
     TEIA_RELEASE_NOTES_v5.0.0_TRANSVERSAL.md — release notes v5.0.0
-    TEIA_TRANSVERSAL_REPORT_P33.md      — benchmark P33.0→P33.2 (O(1) + FastPath)
-    TEIA_GATEKEEPER_REPORT_P31.md       — resultados P31 (0 Deltas negativos)
-    TEIA_ORACLE_CALIBRATION_P30.md      — calibração do Oraculo
+    TEIA_TRANSVERSAL_REPORT_P33.md       — benchmark P33.0→P33.2 (O(1) + FastPath)
+    TEIA_GATEKEEPER_REPORT_P31.md        — resultados P31 (0 Deltas negativos)
+    TEIA_ORACLE_CALIBRATION_P30.md       — calibração do Oráculo
     TEIA_RELEASE_NOTES_v4.0.0_GATEKEEPER.md — release notes v4.0.0
-    TEIA_P22_REALWORLD_CRUCIBLE.md      — crucible P22 (mundo real)
-    TEIA_RELEASE_NOTES_v1.3.0.md        — release notes v1.3.0
-    TEIA_WHITEPAPER_v1.md               — whitepaper fundacional
+    TEIA_WHITEPAPER_v1.md                — whitepaper fundacional
 ```
 
 ---
@@ -250,15 +311,15 @@ TEIA_CLAUDE_AWAKENING/
 
 | Documento | Descrição |
 |---|---|
-| [TEIA_RELEASE_NOTES_v5.0.0_TRANSVERSAL.md](docs/TEIA_RELEASE_NOTES_v5.0.0_TRANSVERSAL.md) | **Release notes v5.0.0 — Transversal FastPath** |
+| [TEIA_RELEASE_NOTES_v6.0.0_ROUTER.md](docs/TEIA_RELEASE_NOTES_v6.0.0_ROUTER.md) | **Release notes v6.0.0 — Adaptive Archive Router** |
+| [TEIA_ADAPTIVE_ROUTER_REPORT_P36.md](docs/TEIA_ADAPTIVE_ROUTER_REPORT_P36.md) | Auditoria P36.0 — 6 vereditos + N* projections |
+| [TEIA_FAIR_BASELINE_REPORT_v5.1.md](docs/TEIA_FAIR_BASELINE_REPORT_v5.1.md) | Baseline justa P35.0 — 4 métodos, corpus Apache CLF real |
+| [TEIA_RELEASE_NOTES_v5.0.0_TRANSVERSAL.md](docs/TEIA_RELEASE_NOTES_v5.0.0_TRANSVERSAL.md) | Release notes v5.0.0 — Transversal FastPath |
 | [TEIA_TRANSVERSAL_REPORT_P33.md](docs/TEIA_TRANSVERSAL_REPORT_P33.md) | Benchmark P33.0→P33.2 — O(1) + C# JIT |
 | [TEIA_RELEASE_NOTES_v4.0.0_GATEKEEPER.md](docs/TEIA_RELEASE_NOTES_v4.0.0_GATEKEEPER.md) | Release notes v4.0.0 — Gatekeeper |
 | [TEIA_GATEKEEPER_REPORT_P31.md](docs/TEIA_GATEKEEPER_REPORT_P31.md) | Resultados P31.0 — 0 Deltas negativos |
-| [TEIA_ORACLE_CALIBRATION_P30.md](docs/TEIA_ORACLE_CALIBRATION_P30.md) | Calibração do Oraculo (derivação de limiares) |
-| [TEIA_P22_REALWORLD_CRUCIBLE.md](docs/TEIA_P22_REALWORLD_CRUCIBLE.md) | Real-World Crucible — COVID +58.7% Delta |
-| [TEIA_RELEASE_NOTES_v1.3.0.md](docs/TEIA_RELEASE_NOTES_v1.3.0.md) | Release notes v1.3.0 |
 | [TEIA_WHITEPAPER_v1.md](docs/TEIA_WHITEPAPER_v1.md) | Whitepaper fundacional |
 
 ---
 
-*TEIA v5.0.0-aion-transversal | 2026-06-02*
+*TEIA v6.0.0-adaptive-router | 2026-06-02*
