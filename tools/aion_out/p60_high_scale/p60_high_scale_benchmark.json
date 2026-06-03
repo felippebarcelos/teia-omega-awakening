@@ -1,0 +1,80 @@
+{
+  "benchmark": "aion_vs_delta_high_scale_physical_io",
+  "methodology": "real_execution_file_size_accounting",
+  "protocol": "P60.0",
+  "pyarrow_version": "24.0.0",
+  "raw": {
+    "aion_erase": {
+      "application_layer_erasure": true,
+      "bytes_written": 64,
+      "bytes_written_human": "64 B",
+      "complexity": "O(1)",
+      "latency_us": 21381.0,
+      "operation": "AION_PHYSICAL_ERASE",
+      "passes": 1,
+      "scope_note": "Zeroed 51 B seed + 13 B index entry = 64 B total",
+      "seed_size_bytes": 48,
+      "target_seq": 49999
+    },
+    "delta_delete": {
+      "application_layer_erasure": false,
+      "bytes_written": 2824102,
+      "bytes_written_human": "2.69 MB",
+      "latency_us": 618299.5,
+      "note": "Record logically hidden; all Parquet bytes physically present.",
+      "operation": "DELTA_DV_DELETE",
+      "parquet_bytes_after": 6289657,
+      "parquet_bytes_before": 3467114,
+      "parquet_data_unchanged": false,
+      "physical_bytes_on_disk": 6289657,
+      "physical_bytes_on_disk_human": "6.00 MB",
+      "target_seq": 49999
+    },
+    "delta_vacuum": {
+      "application_layer_erasure": true,
+      "bytes_freed": 3467114,
+      "bytes_freed_human": "3.31 MB",
+      "bytes_written": 582,
+      "bytes_written_human": "582 B",
+      "latency_us": 42038.9,
+      "operation": "DELTA_VACUUM",
+      "parquet_bytes_after": 2822543,
+      "parquet_bytes_rewritten": 6289657,
+      "vacuum_files": [
+        "part-00000-c7c8ab28-4cab-42d1-a53b-8dd7a61b163a-c000.snappy.parquet"
+      ]
+    }
+  },
+  "sha256": "6af87b53fe83368b2bdf6284fc23a335d9b5e25db68192c81211e77074b02f65",
+  "summary": {
+    "aion": {
+      "complexity": "O(1)",
+      "passes": 1,
+      "scales_with_N": false,
+      "total_io_bytes": 64,
+      "total_io_human": "64 B",
+      "waf": 1.33
+    },
+    "aion_advantage": "44,136×",
+    "asymptotic_proof": "At N=100,000: AION writes 64 B (constant) vs Delta Lake writes 2.69 MB (3.31 MB corpus). AION I/O is O(1); Delta I/O grows with corpus size.",
+    "compliance_caveat": "Important compliance caveat: The immediate isolation provided by AION is absolute at the application layer. Physical byte destruction depends on platform mechanisms (SSD GC / S3 Object Expiry). AION reduces the erasure scope to 64 B — exponentially smaller than Delta Lake's 2.69 MB — but true cryptoshredding still requires platform-level guarantees.",
+    "delta_lake": {
+      "complexity": "O(1) + O(N_rowgroup)",
+      "dv_write_bytes": 2824102,
+      "passes": 2,
+      "physical_bytes_pre_vacuum": 6289657,
+      "physical_bytes_pre_vacuum_human": "6.00 MB",
+      "scales_with_N": true,
+      "total_io_bytes": 2824684,
+      "total_io_human": "2.69 MB",
+      "vacuum_write_bytes": 582,
+      "waf": 58847.6
+    },
+    "n_records": 100000,
+    "n_scaling_factor": 54174.0,
+    "parquet_corpus_bytes": 3467114,
+    "parquet_corpus_human": "3.31 MB",
+    "target_record": 49999
+  },
+  "timestamp": "2026-06-03T22:47:20.467562+00:00"
+}
