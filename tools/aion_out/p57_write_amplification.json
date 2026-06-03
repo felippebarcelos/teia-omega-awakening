@@ -1,0 +1,587 @@
+{
+  "benchmark": "aion_vs_parquet_write_amplification",
+  "methodology": "architectural_simulation",
+  "model_parameters": {
+    "aion_grammar_overhead_bytes": 5755,
+    "aion_seed_bytes": 62,
+    "anchor_source": "P38.0 Time Series measured values",
+    "brotli_individual_bytes": 195,
+    "dict_density": 0.69,
+    "parquet_columnar_bytes": 148,
+    "parquet_gdpr_passes": 2,
+    "parquet_row_group_default_bytes": 134217728,
+    "raw_record_bytes": 380
+  },
+  "protocol": "P57.0",
+  "scenarios": [
+    {
+      "corpus_bytes": {
+        "aion": {
+          "human": "11.67 KB",
+          "total": 11955
+        },
+        "parquet": {
+          "human": "14.45 KB",
+          "total": 14800
+        }
+      },
+      "n_records": 100,
+      "operations": {
+        "DELETE": {
+          "aion": {
+            "complexity": "O(1)",
+            "io_bytes": 62,
+            "io_human": "62 B",
+            "waf": 0.32
+          },
+          "aion_advantage": "477×",
+          "parquet": {
+            "complexity": "O(N_rowgroup)",
+            "io_bytes": 29600,
+            "io_human": "28.91 KB",
+            "waf": 151.79
+          }
+        },
+        "GDPR_ERASURE": {
+          "aion": {
+            "complexity": "O(1)",
+            "erasure_guaranteed": true,
+            "io_bytes": 62,
+            "io_human": "62 B",
+            "latency_class": "immediate",
+            "waf": 0.32
+          },
+          "aion_advantage": "477×",
+          "note": "Parquet GDPR erasure requires a tombstone write followed by a full VACUUM/compaction pass. Old Parquet files may persist in object-store snapshots until expiry, creating a compliance gap.",
+          "parquet": {
+            "complexity": "O(N_rowgroup)",
+            "erasure_guaranteed": false,
+            "io_bytes": 29600,
+            "io_human": "28.91 KB",
+            "latency_class": "deferred (tombstone + VACUUM)",
+            "waf": 151.79
+          }
+        },
+        "UPDATE": {
+          "aion": {
+            "complexity": "O(1)",
+            "io_bytes": 124,
+            "io_human": "124 B",
+            "waf": 0.64
+          },
+          "aion_advantage": "239×",
+          "parquet": {
+            "complexity": "O(N_rowgroup)",
+            "io_bytes": 29600,
+            "io_human": "28.91 KB",
+            "waf": 151.79
+          }
+        }
+      },
+      "parquet_row_group": {
+        "bytes": 14800,
+        "human": "14.45 KB",
+        "records": 100
+      }
+    },
+    {
+      "corpus_bytes": {
+        "aion": {
+          "human": "35.89 KB",
+          "total": 36755
+        },
+        "parquet": {
+          "human": "72.27 KB",
+          "total": 74000
+        }
+      },
+      "n_records": 500,
+      "operations": {
+        "DELETE": {
+          "aion": {
+            "complexity": "O(1)",
+            "io_bytes": 62,
+            "io_human": "62 B",
+            "waf": 0.32
+          },
+          "aion_advantage": "2,387×",
+          "parquet": {
+            "complexity": "O(N_rowgroup)",
+            "io_bytes": 148000,
+            "io_human": "144.53 KB",
+            "waf": 758.97
+          }
+        },
+        "GDPR_ERASURE": {
+          "aion": {
+            "complexity": "O(1)",
+            "erasure_guaranteed": true,
+            "io_bytes": 62,
+            "io_human": "62 B",
+            "latency_class": "immediate",
+            "waf": 0.32
+          },
+          "aion_advantage": "2,387×",
+          "note": "Parquet GDPR erasure requires a tombstone write followed by a full VACUUM/compaction pass. Old Parquet files may persist in object-store snapshots until expiry, creating a compliance gap.",
+          "parquet": {
+            "complexity": "O(N_rowgroup)",
+            "erasure_guaranteed": false,
+            "io_bytes": 148000,
+            "io_human": "144.53 KB",
+            "latency_class": "deferred (tombstone + VACUUM)",
+            "waf": 758.97
+          }
+        },
+        "UPDATE": {
+          "aion": {
+            "complexity": "O(1)",
+            "io_bytes": 124,
+            "io_human": "124 B",
+            "waf": 0.64
+          },
+          "aion_advantage": "1,194×",
+          "parquet": {
+            "complexity": "O(N_rowgroup)",
+            "io_bytes": 148000,
+            "io_human": "144.53 KB",
+            "waf": 758.97
+          }
+        }
+      },
+      "parquet_row_group": {
+        "bytes": 74000,
+        "human": "72.27 KB",
+        "records": 500
+      }
+    },
+    {
+      "corpus_bytes": {
+        "aion": {
+          "human": "66.17 KB",
+          "total": 67755
+        },
+        "parquet": {
+          "human": "144.53 KB",
+          "total": 148000
+        }
+      },
+      "n_records": 1000,
+      "operations": {
+        "DELETE": {
+          "aion": {
+            "complexity": "O(1)",
+            "io_bytes": 62,
+            "io_human": "62 B",
+            "waf": 0.32
+          },
+          "aion_advantage": "4,774×",
+          "parquet": {
+            "complexity": "O(N_rowgroup)",
+            "io_bytes": 296000,
+            "io_human": "289.06 KB",
+            "waf": 1517.95
+          }
+        },
+        "GDPR_ERASURE": {
+          "aion": {
+            "complexity": "O(1)",
+            "erasure_guaranteed": true,
+            "io_bytes": 62,
+            "io_human": "62 B",
+            "latency_class": "immediate",
+            "waf": 0.32
+          },
+          "aion_advantage": "4,774×",
+          "note": "Parquet GDPR erasure requires a tombstone write followed by a full VACUUM/compaction pass. Old Parquet files may persist in object-store snapshots until expiry, creating a compliance gap.",
+          "parquet": {
+            "complexity": "O(N_rowgroup)",
+            "erasure_guaranteed": false,
+            "io_bytes": 296000,
+            "io_human": "289.06 KB",
+            "latency_class": "deferred (tombstone + VACUUM)",
+            "waf": 1517.95
+          }
+        },
+        "UPDATE": {
+          "aion": {
+            "complexity": "O(1)",
+            "io_bytes": 124,
+            "io_human": "124 B",
+            "waf": 0.64
+          },
+          "aion_advantage": "2,387×",
+          "parquet": {
+            "complexity": "O(N_rowgroup)",
+            "io_bytes": 296000,
+            "io_human": "289.06 KB",
+            "waf": 1517.95
+          }
+        }
+      },
+      "parquet_row_group": {
+        "bytes": 148000,
+        "human": "144.53 KB",
+        "records": 1000
+      }
+    },
+    {
+      "corpus_bytes": {
+        "aion": {
+          "human": "308.35 KB",
+          "total": 315755
+        },
+        "parquet": {
+          "human": "722.66 KB",
+          "total": 740000
+        }
+      },
+      "n_records": 5000,
+      "operations": {
+        "DELETE": {
+          "aion": {
+            "complexity": "O(1)",
+            "io_bytes": 62,
+            "io_human": "62 B",
+            "waf": 0.32
+          },
+          "aion_advantage": "23,871×",
+          "parquet": {
+            "complexity": "O(N_rowgroup)",
+            "io_bytes": 1480000,
+            "io_human": "1.41 MB",
+            "waf": 7589.74
+          }
+        },
+        "GDPR_ERASURE": {
+          "aion": {
+            "complexity": "O(1)",
+            "erasure_guaranteed": true,
+            "io_bytes": 62,
+            "io_human": "62 B",
+            "latency_class": "immediate",
+            "waf": 0.32
+          },
+          "aion_advantage": "23,871×",
+          "note": "Parquet GDPR erasure requires a tombstone write followed by a full VACUUM/compaction pass. Old Parquet files may persist in object-store snapshots until expiry, creating a compliance gap.",
+          "parquet": {
+            "complexity": "O(N_rowgroup)",
+            "erasure_guaranteed": false,
+            "io_bytes": 1480000,
+            "io_human": "1.41 MB",
+            "latency_class": "deferred (tombstone + VACUUM)",
+            "waf": 7589.74
+          }
+        },
+        "UPDATE": {
+          "aion": {
+            "complexity": "O(1)",
+            "io_bytes": 124,
+            "io_human": "124 B",
+            "waf": 0.64
+          },
+          "aion_advantage": "11,935×",
+          "parquet": {
+            "complexity": "O(N_rowgroup)",
+            "io_bytes": 1480000,
+            "io_human": "1.41 MB",
+            "waf": 7589.74
+          }
+        }
+      },
+      "parquet_row_group": {
+        "bytes": 740000,
+        "human": "722.66 KB",
+        "records": 5000
+      }
+    },
+    {
+      "corpus_bytes": {
+        "aion": {
+          "human": "611.09 KB",
+          "total": 625755
+        },
+        "parquet": {
+          "human": "1.41 MB",
+          "total": 1480000
+        }
+      },
+      "n_records": 10000,
+      "operations": {
+        "DELETE": {
+          "aion": {
+            "complexity": "O(1)",
+            "io_bytes": 62,
+            "io_human": "62 B",
+            "waf": 0.32
+          },
+          "aion_advantage": "47,742×",
+          "parquet": {
+            "complexity": "O(N_rowgroup)",
+            "io_bytes": 2960000,
+            "io_human": "2.82 MB",
+            "waf": 15179.49
+          }
+        },
+        "GDPR_ERASURE": {
+          "aion": {
+            "complexity": "O(1)",
+            "erasure_guaranteed": true,
+            "io_bytes": 62,
+            "io_human": "62 B",
+            "latency_class": "immediate",
+            "waf": 0.32
+          },
+          "aion_advantage": "47,742×",
+          "note": "Parquet GDPR erasure requires a tombstone write followed by a full VACUUM/compaction pass. Old Parquet files may persist in object-store snapshots until expiry, creating a compliance gap.",
+          "parquet": {
+            "complexity": "O(N_rowgroup)",
+            "erasure_guaranteed": false,
+            "io_bytes": 2960000,
+            "io_human": "2.82 MB",
+            "latency_class": "deferred (tombstone + VACUUM)",
+            "waf": 15179.49
+          }
+        },
+        "UPDATE": {
+          "aion": {
+            "complexity": "O(1)",
+            "io_bytes": 124,
+            "io_human": "124 B",
+            "waf": 0.64
+          },
+          "aion_advantage": "23,871×",
+          "parquet": {
+            "complexity": "O(N_rowgroup)",
+            "io_bytes": 2960000,
+            "io_human": "2.82 MB",
+            "waf": 15179.49
+          }
+        }
+      },
+      "parquet_row_group": {
+        "bytes": 1480000,
+        "human": "1.41 MB",
+        "records": 10000
+      }
+    },
+    {
+      "corpus_bytes": {
+        "aion": {
+          "human": "2.96 MB",
+          "total": 3105755
+        },
+        "parquet": {
+          "human": "7.06 MB",
+          "total": 7400000
+        }
+      },
+      "n_records": 50000,
+      "operations": {
+        "DELETE": {
+          "aion": {
+            "complexity": "O(1)",
+            "io_bytes": 62,
+            "io_human": "62 B",
+            "waf": 0.32
+          },
+          "aion_advantage": "238,710×",
+          "parquet": {
+            "complexity": "O(N_rowgroup)",
+            "io_bytes": 14800000,
+            "io_human": "14.11 MB",
+            "waf": 75897.44
+          }
+        },
+        "GDPR_ERASURE": {
+          "aion": {
+            "complexity": "O(1)",
+            "erasure_guaranteed": true,
+            "io_bytes": 62,
+            "io_human": "62 B",
+            "latency_class": "immediate",
+            "waf": 0.32
+          },
+          "aion_advantage": "238,710×",
+          "note": "Parquet GDPR erasure requires a tombstone write followed by a full VACUUM/compaction pass. Old Parquet files may persist in object-store snapshots until expiry, creating a compliance gap.",
+          "parquet": {
+            "complexity": "O(N_rowgroup)",
+            "erasure_guaranteed": false,
+            "io_bytes": 14800000,
+            "io_human": "14.11 MB",
+            "latency_class": "deferred (tombstone + VACUUM)",
+            "waf": 75897.44
+          }
+        },
+        "UPDATE": {
+          "aion": {
+            "complexity": "O(1)",
+            "io_bytes": 124,
+            "io_human": "124 B",
+            "waf": 0.64
+          },
+          "aion_advantage": "119,355×",
+          "parquet": {
+            "complexity": "O(N_rowgroup)",
+            "io_bytes": 14800000,
+            "io_human": "14.11 MB",
+            "waf": 75897.44
+          }
+        }
+      },
+      "parquet_row_group": {
+        "bytes": 7400000,
+        "human": "7.06 MB",
+        "records": 50000
+      }
+    },
+    {
+      "corpus_bytes": {
+        "aion": {
+          "human": "5.92 MB",
+          "total": 6205755
+        },
+        "parquet": {
+          "human": "14.11 MB",
+          "total": 14800000
+        }
+      },
+      "n_records": 100000,
+      "operations": {
+        "DELETE": {
+          "aion": {
+            "complexity": "O(1)",
+            "io_bytes": 62,
+            "io_human": "62 B",
+            "waf": 0.32
+          },
+          "aion_advantage": "477,419×",
+          "parquet": {
+            "complexity": "O(N_rowgroup)",
+            "io_bytes": 29600000,
+            "io_human": "28.23 MB",
+            "waf": 151794.87
+          }
+        },
+        "GDPR_ERASURE": {
+          "aion": {
+            "complexity": "O(1)",
+            "erasure_guaranteed": true,
+            "io_bytes": 62,
+            "io_human": "62 B",
+            "latency_class": "immediate",
+            "waf": 0.32
+          },
+          "aion_advantage": "477,419×",
+          "note": "Parquet GDPR erasure requires a tombstone write followed by a full VACUUM/compaction pass. Old Parquet files may persist in object-store snapshots until expiry, creating a compliance gap.",
+          "parquet": {
+            "complexity": "O(N_rowgroup)",
+            "erasure_guaranteed": false,
+            "io_bytes": 29600000,
+            "io_human": "28.23 MB",
+            "latency_class": "deferred (tombstone + VACUUM)",
+            "waf": 151794.87
+          }
+        },
+        "UPDATE": {
+          "aion": {
+            "complexity": "O(1)",
+            "io_bytes": 124,
+            "io_human": "124 B",
+            "waf": 0.64
+          },
+          "aion_advantage": "238,710×",
+          "parquet": {
+            "complexity": "O(N_rowgroup)",
+            "io_bytes": 29600000,
+            "io_human": "28.23 MB",
+            "waf": 151794.87
+          }
+        }
+      },
+      "parquet_row_group": {
+        "bytes": 14800000,
+        "human": "14.11 MB",
+        "records": 100000
+      }
+    },
+    {
+      "corpus_bytes": {
+        "aion": {
+          "human": "59.13 MB",
+          "total": 62005755
+        },
+        "parquet": {
+          "human": "141.14 MB",
+          "total": 148000000
+        }
+      },
+      "n_records": 1000000,
+      "operations": {
+        "DELETE": {
+          "aion": {
+            "complexity": "O(1)",
+            "io_bytes": 62,
+            "io_human": "62 B",
+            "waf": 0.32
+          },
+          "aion_advantage": "4,329,604×",
+          "parquet": {
+            "complexity": "O(N_rowgroup)",
+            "io_bytes": 268435456,
+            "io_human": "256.00 MB",
+            "waf": 1376592.08
+          }
+        },
+        "GDPR_ERASURE": {
+          "aion": {
+            "complexity": "O(1)",
+            "erasure_guaranteed": true,
+            "io_bytes": 62,
+            "io_human": "62 B",
+            "latency_class": "immediate",
+            "waf": 0.32
+          },
+          "aion_advantage": "4,329,604×",
+          "note": "Parquet GDPR erasure requires a tombstone write followed by a full VACUUM/compaction pass. Old Parquet files may persist in object-store snapshots until expiry, creating a compliance gap.",
+          "parquet": {
+            "complexity": "O(N_rowgroup)",
+            "erasure_guaranteed": false,
+            "io_bytes": 268435456,
+            "io_human": "256.00 MB",
+            "latency_class": "deferred (tombstone + VACUUM)",
+            "waf": 1376592.08
+          }
+        },
+        "UPDATE": {
+          "aion": {
+            "complexity": "O(1)",
+            "io_bytes": 124,
+            "io_human": "124 B",
+            "waf": 0.64
+          },
+          "aion_advantage": "2,164,802×",
+          "parquet": {
+            "complexity": "O(N_rowgroup)",
+            "io_bytes": 268435456,
+            "io_human": "256.00 MB",
+            "waf": 1376592.08
+          }
+        }
+      },
+      "parquet_row_group": {
+        "bytes": 134217728,
+        "human": "128.00 MB",
+        "records": 906876
+      }
+    }
+  ],
+  "sha256": "4213aaca3fdc508fa8949c69e2e0aa9f3dff5c2ca603cc718a969f8a521dd3ee",
+  "timestamp": "2026-06-03T21:41:36.059515+00:00",
+  "verdict": {
+    "columnar_aggregation_at_rest": "Apache Parquet (native columnar pushdown)",
+    "gdpr_right_to_erasure": "AION-RISPA (immediate, cryptographically guaranteed)",
+    "mutable_active_lake": "AION-RISPA (O(1) mutation, no row-group rewrite)",
+    "read_only_analytics": "Apache Parquet (optimal — columnar scans, no mutation)",
+    "streaming_ingestion": "AION-RISPA (per-file seed append, O(1) index update)"
+  }
+}
