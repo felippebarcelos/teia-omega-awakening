@@ -1,15 +1,15 @@
 """
-teia_cognitive_router.py — TEIA Cognitive Router P40.0 (Python Port)
+_router.py — TEIA Cognitive Router P40.0 (core logic)
 Heuristic Semantic Entropy analysis for AI prompt routing.
 Pure Python stdlib — zero ML dependencies — sub-millisecond O(1) inference.
 
 Routing tiers:
   Local  (<0.35)  — SLM 1-7B / edge inference, zero GPU-seconds
   Hybrid (0.35–0.65) — quantized 13-34B, reduced GPU footprint
-  Cloud  (≥0.65)  — Frontier LLM (GPT-4/Claude-Opus), full GPU inference
+  Cloud  (>=0.65) — Frontier LLM (GPT-4/Claude-Opus), full GPU inference
 
 Output: canonical JSON sealed with SHA-256 for audit trails.
-Write==Read invariant: identical input → identical JSON → identical SHA-256.
+Write==Read invariant: identical input -> identical JSON -> identical SHA-256.
 Delta always written in full — mathematical symbol prohibited.
 """
 
@@ -148,10 +148,10 @@ def compute_semantic_entropy(text: str) -> dict[str, Any]:
     )), 4)
 
     return {
-        "char_count":       char_count,
-        "token_estimate":   token_est,
-        "word_count":       word_count,
-        "entropy":          entropy,
+        "char_count":        char_count,
+        "token_estimate":    token_est,
+        "word_count":        word_count,
+        "entropy":           entropy,
         "features": {
             "token_score":          ts,
             "vocab_diversity":      vs,
@@ -160,8 +160,8 @@ def compute_semantic_entropy(text: str) -> dict[str, Any]:
             "structural_score":     ss,
             "constraint_score":     cs,
         },
-        "_reasoning_count": r_count,
-        "_data_count":      d_count,
+        "_reasoning_count":  r_count,
+        "_data_count":       d_count,
         "_constraint_count": c_count,
     }
 
@@ -303,7 +303,7 @@ def _cli() -> None:
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument("--text",  "-t", help="Prompt text (inline)")
     group.add_argument("--file",  "-f", help="Path to file containing the prompt")
-    parser.add_argument("--output", "-o", help="Write sealed JSON to this path")
+    parser.add_argument("--output",  "-o", help="Write sealed JSON to this path")
     parser.add_argument("--no-seal", action="store_true", help="Skip SHA-256 audit seal")
     args = parser.parse_args()
 

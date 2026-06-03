@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "teia-cognitive-router"
+version = "1.0.0"
+description = "Deterministic, compliance-first LLM routing with cryptographic audit trails"
+readme = "README.md"
+license = {text = "Apache-2.0"}
+requires-python = ">=3.8"
+authors = [
+    {name = "Felippe Barcelos", email = "felippe.barcelos10@gmail.com"}
+]
+keywords = [
+    "llm", "routing", "compliance", "ai", "deterministic",
+    "audit", "enterprise", "fintech", "healthcare", "vllm", "litellm"
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Financial and Insurance Industry",
+    "Intended Audience :: Healthcare Industry",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Security :: Cryptography",
+    "Topic :: Office/Business :: Financial",
+]
+
+[project.urls]
+Homepage = "https://github.com/felippebarcelos/teia-omega-awakening"
+Repository = "https://github.com/felippebarcelos/teia-omega-awakening"
+"Bug Tracker" = "https://github.com/felippebarcelos/teia-omega-awakening/issues"
+
+[project.scripts]
+teia-route  = "teia_cognitive_router._router:_cli"
+teia-verify = "teia_cognitive_router._verifier:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

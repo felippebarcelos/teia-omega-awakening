@@ -1,8 +1,16 @@
 # TEIA Cognitive Router
 
+[![PyPI](https://img.shields.io/pypi/v/teia-cognitive-router)](https://pypi.org/project/teia-cognitive-router/)
+[![Python](https://img.shields.io/pypi/pyversions/teia-cognitive-router)](https://pypi.org/project/teia-cognitive-router/)
+[![License](https://img.shields.io/pypi/l/teia-cognitive-router)](https://pypi.org/project/teia-cognitive-router/)
+
 **Compliance-First LLM Routing · Deterministic Cost Optimization · Cryptographic Audit Trails**
 
 > *"The only router that can mathematically prove its own decisions."*
+
+```bash
+pip install teia-cognitive-router
+```
 
 ---
 

@@ -28,8 +28,8 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Any
 
-_HERE = Path(__file__).parent
-sys.path.insert(0, str(_HERE))
+_PACKAGE_SRC = Path(__file__).parent.parent / "src"
+sys.path.insert(0, str(_PACKAGE_SRC))
 import teia_cognitive_router as router  # noqa: E402
 
 

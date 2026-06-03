@@ -1,5 +1,5 @@
 """
-teia_audit_verifier.py — TEIA P44.0 Cryptographic Audit Verifier
+_verifier.py — TEIA Cryptographic Audit Verifier P44.0
 Proves that a routing decision is mathematically reproducible and unmodified.
 
 Two verification modes:
@@ -22,14 +22,14 @@ Two verification modes:
 
 Usage:
   # Verify document seal only
-  python teia_audit_verifier.py --file quality_cost_results.json
+  teia-verify --file quality_cost_results.json
 
   # Full routing verification (requires original prompt)
-  python teia_audit_verifier.py --file routing_result.json --text "Your original prompt"
-  python teia_audit_verifier.py --file routing_result.json --prompt-file prompt.txt
+  teia-verify --file routing_result.json --text "Your original prompt"
+  teia-verify --file routing_result.json --prompt-file prompt.txt
 
   # Verify from stored prompt (if routing result contains input text)
-  python teia_audit_verifier.py --file routing_result.json --from-stored
+  teia-verify --file routing_result.json --from-stored
 
 Output: AUDIT PASS or AUDIT FAIL with full diagnostic detail.
 Write==Read invariant. Delta always written in full.
@@ -44,9 +44,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
-_HERE = Path(__file__).parent
-sys.path.insert(0, str(_HERE))
-import teia_cognitive_router as router  # noqa: E402
+from . import _router as router
 
 # ── ANSI colours ─────────────────────────────────────────────────────────────
 
@@ -72,14 +70,13 @@ def verify_document_seal(data: dict[str, Any]) -> dict[str, Any]:
 
     if not stored_hash:
         return {
-            "pass":    False,
-            "mode":    "document_seal",
-            "reason":  "No audit_seal.sha256 field found in document.",
-            "stored":  "",
+            "pass":     False,
+            "mode":     "document_seal",
+            "reason":   "No audit_seal.sha256 field found in document.",
+            "stored":   "",
             "computed": "",
         }
 
-    # Reconstruct the body that was sealed (everything except audit_seal)
     body = {k: v for k, v in data.items() if k != "audit_seal"}
     canonical = router.to_canonical_json(body)
     computed_hash = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
@@ -102,9 +99,8 @@ def verify_routing_decision(data: dict[str, Any], prompt_text: str) -> dict[str,
     """
     seal_result = verify_document_seal(data)
 
-    # Re-route from scratch
-    fresh_result  = router.route(prompt_text)
-    fresh_entropy = fresh_result["semantic_entropy_score"]
+    fresh_result   = router.route(prompt_text)
+    fresh_entropy  = fresh_result["semantic_entropy_score"]
     fresh_decision = fresh_result["routing_decision"]
 
     stored_entropy  = data.get("semantic_entropy_score")
@@ -113,7 +109,6 @@ def verify_routing_decision(data: dict[str, Any], prompt_text: str) -> dict[str,
     entropy_match  = (fresh_entropy  == stored_entropy)
     decision_match = (fresh_decision == stored_decision)
 
-    # Full feature-level comparison
     stored_features = data.get("entropy_features", {})
     fresh_features  = fresh_result.get("entropy_features", {})
     features_match  = (stored_features == fresh_features)
@@ -121,9 +116,9 @@ def verify_routing_decision(data: dict[str, Any], prompt_text: str) -> dict[str,
     all_pass = seal_result["pass"] and entropy_match and decision_match and features_match
 
     return {
-        "pass":             all_pass,
-        "mode":             "full_routing_verification",
-        "document_seal":    seal_result,
+        "pass":          all_pass,
+        "mode":          "full_routing_verification",
+        "document_seal": seal_result,
         "entropy": {
             "stored":   stored_entropy,
             "computed": fresh_entropy,
@@ -134,7 +129,7 @@ def verify_routing_decision(data: dict[str, Any], prompt_text: str) -> dict[str,
             "computed": fresh_decision,
             "match":    decision_match,
         },
-        "features_match":   features_match,
+        "features_match": features_match,
         "reason": (
             "All checks passed — routing decision is mathematically proven and unmodified"
             if all_pass else
@@ -144,8 +139,6 @@ def verify_routing_decision(data: dict[str, Any], prompt_text: str) -> dict[str,
 
 
 def _find_stored_prompt(data: dict[str, Any]) -> str | None:
-    """Look for an original prompt stored in the routing result."""
-    # Some formats store the input text directly
     for key in ("input_text", "prompt", "text", "query"):
         if key in data and isinstance(data[key], str) and data[key].strip():
             return data[key]
@@ -235,7 +228,6 @@ def main() -> None:
 
     data = json.loads(file_path.read_text(encoding="utf-8"))
 
-    # Determine verification mode
     prompt_text: str | None = None
     if args.text.strip():
         prompt_text = args.text.strip()
