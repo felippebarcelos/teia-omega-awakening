@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TEIA Compliance Shield — Audit Dashboard</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:        #0d1117;
+    --panel:     #161b22;
+    --panel2:    #1c2128;
+    --border:    #30363d;
+    --text:      #e6edf3;
+    --muted:     #7d8590;
+    --accent:    #388bfd;
+    --pass:      #3fb950;
+    --fail:      #f85149;
+    --warn:      #d29922;
+    --cloud:     #79c0ff;
+    --hybrid:    #ffa657;
+    --local:     #3fb950;
+    --mono:      'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    --radius:    8px;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ── Header ─────────────────────────────────────────────── */
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 14px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--panel);
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .logo-icon {
+    width: 32px; height: 32px;
+    background: linear-gradient(135deg, #388bfd, #79c0ff);
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; font-weight: 800; color: #0d1117;
+  }
+  .logo-text { font-size: 15px; font-weight: 600; }
+  .logo-sub  { font-size: 11px; color: var(--muted); }
+  .header-meta { display: flex; gap: 16px; align-items: center; }
+  .badge {
+    font-size: 11px; font-family: var(--mono);
+    padding: 2px 8px; border-radius: 12px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+  }
+
+  /* ── Main layout ─────────────────────────────────────────── */
+  main { max-width: 960px; margin: 0 auto; padding: 28px 20px; }
+
+  section { margin-bottom: 24px; }
+
+  h2 {
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+
+  /* ── Dropzone ────────────────────────────────────────────── */
+  #dropzone {
+    border: 2px dashed var(--border);
+    border-radius: var(--radius);
+    padding: 48px 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color .2s, background .2s;
+    background: var(--panel);
+  }
+  #dropzone:hover, #dropzone.drag-over {
+    border-color: var(--accent);
+    background: rgba(56,139,253,.06);
+  }
+  #dropzone svg { color: var(--muted); margin-bottom: 12px; }
+  #dropzone .drop-title { font-size: 15px; font-weight: 500; margin-bottom: 4px; }
+  #dropzone .drop-sub   { font-size: 12px; color: var(--muted); }
+  #dropzone .drop-types {
+    margin-top: 12px;
+    display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;
+  }
+  #dropzone .drop-types span {
+    font-size: 11px; font-family: var(--mono);
+    padding: 2px 8px; border-radius: 4px;
+    background: var(--panel2); border: 1px solid var(--border);
+    color: var(--muted);
+  }
+  #file-input { display: none; }
+
+  /* ── Verdict banner ──────────────────────────────────────── */
+  #verdict-banner {
+    display: none;
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    border: 1px solid;
+    margin-bottom: 24px;
+    align-items: center;
+    gap: 16px;
+  }
+  #verdict-banner.pass { background: rgba(63,185,80,.08); border-color: rgba(63,185,80,.4); }
+  #verdict-banner.fail { background: rgba(248,81,73,.08); border-color: rgba(248,81,73,.4); }
+  .verdict-icon { font-size: 32px; line-height: 1; }
+  .verdict-label { font-size: 22px; font-weight: 700; }
+  .verdict-sub   { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  #verdict-banner.pass .verdict-label { color: var(--pass); }
+  #verdict-banner.fail .verdict-label { color: var(--fail); }
+
+  /* ── Metric cards ────────────────────────────────────────── */
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 12px;
+  }
+  .metric-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+  }
+  .metric-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin-bottom: 6px; }
+  .metric-value { font-size: 18px; font-weight: 600; }
+  .metric-value.cloud  { color: var(--cloud); }
+  .metric-value.hybrid { color: var(--hybrid); }
+  .metric-value.local  { color: var(--local); }
+  .metric-value.pass   { color: var(--pass); }
+  .metric-value.fail   { color: var(--fail); }
+  .metric-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  /* ── Hash table ──────────────────────────────────────────── */
+  .hash-table {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    width: 100%;
+  }
+  .hash-table table { width: 100%; border-collapse: collapse; }
+  .hash-table th {
+    background: var(--panel2);
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  .hash-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+    vertical-align: top;
+  }
+  .hash-table tr:last-child td { border-bottom: none; }
+  .hash-table tr:hover td { background: rgba(255,255,255,.02); }
+  .hash-mono { font-family: var(--mono); color: var(--accent); word-break: break-all; font-size: 11px; }
+  .hash-label { font-weight: 500; white-space: nowrap; color: var(--text); }
+  .tag {
+    display: inline-block;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .04em;
+  }
+  .tag.pass { background: rgba(63,185,80,.15); color: var(--pass); border: 1px solid rgba(63,185,80,.3); }
+  .tag.fail { background: rgba(248,81,73,.15); color: var(--fail); border: 1px solid rgba(248,81,73,.3); }
+  .tag.info { background: rgba(56,139,253,.15); color: var(--accent); border: 1px solid rgba(56,139,253,.3); }
+
+  /* ── Chain verification ──────────────────────────────────── */
+  .chain-entry {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+  }
+  .chain-entry:last-child { border-bottom: none; }
+  .chain-num {
+    font-family: var(--mono);
+    color: var(--muted);
+    min-width: 32px;
+    font-size: 11px;
+    padding-top: 1px;
+  }
+  .chain-info { flex: 1; }
+  .chain-hashes { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+  .chain-hash-item { font-family: var(--mono); font-size: 10px; color: var(--muted); }
+  .chain-hash-item span { color: var(--accent); }
+
+  /* ── Progress / spinner ──────────────────────────────────── */
+  #loading {
+    display: none;
+    text-align: center;
+    padding: 32px;
+    color: var(--muted);
+  }
+  .spinner {
+    display: inline-block;
+    width: 20px; height: 20px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin .7s linear infinite;
+    margin-right: 10px;
+    vertical-align: middle;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── File info bar ───────────────────────────────────────── */
+  #file-info {
+    display: none;
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px 14px;
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 16px;
+    display: none;
+    gap: 10px;
+    align-items: center;
+  }
+  #file-info .fi-name { color: var(--text); font-weight: 500; font-family: var(--mono); }
+
+  /* ── Notice box ──────────────────────────────────────────── */
+  .notice {
+    background: rgba(210,153,34,.06);
+    border: 1px solid rgba(210,153,34,.3);
+    border-radius: var(--radius);
+    padding: 10px 14px;
+    font-size: 12px;
+    color: var(--warn);
+    margin-top: 12px;
+  }
+
+  /* ── Result sections ─────────────────────────────────────── */
+  .result-section { display: none; }
+
+  /* ── Reset button ────────────────────────────────────────── */
+  #reset-btn {
+    display: none;
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    border-radius: var(--radius);
+    padding: 6px 14px;
+    font-size: 12px;
+    cursor: pointer;
+    margin-bottom: 20px;
+    transition: border-color .15s, color .15s;
+  }
+  #reset-btn:hover { border-color: var(--accent); color: var(--text); }
+
+  /* ── Footer ──────────────────────────────────────────────── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 14px 28px;
+    font-size: 11px;
+    color: var(--muted);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  footer a { color: var(--accent); text-decoration: none; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">T</div>
+    <div>
+      <div class="logo-text">TEIA Compliance Shield</div>
+      <div class="logo-sub">Enterprise Audit Dashboard</div>
+    </div>
+  </div>
+  <div class="header-meta">
+    <span class="badge">v1.3.0</span>
+    <span class="badge">P52.0</span>
+    <span class="badge">Offline · No external calls</span>
+  </div>
+</header>
+
+<main>
+
+  <!-- Drop zone -->
+  <section>
+    <h2>Audit Verification</h2>
+    <div id="dropzone" tabindex="0" role="button" aria-label="Upload routing result or audit log">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <polyline points="17 8 12 3 7 8"/>
+        <line x1="12" y1="3" x2="12" y2="15"/>
+      </svg>
+      <div class="drop-title">Drop audit file here, or click to select</div>
+      <div class="drop-sub">Processed entirely in your browser — no data leaves this page</div>
+      <div class="drop-types">
+        <span>routing_result.json</span>
+        <span>teia_gateway_audit.jsonl</span>
+        <span>*.json</span>
+        <span>*.jsonl</span>
+      </div>
+    </div>
+    <input type="file" id="file-input" accept=".json,.jsonl,.txt">
+  </section>
+
+  <!-- Loading -->
+  <div id="loading"><span class="spinner"></span>Verifying cryptographic seals…</div>
+
+  <!-- File info -->
+  <div id="file-info" style="display:none">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+    <span id="fi-name" class="fi-name"></span>
+    <span id="fi-size"></span>
+    <span id="fi-type"></span>
+  </div>
+
+  <!-- Reset -->
+  <button id="reset-btn">↩ Verify another file</button>
+
+  <!-- Verdict banner -->
+  <div id="verdict-banner">
+    <div class="verdict-icon" id="verdict-icon"></div>
+    <div>
+      <div class="verdict-label" id="verdict-label"></div>
+      <div class="verdict-sub" id="verdict-sub"></div>
+    </div>
+  </div>
+
+  <!-- Single document results -->
+  <div id="section-single" class="result-section">
+    <section>
+      <h2>Routing Decision</h2>
+      <div class="metrics-grid" id="metrics-grid"></div>
+    </section>
+
+    <section>
+      <h2>Cryptographic Audit Trail</h2>
+      <div class="hash-table">
+        <table id="hash-table">
+          <thead>
+            <tr>
+              <th>Field</th>
+              <th>Value</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="hash-tbody"></tbody>
+        </table>
+      </div>
+      <div class="notice" id="float-notice" style="display:none">
+        ⚠ JavaScript number precision: for routing decisions with exact-zero savings (Cloud routing),
+        float serialization may differ from Python. Use <code>teia-verify</code> CLI for definitive verification.
+      </div>
+    </section>
+
+    <section>
+      <h2>Entropy Feature Breakdown</h2>
+      <div class="hash-table">
+        <table>
+          <thead>
+            <tr><th>Feature</th><th>Score</th><th>Weight</th><th>Contribution</th></tr>
+          </thead>
+          <tbody id="features-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <!-- JSONL chain results -->
+  <div id="section-chain" class="result-section">
+    <section>
+      <h2>Chain Summary</h2>
+      <div class="metrics-grid" id="chain-metrics"></div>
+    </section>
+
+    <section>
+      <h2>Entry-by-Entry Chain Verification</h2>
+      <div class="hash-table" style="max-height:420px;overflow-y:auto;">
+        <div id="chain-entries"></div>
+      </div>
+    </section>
+  </div>
+
+</main>
+
+<footer>
+  <span>TEIA Cognitive Router · Apache 2.0 · All verification runs locally in your browser</span>
+  <span>
+    <a href="https://pypi.org/project/teia-cognitive-router/" target="_blank">PyPI</a> ·
+    <a href="https://github.com/felippebarcelos/teia-omega-awakening" target="_blank">GitHub</a> ·
+    CLI: <code>teia-verify --verify-chain --chain-file audit.jsonl</code>
+  </span>
+</footer>
+
+<script>
+"use strict";
+
+// ── Pure-JS SHA-256 (no Web Crypto — works on file:// in all browsers) ────────
+const SHA256 = (function() {
+  const K = [
+    0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,
+    0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,
+    0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,
+    0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,
+    0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,
+    0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,
+    0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,
+    0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2
+  ];
+  const H0 = [0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19];
+
+  function rotr(x,n){ return (x>>>n)|(x<<(32-n)); }
+  function add(...xs){ return xs.reduce((a,b)=>(a+b)|0,0); }
+
+  function preprocess(msg) {
+    const bytes = new TextEncoder().encode(msg);
+    const bitLen = bytes.length * 8;
+    const padded = new Uint8Array(Math.ceil((bytes.length + 9) / 64) * 64);
+    padded.set(bytes);
+    padded[bytes.length] = 0x80;
+    const v = new DataView(padded.buffer);
+    v.setUint32(padded.length - 4, bitLen & 0xffffffff, false);
+    v.setUint32(padded.length - 8, Math.floor(bitLen / 2**32), false);
+    return padded;
+  }
+
+  return function sha256(msg) {
+    const padded = preprocess(msg);
+    let [h0,h1,h2,h3,h4,h5,h6,h7] = H0.slice();
+
+    for (let i = 0; i < padded.length; i += 64) {
+      const w = new Uint32Array(64);
+      const view = new DataView(padded.buffer, i, 64);
+      for (let j = 0; j < 16; j++) w[j] = view.getUint32(j * 4, false);
+      for (let j = 16; j < 64; j++) {
+        const s0 = rotr(w[j-15],7) ^ rotr(w[j-15],18) ^ (w[j-15]>>>3);
+        const s1 = rotr(w[j-2],17) ^ rotr(w[j-2],19)  ^ (w[j-2]>>>10);
+        w[j] = add(w[j-16], s0, w[j-7], s1);
+      }
+
+      let [a,b,c,d,e,f,g,h] = [h0,h1,h2,h3,h4,h5,h6,h7];
+
+      for (let j = 0; j < 64; j++) {
+        const S1   = rotr(e,6)  ^ rotr(e,11)  ^ rotr(e,25);
+        const ch   = (e & f) ^ (~e & g);
+        const temp1 = add(h, S1, ch, K[j], w[j]);
+        const S0   = rotr(a,2)  ^ rotr(a,13)  ^ rotr(a,22);
+        const maj  = (a & b) ^ (a & c) ^ (b & c);
+        const temp2 = add(S0, maj);
+
+        h = g; g = f; f = e; e = add(d, temp1);
+        d = c; c = b; b = a; a = add(temp1, temp2);
+      }
+
+      h0=add(h0,a); h1=add(h1,b); h2=add(h2,c); h3=add(h3,d);
+      h4=add(h4,e); h5=add(h5,f); h6=add(h6,g); h7=add(h7,h);
+    }
+
+    return [h0,h1,h2,h3,h4,h5,h6,h7]
+      .map(v => (v >>> 0).toString(16).padStart(8,'0'))
+      .join('');
+  };
+})();
+
+
+// ── Canonical JSON (matches Python json.dumps sort_keys=True separators=(',',':')) ──
+function canonicalJson(obj) {
+  if (obj === null) return 'null';
+  if (obj === undefined) return 'null';
+  if (typeof obj === 'boolean') return obj.toString();
+  if (typeof obj === 'number') {
+    if (!isFinite(obj)) return 'null';
+    // Match Python float output: integers that were originally floats
+    // get .0 in Python (e.g., 0.0 → "0.0") but not in JS (→ "0").
+    // We cannot recover this from JSON.parse; handle known-float fields via schema.
+    return JSON.stringify(obj);
+  }
+  if (typeof obj === 'string') return JSON.stringify(obj);
+  if (Array.isArray(obj)) {
+    return '[' + obj.map(canonicalJson).join(',') + ']';
+  }
+  if (typeof obj === 'object') {
+    const keys = Object.keys(obj).sort();
+    return '{' + keys.map(k => JSON.stringify(k) + ':' + canonicalJson(obj[k])).join(',') + '}';
+  }
+  return JSON.stringify(obj);
+}
+
+
+// ── Detect whether body hash check may have float mismatch ───────────────────
+function mightHaveFloatMismatch(data) {
+  const econ = data.gpu_economics || {};
+  // Cloud routing has 0.0 for saved fields; this causes Python vs JS float diff
+  return (econ.delta_usd_saved === 0) || (econ.delta_gpu_seconds_saved === 0);
+}
+
+
+// ── Verify a single sealed routing result JSON ───────────────────────────────
+function verifySingle(data) {
+  const storedHash = data?.audit_seal?.sha256;
+  if (!storedHash) return { pass: false, reason: 'audit_seal.sha256 not found in document' };
+
+  const body = {};
+  for (const [k, v] of Object.entries(data)) {
+    if (k !== 'audit_seal') body[k] = v;
+  }
+  const canonical = canonicalJson(body);
+  const computed = SHA256(canonical);
+  const match = computed === storedHash;
+
+  return {
+    pass: match,
+    stored: storedHash,
+    computed,
+    canonical_preview: canonical.substring(0, 300),
+    floatWarning: !match && mightHaveFloatMismatch(data),
+  };
+}
+
+
+// ── Verify a temporal chain from JSONL entries ───────────────────────────────
+function verifyChain(entries) {
+  if (!entries.length) return { pass: false, total: 0, failed: 0, checks: [], reason: 'Empty log' };
+
+  let prevAnchor = 'GENESIS';
+  const checks = [];
+  let failedCount = 0;
+
+  for (let i = 0; i < entries.length; i++) {
+    const e = entries[i];
+    const seal = e?.audit_seal || {};
+    const storedSha    = seal.sha256           || '';
+    const storedAnchor = seal.time_anchor_hash  || '';
+    const storedPrev   = seal.prev_anchor_sha256 || '';
+
+    if (!storedSha || !storedAnchor) {
+      checks.push({ index: i, pass: false, reason: 'Missing audit_seal.sha256 or time_anchor_hash',
+        decision: e.routing_decision || '?', ts: e.timestamp || '' });
+      failedCount++;
+      continue;
+    }
+
+    const expectedAnchor = SHA256(prevAnchor + ':' + storedSha);
+    const ok = (expectedAnchor === storedAnchor);
+    checks.push({
+      index: i, pass: ok,
+      decision:       e.routing_decision || '?',
+      entropy:        e.semantic_entropy  || 0,
+      ts:             e.timestamp         || '',
+      storedSha:      storedSha,
+      storedAnchor:   storedAnchor,
+      expectedAnchor: expectedAnchor,
+      prevAnchor:     prevAnchor,
+      reason:         ok ? 'OK' : 'Chain broken — anchor mismatch',
+    });
+    if (!ok) failedCount++;
+    prevAnchor = storedAnchor;
+  }
+
+  return {
+    pass: failedCount === 0,
+    total: entries.length,
+    failed: failedCount,
+    checks,
+    lastAnchor: prevAnchor,
+    reason: failedCount === 0
+      ? `All ${entries.length} entries form a valid, unbroken chain`
+      : `${failedCount} of ${entries.length} entries failed chain verification`,
+  };
+}
+
+
+// ── Routing tier color class ─────────────────────────────────────────────────
+function tierClass(d) {
+  return ({ Cloud: 'cloud', Hybrid: 'hybrid', Local: 'local' })[d] || '';
+}
+
+
+// ── Render single document results ───────────────────────────────────────────
+function renderSingle(data, verif) {
+  const d   = data.routing_decision    || '—';
+  const e   = data.semantic_entropy_score;
+  const conf = data.routing_confidence  || '—';
+  const rat  = data.routing_rationale   || '—';
+  const econ = data.gpu_economics        || {};
+  const seal = data.audit_seal           || {};
+  const mode = data.routing_mode         || '—';
+
+  const saved = econ.delta_usd_saved != null
+    ? '$' + Number(econ.delta_usd_saved).toFixed(6)
+    : '—';
+
+  // Verdict
+  const banner = document.getElementById('verdict-banner');
+  banner.style.display = 'flex';
+  banner.className = verif.pass ? 'pass' : 'fail';
+  document.getElementById('verdict-icon').textContent  = verif.pass ? '✓' : '✗';
+  document.getElementById('verdict-label').textContent = verif.pass ? 'AUDIT PASS' : 'AUDIT FAIL';
+  document.getElementById('verdict-sub').textContent = verif.pass
+    ? 'SHA-256 body seal verified — document has not been modified since routing'
+    : verif.floatWarning
+      ? 'Body hash mismatch (likely float serialization — see notice below). Use teia-verify CLI to confirm.'
+      : 'Body hash mismatch — document may have been modified';
+
+  // Metrics
+  const mg = document.getElementById('metrics-grid');
+  mg.innerHTML = '';
+  function card(label, value, cls, sub) {
+    return `<div class="metric-card">
+      <div class="metric-label">${label}</div>
+      <div class="metric-value ${cls||''}">${value}</div>
+      ${sub ? `<div class="metric-sub">${sub}</div>` : ''}
+    </div>`;
+  }
+  mg.innerHTML = [
+    card('Routing Verdict', d, tierClass(d), mode),
+    card('Semantic Entropy', e != null ? e.toFixed(4) : '—', ''),
+    card('Confidence', conf, ''),
+    card('GPU Cost Saved', saved, 'pass'),
+    card('Seal Status', verif.pass ? 'VERIFIED' : 'MISMATCH', verif.pass ? 'pass' : 'fail'),
+    card('Routing Mode', mode, ''),
+  ].join('');
+
+  // Hash table
+  const htbody = document.getElementById('hash-tbody');
+  htbody.innerHTML = '';
+  function hrow(label, value, tag, extra) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="hash-label">${label}</td>
+      <td><span class="hash-mono">${value || '—'}</span>${extra||''}</td>
+      <td>${tag ? `<span class="tag ${tag.cls}">${tag.text}</span>` : ''}</td>`;
+    return tr;
+  }
+
+  htbody.appendChild(hrow('Body SHA-256 (stored)', seal.sha256, null));
+  htbody.appendChild(hrow('Body SHA-256 (computed)', verif.computed,
+    { cls: verif.pass ? 'pass' : 'fail', text: verif.pass ? 'MATCH' : 'MISMATCH' }));
+  if (seal.time_anchor_hash) {
+    htbody.appendChild(hrow('Time Anchor Hash', seal.time_anchor_hash, { cls:'info', text:'CHAIN LINK' }));
+    htbody.appendChild(hrow('Previous Anchor', seal.prev_anchor_sha256 || 'GENESIS', { cls:'info', text:'BACKLINK' }));
+  }
+  if (seal.timestamp_utc)  htbody.appendChild(hrow('Timestamp (UTC)', seal.timestamp_utc, null));
+  if (seal.algorithm)      htbody.appendChild(hrow('Algorithm', seal.algorithm, null));
+
+  // Float notice
+  const fn = document.getElementById('float-notice');
+  if (verif.floatWarning) fn.style.display = 'block';
+
+  // Features
+  const fb = document.getElementById('features-tbody');
+  fb.innerHTML = '';
+  const feats = data.entropy_features || {};
+  const weights = data.feature_weights || {};
+  const fnames = ['token_score','vocab_diversity','reasoning_verb_score','data_op_score','structural_score','constraint_score'];
+  for (const fn2 of fnames) {
+    const score = feats[fn2] != null ? feats[fn2].toFixed(4) : '—';
+    const w     = weights[fn2] != null ? weights[fn2].toFixed(2) : '—';
+    const contrib = (feats[fn2] != null && weights[fn2] != null)
+      ? (feats[fn2] * weights[fn2]).toFixed(4)
+      : '—';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${fn2}</td><td>${score}</td><td>${w}</td><td>${contrib}</td>`;
+    fb.appendChild(tr);
+  }
+
+  // Rationale
+  if (rat && rat !== '—') {
+    const s = document.createElement('div');
+    s.style.cssText = 'margin-top:12px;font-size:12px;color:var(--muted);padding:10px 14px;background:var(--panel);border:1px solid var(--border);border-radius:var(--radius)';
+    s.innerHTML = `<span style="color:var(--text);font-weight:500">Routing Rationale: </span>${rat}`;
+    document.getElementById('section-single').querySelector('section:first-child').appendChild(s);
+  }
+
+  document.getElementById('section-single').style.display = 'block';
+}
+
+
+// ── Render chain results ──────────────────────────────────────────────────────
+function renderChain(result) {
+  // Verdict
+  const banner = document.getElementById('verdict-banner');
+  banner.style.display = 'flex';
+  banner.className = result.pass ? 'pass' : 'fail';
+  document.getElementById('verdict-icon').textContent  = result.pass ? '✓' : '✗';
+  document.getElementById('verdict-label').textContent = result.pass ? 'CHAIN INTACT' : 'CHAIN BROKEN';
+  document.getElementById('verdict-sub').textContent   = result.reason;
+
+  // Metrics
+  const cm = document.getElementById('chain-metrics');
+  cm.innerHTML = '';
+  function card(label, value, cls, sub) {
+    return `<div class="metric-card"><div class="metric-label">${label}</div>
+      <div class="metric-value ${cls||''}">${value}</div>
+      ${sub ? `<div class="metric-sub">${sub}</div>` : ''}</div>`;
+  }
+  const passRate = result.total > 0
+    ? ((result.total - result.failed) / result.total * 100).toFixed(1) + '%'
+    : '—';
+  cm.innerHTML = [
+    card('Total Entries', result.total, ''),
+    card('Chain Status', result.pass ? 'INTACT' : 'BROKEN', result.pass ? 'pass' : 'fail'),
+    card('Failed Entries', result.failed, result.failed > 0 ? 'fail' : 'pass'),
+    card('Integrity Rate', passRate, result.pass ? 'pass' : 'fail'),
+    card('Last Anchor', result.lastAnchor ? result.lastAnchor.substring(0,12)+'…' : '—', 'pass', 'chain head'),
+  ].join('');
+
+  // Entries
+  const ce = document.getElementById('chain-entries');
+  ce.innerHTML = '';
+  for (const chk of result.checks) {
+    const div = document.createElement('div');
+    div.className = 'chain-entry';
+    const tcls = tierClass(chk.decision);
+    div.innerHTML = `
+      <div class="chain-num">#${String(chk.index).padStart(4,'0')}</div>
+      <div class="chain-info">
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:4px">
+          <span class="tag ${chk.pass ? 'pass' : 'fail'}">${chk.pass ? 'PASS' : 'FAIL'}</span>
+          <span class="metric-value ${tcls}" style="font-size:12px">${chk.decision}</span>
+          ${chk.entropy ? `<span style="color:var(--muted);font-size:11px">entropy ${Number(chk.entropy).toFixed(4)}</span>` : ''}
+          ${chk.ts ? `<span style="color:var(--muted);font-size:10px">${chk.ts.substring(0,19).replace('T',' ')}</span>` : ''}
+        </div>
+        ${!chk.pass ? `<div style="color:var(--fail);font-size:11px;margin-bottom:4px">${chk.reason}</div>` : ''}
+        <div class="chain-hashes">
+          <div class="chain-hash-item">sha256 <span>${chk.storedSha ? chk.storedSha.substring(0,16)+'…' : '—'}</span></div>
+          <div class="chain-hash-item">anchor <span>${chk.storedAnchor ? chk.storedAnchor.substring(0,16)+'…' : '—'}</span></div>
+          <div class="chain-hash-item">prev <span>${chk.prevAnchor === 'GENESIS' ? 'GENESIS' : chk.prevAnchor.substring(0,16)+'…'}</span></div>
+        </div>
+      </div>`;
+    ce.appendChild(div);
+  }
+
+  document.getElementById('section-chain').style.display = 'block';
+}
+
+
+// ── File processing ───────────────────────────────────────────────────────────
+function processFile(file) {
+  const loading = document.getElementById('loading');
+  loading.style.display = 'block';
+  hideResults();
+
+  const fi = document.getElementById('file-info');
+  fi.style.display = 'flex';
+  document.getElementById('fi-name').textContent = file.name;
+  document.getElementById('fi-size').textContent = formatBytes(file.size);
+  document.getElementById('fi-type').textContent =
+    file.name.endsWith('.jsonl') ? '· JSONL audit log' : '· JSON routing result';
+
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    loading.style.display = 'none';
+    document.getElementById('reset-btn').style.display = 'inline-block';
+
+    try {
+      const text = ev.target.result.trim();
+      const isJsonl = file.name.endsWith('.jsonl') || text.includes('\n') && !text.startsWith('[');
+
+      if (isJsonl) {
+        // Parse JSONL
+        const lines = text.split('\n').filter(l => l.trim());
+        const entries = lines.map((l, i) => {
+          try { return JSON.parse(l); }
+          catch(e) { return null; }
+        }).filter(Boolean);
+
+        if (!entries.length) throw new Error('No valid JSON entries found in file');
+        const result = verifyChain(entries);
+        renderChain(result);
+      } else {
+        // Parse single JSON
+        const data = JSON.parse(text);
+        const verif = verifySingle(data);
+        renderSingle(data, verif);
+      }
+    } catch(e) {
+      showError('Parse error: ' + e.message);
+    }
+  };
+  reader.onerror = () => {
+    loading.style.display = 'none';
+    showError('File read error');
+  };
+  reader.readAsText(file, 'utf-8');
+}
+
+function hideResults() {
+  document.getElementById('verdict-banner').style.display    = 'none';
+  document.getElementById('section-single').style.display   = 'none';
+  document.getElementById('section-chain').style.display    = 'none';
+  document.getElementById('float-notice').style.display     = 'none';
+  document.getElementById('reset-btn').style.display        = 'none';
+  document.getElementById('file-info').style.display        = 'none';
+}
+
+function showError(msg) {
+  const banner = document.getElementById('verdict-banner');
+  banner.style.display = 'flex';
+  banner.className = 'fail';
+  document.getElementById('verdict-icon').textContent  = '✗';
+  document.getElementById('verdict-label').textContent = 'ERROR';
+  document.getElementById('verdict-sub').textContent   = msg;
+  document.getElementById('reset-btn').style.display   = 'inline-block';
+}
+
+function formatBytes(n) {
+  if (n < 1024)       return n + ' B';
+  if (n < 1048576)    return (n/1024).toFixed(1) + ' KB';
+  return (n/1048576).toFixed(1) + ' MB';
+}
+
+
+// ── Event listeners ───────────────────────────────────────────────────────────
+const dropzone  = document.getElementById('dropzone');
+const fileInput = document.getElementById('file-input');
+
+dropzone.addEventListener('click', () => fileInput.click());
+dropzone.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') fileInput.click(); });
+
+dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('drag-over'); });
+dropzone.addEventListener('dragleave', ()=> dropzone.classList.remove('drag-over'));
+dropzone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropzone.classList.remove('drag-over');
+  const f = e.dataTransfer.files[0];
+  if (f) processFile(f);
+});
+
+fileInput.addEventListener('change', () => {
+  if (fileInput.files[0]) processFile(fileInput.files[0]);
+  fileInput.value = '';
+});
+
+document.getElementById('reset-btn').addEventListener('click', () => {
+  hideResults();
+  dropzone.style.display = 'block';
+});
+</script>
+</body>
+</html>

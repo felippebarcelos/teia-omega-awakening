@@ -5,7 +5,7 @@
 > *"TEIA is not always the best format.*
 > *TEIA is the system that discovers which format must win."*
 
-**Latest release:** [v16.0.0-open-core](https://github.com/felippebarcelos/teia-omega-awakening/releases/tag/v16.0.0-open-core) — RFC 3161 Notarization · Open-Core Commercial Model · arXiv Whitepaper Draft · P50.0
+**Latest release:** [v17.0.0-audit-dashboard](https://github.com/felippebarcelos/teia-omega-awakening/releases/tag/v17.0.0-audit-dashboard) — Enterprise Audit Dashboard · LaTeX Whitepaper Compiler · Zenodo DOI Route · P52.0
 
 ---
 
@@ -333,7 +333,8 @@ Calibration accuracy:
 | v13.0.0 | PyPI + Deterministic Gateway | `pip install teia-cognitive-router` · FastAPI proxy · SHA-256 audit JSONL · P46.0–P47.0 |
 | v14.0.0 | Compliance-Safe Mode | MT-Bench 99.6% quality retention · compliance_safe default · GRC-ready branding · P48.0 |
 | v15.0.0 | Cryptographic Time Chain | Merkle-chained audit ledger · time_anchor_hash per decision · RFC 3161 foundation · teia-verify --verify-chain · P49.0 |
-| **v16.0.0** | **Open-Core Transition** | **RFC 3161 notary script · Open-Core commercial model doc · arXiv whitepaper draft · go-to-market · P50.0** |
+| v16.0.0 | Open-Core Transition | RFC 3161 notary script · Open-Core commercial model doc · arXiv whitepaper draft · go-to-market · P50.0 |
+| **v17.0.0** | **Enterprise Audit Dashboard** | **Self-contained HTML audit UI · LaTeX whitepaper compiler · Zenodo DOI instructions · pure-JS SHA-256 · P52.0** |
 
 ---
 
@@ -356,6 +357,6 @@ See individual files for usage instructions.
 
 ---
 
-*TEIA Information Economics Engine v16.0.0 | Protocol P50.0 | 2026-06-02*
+*TEIA Information Economics Engine v17.0.0 | Protocol P52.0 | 2026-06-03*
 *Built on hardware: i3-10100F · 16 GB RAM · PowerShell 7+ · Python 3.8+ · WinFsp*
 *"Ferrari di papelão — using code efficiency to overcome silicon constraints."*
