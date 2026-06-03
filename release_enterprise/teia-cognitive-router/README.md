@@ -1,6 +1,6 @@
 # TEIA Cognitive Router
 
-[![PyPI](https://img.shields.io/pypi/v/teia-cognitive-router)](https://pypi.org/project/teia-cognitive-router/1.4.0/)
+[![PyPI](https://img.shields.io/pypi/v/teia-cognitive-router)](https://pypi.org/project/teia-cognitive-router/1.5.0/)
 [![Python](https://img.shields.io/pypi/pyversions/teia-cognitive-router)](https://pypi.org/project/teia-cognitive-router/)
 [![License](https://img.shields.io/pypi/l/teia-cognitive-router)](https://pypi.org/project/teia-cognitive-router/)
 
@@ -282,6 +282,10 @@ from teia_cognitive_router import route, seal, route_and_seal, to_canonical_json
 | `route_and_seal(text)` | `(dict, str)` | Route + seal + canonical JSON string |
 | `to_canonical_json(obj)` | `str` | Deterministic JSON (`sort_keys=True`, no whitespace) |
 | `generate_html_report(chain_file, org)` | `str` | Self-contained HTML compliance report from JSONL chain |
+| `enforce(routing_result, policy)` | `dict` | Apply policy rules; adds deterministic `policy_seal` |
+| `enforce_chain(chain_file, policy)` | `list[dict]` | Batch-apply policy to JSONL audit chain |
+| `load_policy(path_or_dict)` | `dict` | Load and validate a policy JSON |
+| `validate_policy(policy)` | `list[str]` | Return list of validation errors (empty = valid) |
 
 ### Output Fields
 
@@ -421,6 +425,115 @@ Foundation for [RFC 3161](https://www.rfc-editor.org/rfc/rfc3161) / eIDAS Art. 4
 
 ---
 
+## Routing Policy Engine (v1.5.0+)
+
+Enforce hard compliance rules **on top** of entropy-based routing. A policy overrides the entropy verdict when a business rule requires it — and every enforcement action is sealed with its own deterministic SHA-256.
+
+```bash
+pip install teia-cognitive-router==1.5.0
+
+# Print the built-in example policy
+teia-policy example > healthcare.json
+
+# Validate a policy file
+teia-policy validate --policy healthcare.json
+# → POLICY VALID: 4 rule(s) — teia-example-policy v1.0
+
+# Apply policy to a single routing result
+teia-policy enforce --policy healthcare.json --input routing_result.json
+# → POLICY ENFORCED — decision overridden
+#   Rule     : HIPAA-001
+#   Original : Cloud
+#   Enforced : Local
+#   Reason   : HIPAA-001: PHI data locality requirement
+
+# Batch-apply policy to an entire audit chain
+teia-policy enforce --policy healthcare.json --chain audit_chain.jsonl
+# → Enforced 1200 entries  →  audit_chain.enforced.jsonl
+#   Overridden : 47
+#   Flagged    : 12
+#   Unchanged  : 1141
+```
+
+### Policy JSON format
+
+```json
+{
+  "name": "acme-hipaa-policy",
+  "version": "1.0",
+  "rules": [
+    {
+      "id":          "HIPAA-001",
+      "description": "PHI data must never leave local infrastructure",
+      "priority":    10,
+      "if":          { "decision": "cloud" },
+      "then":        { "force_decision": "local",
+                       "add_flag":       "hipaa_enforced",
+                       "override_reason": "HIPAA-001: PHI data locality" }
+    },
+    {
+      "id":          "GDPR-DPO-001",
+      "description": "High-entropy cloud decisions flagged for DPO review",
+      "priority":    20,
+      "if":          { "entropy_range": [0.85, 1.0], "decision": "cloud" },
+      "then":        { "add_flag": "dpo_review_required",
+                       "override_reason": "GDPR-DPO-001: high-entropy cloud flagged" }
+    }
+  ]
+}
+```
+
+### Rule conditions (`if`)
+
+| Key | Type | Description |
+|---|---|---|
+| `decision` | `"local"` / `"hybrid"` / `"cloud"` | Match specific routing tier |
+| `entropy_range` | `[min, max]` | Entropy score range [0.0, 1.0] |
+| `confidence` | `"high"` / `"medium"` / `"low"` | Routing confidence level |
+| `always` | `true` | Catch-all — always matches |
+
+### Rule actions (`then`)
+
+| Key | Type | Description |
+|---|---|---|
+| `force_decision` | `"local"` / `"hybrid"` / `"cloud"` | Override the routing decision |
+| `add_flag` | string | Add a compliance flag to the record |
+| `override_reason` | string | Human-readable justification logged in `policy_seal` |
+
+### Determinism guarantee
+
+`policy_seal.sha256 = SHA-256(original_audit_sha256 + ":" + canonical(enforcement))`
+
+The original `audit_seal` is **never modified** — it remains a valid proof of the original routing decision. The `policy_seal` is a second, independent layer:
+
+```
+SHA-256 body seal → audit_seal (original routing)
+     ↓
+Policy enforcement  → policy_seal (compliance override)
+     ↓
+RFC 3161 TSR        → external trusted timestamp
+```
+
+### Python API
+
+```python
+from teia_cognitive_router import route_and_seal, enforce, load_policy, EXAMPLE_POLICY
+from pathlib import Path
+
+# Use the built-in example or load your own
+policy = load_policy(Path("acme-hipaa-policy.json"))
+
+sealed, _ = route_and_seal("Summarize this patient diagnosis report")
+enforced  = enforce(sealed, policy)
+
+print(enforced["routing_decision"])          # "Local"  (overridden from "Cloud")
+print(enforced["policy_seal"]["rule_applied"])  # "HIPAA-001"
+print(enforced["policy_seal"]["sha256"])        # deterministic SHA-256
+print(enforced["policy_seal"]["decision_changed"])  # True
+```
+
+---
+
 ## Compliance Report Generator (v1.4.0+)
 
 Turn any TEIA JSONL audit chain into a self-contained HTML compliance report — no server, no install, printable to PDF directly from the browser.
@@ -466,7 +579,8 @@ teia-cognitive-router/
 │   ├── _verifier.py    # Cryptographic audit verifier + temporal chain verification
 │   ├── _gateway.py     # Deterministic LLM Gateway (requires [gateway] extra)
 │   ├── _notary.py      # RFC 3161 TSA client — legal notarization (stdlib only)
-│   └── _reporter.py    # Compliance Report Generator — HTML/EU AI Act/GDPR/SOC 2 (stdlib only)
+│   ├── _reporter.py    # Compliance Report Generator — HTML/EU AI Act/GDPR/SOC 2 (stdlib only)
+│   └── _policy.py      # Routing Policy Engine — hard compliance rules + policy_seal (stdlib only)
 ├── tests/
 │   ├── run_quality_cost_benchmark.py
 │   └── teia_router_bench_harness.py
@@ -491,4 +605,4 @@ Apache 2.0 — see LICENSE file.
 
 ---
 
-*TEIA Cognitive Router v1.4.0 | Protocol P53.0 | 2026-06-03*
+*TEIA Cognitive Router v1.5.0 | Protocol P54.0 | 2026-06-03*

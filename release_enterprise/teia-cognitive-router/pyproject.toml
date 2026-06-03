@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "teia-cognitive-router"
-version = "1.4.0"
+version = "1.5.0"
 description = "Deterministic, compliance-first LLM routing with cryptographic audit trails"
 readme = "README.md"
 license = {text = "Apache-2.0"}
@@ -52,6 +52,7 @@ teia-verify   = "teia_cognitive_router._verifier:main"
 teia-gateway  = "teia_cognitive_router._gateway:_cli"
 teia-notarize = "teia_cognitive_router._notary:_cli"
 teia-report   = "teia_cognitive_router._reporter:_cli"
+teia-policy   = "teia_cognitive_router._policy:_cli"
 
 [tool.setuptools.packages.find]
 where = ["src"]
