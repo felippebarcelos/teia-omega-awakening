@@ -5,7 +5,7 @@
 > *"TEIA is not always the best format.*
 > *TEIA is the system that discovers which format must win."*
 
-**Latest release:** [v9.0.0-python-port](https://github.com/felippebarcelos/teia-omega-awakening/releases/tag/v9.0.0-python-port) — Python port · 15,361 prompts/sec · 98.4% GPU cost reduction · integration-ready for vLLM/K8s/LiteLLM
+**Latest release:** [v11.0.0-audit-verifier](https://github.com/felippebarcelos/teia-omega-awakening/releases/tag/v11.0.0-audit-verifier) — Cryptographic audit verifier · public benchmark harness · "The only router that can prove its own decisions."
 
 ---
 
@@ -253,8 +253,8 @@ pwsh -ExecutionPolicy Bypass -File .\tools\Benchmark-MultiDomain.ps1
 | `teia_cognitive_router.py` | Semantic Entropy routing for AI prompts · SHA-256 audit seal | canonical JSON |
 | `run_router_benchmark.py` | 100-prompt MT-Bench/AlpacaEval benchmark · GPU economics | `benchmark_results.json` |
 | `run_quality_cost_benchmark.py` | Cost vs Quality benchmark · 3 tiers · deterministic quality model | `quality_cost_results.json` |
-| `teia_router_bench_harness.py` | Public benchmark harness · accepts MT-Bench/RouterBench/generic JSON | `public_benchmark_evaluation.json` |
-| `teia_audit_verifier.py` | Cryptographic audit verifier · proves routing decision is unmodified | PASS/FAIL + exit code |
+| `teia_router_bench_harness.py` | Public benchmark harness · accepts MT-Bench/RouterBench/generic JSON · offline | `public_benchmark_evaluation.json` |
+| `teia_audit_verifier.py` | **Cryptographic audit verifier** · proves routing decision is mathematically unmodified · exit 0/1 | `AUDIT PASS / FAIL` |
 
 ### PowerShell
 
@@ -326,7 +326,9 @@ Calibration accuracy:
 | v6.0.0 | Adaptive Supervisor | 6/6 honest verdicts · N\* projected mathematically |
 | v7.0.0 | Information Economics Engine | Heuristic N\* prediction · Multi-domain P38.0 · Real-world audit |
 | v8.0.0 | Cognitive Economics Engine | Semantic Entropy routing · GPU-seconds savings · P41.0 dogfooding |
-| **v9.0.0** | **Python Port + Scale Benchmark** | **15,361 prompts/sec · 98.4% GPU cost reduction · vLLM/K8s/LiteLLM ready** |
+| v9.0.0 | Python Port + Scale Benchmark | 15,361 prompts/sec · 98.4% GPU cost reduction · vLLM/K8s/LiteLLM ready |
+| v10.0.0 | Cost vs Quality Benchmark | Honest 3-tier quality model · compliance language corrected · P43.0 |
+| **v11.0.0** | **Cryptographic Audit Verifier** | **SHA-256 routing proofs · public benchmark harness · compliance-grade determinism** |
 
 ---
 
@@ -349,6 +351,6 @@ See individual files for usage instructions.
 
 ---
 
-*TEIA Information Economics Engine v9.0.0 | Protocol P42.0 | 2026-06-02*
+*TEIA Information Economics Engine v11.0.0 | Protocol P44.0 | 2026-06-02*
 *Built on hardware: i3-10100F · 16 GB RAM · PowerShell 7+ · Python 3.8+ · WinFsp*
 *"Ferrari di papelão — using code efficiency to overcome silicon constraints."*
