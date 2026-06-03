@@ -5,7 +5,7 @@
 > *"TEIA is not always the best format.*
 > *TEIA is the system that discovers which format must win."*
 
-**Latest release:** [v11.0.0-audit-verifier](https://github.com/felippebarcelos/teia-omega-awakening/releases/tag/v11.0.0-audit-verifier) — Cryptographic audit verifier · public benchmark harness · "The only router that can prove its own decisions."
+**Latest release:** [v12.0.0-enterprise](https://github.com/felippebarcelos/teia-omega-awakening/releases/tag/v12.0.0-enterprise) — Enterprise spin-off · clean Python package · compliance-ready drop-in middleware · P45.0
 
 ---
 
@@ -328,7 +328,8 @@ Calibration accuracy:
 | v8.0.0 | Cognitive Economics Engine | Semantic Entropy routing · GPU-seconds savings · P41.0 dogfooding |
 | v9.0.0 | Python Port + Scale Benchmark | 15,361 prompts/sec · 98.4% GPU cost reduction · vLLM/K8s/LiteLLM ready |
 | v10.0.0 | Cost vs Quality Benchmark | Honest 3-tier quality model · compliance language corrected · P43.0 |
-| **v11.0.0** | **Cryptographic Audit Verifier** | **SHA-256 routing proofs · public benchmark harness · compliance-grade determinism** |
+| v11.0.0 | Cryptographic Audit Verifier | SHA-256 routing proofs · public benchmark harness · compliance-grade determinism |
+| **v12.0.0** | **Enterprise Spin-Off** | **Clean Python package · zero philosophy · vLLM/LiteLLM drop-in · compliance-first README · P45.0** |
 
 ---
 
@@ -351,6 +352,6 @@ See individual files for usage instructions.
 
 ---
 
-*TEIA Information Economics Engine v11.0.0 | Protocol P44.0 | 2026-06-02*
+*TEIA Information Economics Engine v12.0.0 | Protocol P45.0 | 2026-06-02*
 *Built on hardware: i3-10100F · 16 GB RAM · PowerShell 7+ · Python 3.8+ · WinFsp*
 *"Ferrari di papelão — using code efficiency to overcome silicon constraints."*
