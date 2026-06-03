@@ -5,7 +5,7 @@
 > *"TEIA is not always the best format.*
 > *TEIA is the system that discovers which format must win."*
 
-**Latest release:** [v13.0.0-pypi](https://github.com/felippebarcelos/teia-omega-awakening/releases/tag/v13.0.0-pypi) — PyPI publication · Ouroboros Gateway · `pip install teia-cognitive-router` · P46.0–P47.0
+**Latest release:** [v14.0.0-compliance](https://github.com/felippebarcelos/teia-omega-awakening/releases/tag/v14.0.0-compliance) — Compliance-Safe Mode · MT-Bench 99.6% quality · GRC branding · P48.0
 
 ---
 
@@ -330,7 +330,8 @@ Calibration accuracy:
 | v10.0.0 | Cost vs Quality Benchmark | Honest 3-tier quality model · compliance language corrected · P43.0 |
 | v11.0.0 | Cryptographic Audit Verifier | SHA-256 routing proofs · public benchmark harness · compliance-grade determinism |
 | v12.0.0 | Enterprise Spin-Off | Clean Python package · zero philosophy · vLLM/LiteLLM drop-in · compliance-first README · P45.0 |
-| **v13.0.0** | **PyPI + Ouroboros Gateway** | **`pip install teia-cognitive-router` · FastAPI proxy · SHA-256 audit JSONL · P46.0–P47.0** |
+| v13.0.0 | PyPI + Deterministic Gateway | `pip install teia-cognitive-router` · FastAPI proxy · SHA-256 audit JSONL · P46.0–P47.0 |
+| **v14.0.0** | **Compliance-Safe Mode** | **MT-Bench 99.6% quality retention · compliance_safe default · GRC-ready branding · P48.0** |
 
 ---
 
@@ -353,6 +354,6 @@ See individual files for usage instructions.
 
 ---
 
-*TEIA Information Economics Engine v13.0.0 | Protocol P47.0 | 2026-06-02*
+*TEIA Information Economics Engine v14.0.0 | Protocol P48.0 | 2026-06-02*
 *Built on hardware: i3-10100F · 16 GB RAM · PowerShell 7+ · Python 3.8+ · WinFsp*
 *"Ferrari di papelão — using code efficiency to overcome silicon constraints."*
