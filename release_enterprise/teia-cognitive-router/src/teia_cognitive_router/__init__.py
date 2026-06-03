@@ -22,7 +22,7 @@ from teia_cognitive_router._router import (
     HYBRID_THRESHOLD,
 )
 
-__version__ = "1.0.0"
+__version__ = "1.1.0"
 
 __all__ = [
     "route",

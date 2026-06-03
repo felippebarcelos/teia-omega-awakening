@@ -9,7 +9,8 @@
 > *"The only router that can mathematically prove its own decisions."*
 
 ```bash
-pip install teia-cognitive-router
+pip install teia-cognitive-router           # core router + audit verifier
+pip install teia-cognitive-router[gateway]  # + Ouroboros FastAPI proxy
 ```
 
 ---
@@ -301,26 +302,68 @@ from teia_cognitive_router import route, seal, route_and_seal, to_canonical_json
 
 ---
 
+## Ouroboros Gateway (v1.1.0)
+
+A drop-in FastAPI proxy that intercepts every OpenAI-compatible request, routes it through TEIA, and forwards to the right endpoint — all while writing a SHA-256-sealed audit log entry per request.
+
+```bash
+pip install teia-cognitive-router[gateway]
+teia-gateway                          # starts on http://127.0.0.1:8080
+```
+
+| Tier | Forwarded to |
+|---|---|
+| Local / Hybrid | `TEIA_LOCAL_ENDPOINT` (default: Ollama at `:11434`) |
+| Cloud | `https://api.openai.com/v1/chat/completions` |
+
+```bash
+# Environment variables
+export TEIA_LOCAL_ENDPOINT="http://localhost:11434/v1/chat/completions"
+export OPENAI_API_KEY="sk-..."          # only needed for Cloud-tier requests
+export TEIA_AUDIT_LOG="./audit.jsonl"  # SHA-256 sealed JSONL log
+
+teia-gateway --host 127.0.0.1 --port 8080
+```
+
+Every response includes a `teia_routing` field:
+
+```json
+{
+  "teia_routing": {
+    "decision": "Local",
+    "entropy": 0.21,
+    "delta_usd_saved": 0.000440,
+    "audit_seal_sha256": "a3f8c1..."
+  }
+}
+```
+
+---
+
 ## Repository Structure
 
 ```
 teia-cognitive-router/
-├── src/
-│   ├── teia_cognitive_router.py    # Core router — Python 3.8+ stdlib only
-│   └── teia_audit_verifier.py      # Cryptographic audit verifier
+├── src/teia_cognitive_router/
+│   ├── __init__.py     # Public API: route, seal, route_and_seal, to_canonical_json
+│   ├── _router.py      # Core 6-axis semantic entropy engine (stdlib only)
+│   ├── _verifier.py    # Cryptographic audit verifier
+│   └── _gateway.py     # Ouroboros FastAPI proxy (requires [gateway] extra)
 ├── tests/
-│   ├── run_quality_cost_benchmark.py  # Cost vs quality benchmark (30 prompts)
-│   └── teia_router_bench_harness.py   # MT-Bench / RouterBench / generic harness
+│   ├── run_quality_cost_benchmark.py
+│   └── teia_router_bench_harness.py
 └── docs/
-    └── INTEGRATION_GUIDE.md        # Full integration guide with code examples
+    └── INTEGRATION_GUIDE.md
 ```
 
 ---
 
 ## Requirements
 
-- Python 3.8 or higher
-- No third-party packages — stdlib only (`hashlib`, `json`, `re`, `math`, `argparse`)
+| Install | Dependencies |
+|---|---|
+| `pip install teia-cognitive-router` | Python 3.8+ stdlib only |
+| `pip install teia-cognitive-router[gateway]` | + fastapi, uvicorn, httpx |
 
 ---
 
@@ -330,4 +373,4 @@ Apache 2.0 — see LICENSE file.
 
 ---
 
-*TEIA Cognitive Router v1.0.0 | Protocol P44.0 | 2026-06-02*
+*TEIA Cognitive Router v1.1.0 | Protocol P47.0 | 2026-06-02*

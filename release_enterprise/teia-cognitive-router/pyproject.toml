@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "teia-cognitive-router"
-version = "1.0.0"
+version = "1.1.0"
 description = "Deterministic, compliance-first LLM routing with cryptographic audit trails"
 readme = "README.md"
 license = {text = "Apache-2.0"}
@@ -39,9 +39,17 @@ Homepage = "https://github.com/felippebarcelos/teia-omega-awakening"
 Repository = "https://github.com/felippebarcelos/teia-omega-awakening"
 "Bug Tracker" = "https://github.com/felippebarcelos/teia-omega-awakening/issues"
 
+[project.optional-dependencies]
+gateway = [
+    "fastapi>=0.100.0",
+    "uvicorn>=0.20.0",
+    "httpx>=0.24.0",
+]
+
 [project.scripts]
-teia-route  = "teia_cognitive_router._router:_cli"
-teia-verify = "teia_cognitive_router._verifier:main"
+teia-route   = "teia_cognitive_router._router:_cli"
+teia-verify  = "teia_cognitive_router._verifier:main"
+teia-gateway = "teia_cognitive_router._gateway:_cli"
 
 [tool.setuptools.packages.find]
 where = ["src"]
