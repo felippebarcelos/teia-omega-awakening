@@ -1,9 +1,11 @@
 # TEIA — Information Economics Engine
 
-**Storage as Computation · Adaptive Archive Routing · Entropy-Honest Decision Making**
+**Storage as Computation · Cognitive Routing · Entropy-Honest Decision Making**
 
 > *"TEIA is not always the best format.*
 > *TEIA is the system that discovers which format must win."*
+
+**Latest release:** [v9.0.0-python-port](https://github.com/felippebarcelos/teia-omega-awakening/releases/tag/v9.0.0-python-port) — Python port · 15,361 prompts/sec · 98.4% GPU cost reduction · vLLM/K8s/LiteLLM ready
 
 ---
 
@@ -46,10 +48,15 @@ Reconstruction is execution, not decompression. As N → ∞, the overhead per f
 
 ---
 
-## Architecture: Three Operational Layers
+## Architecture: Four Operational Layers
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
+│  Layer 4 — Cognitive Router (P40.0) · Python v9.0.0             │
+│  Semantic Entropy analysis of AI prompts → Local/Hybrid/Cloud   │
+│  15k prompts/sec · SHA-256 audit seal · zero network calls      │
+│  vLLM / Kubernetes / LiteLLM / OpenAI drop-in middleware        │
+├─────────────────────────────────────────────────────────────────┤
 │  Layer 3 — NStar Predictor (P39.0)                              │
 │  Heuristic lens: reads sample, predicts N* in milliseconds      │
 │  No compression · No file modification · Canonical JSON output  │
@@ -139,7 +146,37 @@ not with dict_density alone.
 
 ---
 
-## Quick Start
+## Cognitive Router — Quick Start (Python, v9.0.0)
+
+No dependencies beyond Python 3.8+ stdlib.
+
+```bash
+# Route a single prompt
+python tools/teia_cognitive_router.py --text "List all files in this directory"
+# → { "routing_decision": "Local", "semantic_entropy_score": 0.15, ... }
+
+python tools/teia_cognitive_router.py \
+  --text "Analyze root cause of this distributed outage across 6 services" \
+  --output result.json
+# → VERDICT: Cloud | entropy: 0.72 | SHA-256 audit seal attached
+
+# 100-prompt MT-Bench/AlpacaEval scale benchmark
+python tools/run_router_benchmark.py
+# → 15,361 prompts/sec · 98.4% savings · USD 230/mo projected
+```
+
+```python
+from teia_cognitive_router import route_and_seal
+
+sealed, json_str = route_and_seal("Extract all dates from this document")
+print(sealed["routing_decision"])          # Local
+print(sealed["gpu_economics"]["delta_usd_saved"])  # 0.000440
+print(sealed["audit_seal"]["sha256"])      # deterministic SHA-256
+```
+
+---
+
+## Storage Router — Quick Start (PowerShell)
 
 ### Prerequisites
 - PowerShell 7+
@@ -191,8 +228,19 @@ pwsh -ExecutionPolicy Bypass -File .\tools\Benchmark-MultiDomain.ps1
 
 ## Tool Reference
 
+### Python (v9.0.0 — vLLM / Kubernetes / LiteLLM ready)
+
 | Script | Purpose | Output |
 |---|---|---|
+| `teia_cognitive_router.py` | Semantic Entropy routing for AI prompts · SHA-256 audit seal | canonical JSON |
+| `run_router_benchmark.py` | 100-prompt MT-Bench/AlpacaEval benchmark · GPU economics | `benchmark_results.json` |
+
+### PowerShell
+
+| Script | Purpose | Output |
+|---|---|---|
+| `TEIA-Cognitive-Router.ps1` | Cognitive routing (PowerShell, P40.0) | canonical JSON |
+| `Run-CognitiveEconomicValidation.ps1` | P41.0 dogfooding validation | routing table + USD savings |
 | `TEIA-AION-Transversal.ps1` | Master Grammar extraction + C# JIT forging | seeds + decoder |
 | `TEIA-Archive-Router.ps1` | 3-candidate router with real compression | routing decision + N\* |
 | `TEIA-NStar-Predictor.ps1` | Heuristic N\* prediction without compression | canonical JSON |
@@ -235,11 +283,13 @@ Calibration accuracy:
 
 | Document | Protocol | Description |
 |---|---|---|
+| [Python Integration Guide](docs/TEIA_PYTHON_INTEGRATION_GUIDE.md) | P42.0 | vLLM / K8s / LiteLLM integration · Compliance-first routing |
+| [P41.0 Economics Proof](docs/TEIA_P41_COGNITIVE_ECONOMICS_PROOF.md) | P41.0 | Empirical GPU savings — sealed by SHA-256 |
+| [Cognitive Routing Theory](docs/TEIA_COGNITIVE_ROUTING_THEORY.md) | P40.0 | Ontoprocedural Ontogenesis applied to AI inference |
 | [Release Notes v7.0.0](docs/TEIA_RELEASE_NOTES_v7.0.0_ECONOMICS_ENGINE.md) | P39.0 | Information Economics Engine — The Awakening |
 | [Release Notes v6.0.0](docs/TEIA_RELEASE_NOTES_v6.0.0_ROUTER.md) | P37.0 | Adaptive Archive Router |
 | [Adaptive Router Report P36.0](docs/TEIA_ADAPTIVE_ROUTER_REPORT_P36.md) | P36.0 | 6-permutation audit with real Apache CLF |
 | [Multi-Domain Benchmark P38.0](docs/TEIA_MULTIDOMAIN_BENCHMARK_REPORT.md) | P38.0 | N\* across 4 divergent domains |
-| [Fair Baseline Report v5.1](docs/TEIA_FAIR_BASELINE_REPORT_v5.1.md) | P35.0 | Peer-review hardened 4-method comparison |
 | [Research Frontier](TEIA_RESEARCH_FRONTIER.md) | P38.0 | Active hypotheses and future experiments |
 | [Dogfooding Protocol](docs/TEIA_DOGFOODING_PROTOCOL.md) | P38.1 | Protocol for real-world entropy testing |
 
@@ -253,7 +303,9 @@ Calibration accuracy:
 | v4.0.0 | Gatekeeper Oracle | Zero negative deltas guaranteed |
 | v5.0.0 | O(1) Archive Format | 43x faster access · 42.7x faster incremental · C# JIT |
 | v6.0.0 | Adaptive Supervisor | 6/6 honest verdicts · N\* projected mathematically |
-| **v7.0.0** | **Information Economics Engine** | **Heuristic N\* prediction · Multi-domain P38.0 · Real-world audit** |
+| v7.0.0 | Information Economics Engine | Heuristic N\* prediction · Multi-domain P38.0 · Real-world audit |
+| v8.0.0 | Cognitive Economics Engine | Semantic Entropy routing · GPU-seconds savings · P41.0 dogfooding |
+| **v9.0.0** | **Python Port + Scale Benchmark** | **15,361 prompts/sec · 98.4% GPU cost reduction · vLLM/K8s/LiteLLM ready** |
 
 ---
 
@@ -276,6 +328,6 @@ See individual files for usage instructions.
 
 ---
 
-*TEIA Information Economics Engine v7.0.0 | Protocol P39.0 | 2026-06-02*
-*Built on hardware: i3-10100F · 8 GB RAM · PowerShell 7+ · WinFsp*
+*TEIA Information Economics Engine v9.0.0 | Protocol P42.0 | 2026-06-02*
+*Built on hardware: i3-10100F · 16 GB RAM · PowerShell 7+ · Python 3.8+ · WinFsp*
 *"Ferrari di papelão — using code efficiency to overcome silicon constraints."*
