@@ -174,6 +174,24 @@ print(sealed["gpu_economics"]["delta_usd_saved"])  # 0.000440
 print(sealed["audit_seal"]["sha256"])      # deterministic SHA-256
 ```
 
+### Audit Verifier — For Compliance Officers
+
+Prove that any stored routing decision is mathematically reproducible and untampered:
+
+```bash
+# Verify document seal (integrity check)
+python tools/teia_audit_verifier.py --file routing_result.json
+
+# Full determinism proof: re-run the math from the original prompt
+python tools/teia_audit_verifier.py \
+  --file routing_result.json \
+  --text "Your original prompt text"
+# → AUDIT PASS: The routing decision is mathematically proven and unmodified.
+
+# Run any public benchmark dataset locally (MT-Bench, RouterBench, generic JSON)
+python tools/teia_router_bench_harness.py --input mt_bench_questions.json
+```
+
 ---
 
 ## Storage Router — Quick Start (PowerShell)
@@ -228,12 +246,15 @@ pwsh -ExecutionPolicy Bypass -File .\tools\Benchmark-MultiDomain.ps1
 
 ## Tool Reference
 
-### Python (v9.0.0 — vLLM / Kubernetes / LiteLLM ready)
+### Python (v10.0.0 — vLLM / Kubernetes / LiteLLM ready)
 
 | Script | Purpose | Output |
 |---|---|---|
 | `teia_cognitive_router.py` | Semantic Entropy routing for AI prompts · SHA-256 audit seal | canonical JSON |
 | `run_router_benchmark.py` | 100-prompt MT-Bench/AlpacaEval benchmark · GPU economics | `benchmark_results.json` |
+| `run_quality_cost_benchmark.py` | Cost vs Quality benchmark · 3 tiers · deterministic quality model | `quality_cost_results.json` |
+| `teia_router_bench_harness.py` | Public benchmark harness · accepts MT-Bench/RouterBench/generic JSON | `public_benchmark_evaluation.json` |
+| `teia_audit_verifier.py` | Cryptographic audit verifier · proves routing decision is unmodified | PASS/FAIL + exit code |
 
 ### PowerShell
 
