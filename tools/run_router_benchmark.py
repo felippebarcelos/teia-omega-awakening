@@ -382,8 +382,8 @@ def print_report(bm: dict) -> None:
     print(f"  SHA-256  : {_c(seal.get('sha256',''), 'cyan')}")
     print(_c("=" * 62, "cyan"))
     print()
-    print(_c("  TEIA is now interoperable with global Data Center infrastructure.", "bold"))
-    print(_c("  Python module ready for vLLM / Kubernetes / LiteLLM integration.", "bold"))
+    print(_c("  TEIA Python module is integration-ready for vLLM / Kubernetes / LiteLLM.", "bold"))
+    print(_c("  Cost benchmark only — see run_quality_cost_benchmark.py for quality analysis.", "bold"))
     print(_c("=" * 62, "cyan"))
     print()
 

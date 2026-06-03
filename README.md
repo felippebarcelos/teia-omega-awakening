@@ -5,7 +5,7 @@
 > *"TEIA is not always the best format.*
 > *TEIA is the system that discovers which format must win."*
 
-**Latest release:** [v9.0.0-python-port](https://github.com/felippebarcelos/teia-omega-awakening/releases/tag/v9.0.0-python-port) — Python port · 15,361 prompts/sec · 98.4% GPU cost reduction · vLLM/K8s/LiteLLM ready
+**Latest release:** [v9.0.0-python-port](https://github.com/felippebarcelos/teia-omega-awakening/releases/tag/v9.0.0-python-port) — Python port · 15,361 prompts/sec · 98.4% GPU cost reduction · integration-ready for vLLM/K8s/LiteLLM
 
 ---
 
@@ -54,8 +54,8 @@ Reconstruction is execution, not decompression. As N → ∞, the overhead per f
 ┌─────────────────────────────────────────────────────────────────┐
 │  Layer 4 — Cognitive Router (P40.0) · Python v9.0.0             │
 │  Semantic Entropy analysis of AI prompts → Local/Hybrid/Cloud   │
-│  15k prompts/sec · SHA-256 audit seal · zero network calls      │
-│  vLLM / Kubernetes / LiteLLM / OpenAI drop-in middleware        │
+│  15k prompts/sec · SHA-256 audit logs · zero network calls      │
+│  Integration-ready: vLLM / Kubernetes / LiteLLM / OpenAI        │
 ├─────────────────────────────────────────────────────────────────┤
 │  Layer 3 — NStar Predictor (P39.0)                              │
 │  Heuristic lens: reads sample, predicts N* in milliseconds      │

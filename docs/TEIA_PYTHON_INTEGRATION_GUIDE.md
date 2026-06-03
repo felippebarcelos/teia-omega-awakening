@@ -22,7 +22,7 @@ they introduce a fundamental conflict with regulatory compliance requirements:
 | **Opacity** | Regulators cannot inspect a neural network weight matrix to verify a routing decision was correct |
 | **Training data dependency** | The router's behavior depends on training data that may be proprietary, expired, or contaminated |
 
-### Why TEIA's Heuristic Approach is Compliance-First
+### Why TEIA's Heuristic Approach Supports Compliance Workflows
 
 The TEIA Cognitive Router computes routing decisions from **six measurable text features**
 using a fixed arithmetic formula. Every single decision is:
@@ -40,11 +40,11 @@ regulator in plain language, statistical accuracy is worthless without determini
 
 | Framework | TEIA Compliance Property |
 |---|---|
-| **EU AI Act** (High-Risk Systems) | Deterministic output → satisfies human oversight and transparency requirements |
-| **GDPR / Right to Explanation** | `routing_rationale` provides human-readable justification for every decision |
-| **SEC / FINRA** (Algorithmic Accountability) | SHA-256 audit seal enables exact reproduction of any past routing decision |
-| **HIPAA** (Audit Controls) | No prompt text ever leaves the local process — zero data exfiltration risk |
-| **Basel III** (Model Risk) | Fixed heuristic formula has no model drift — behavior is identical in 2026 and 2030 |
+| **EU AI Act** (High-Risk Systems) | Provides reproducible routing logs that support human oversight requirements — compliance validation requires legal review |
+| **GDPR / Right to Explanation** | `routing_rationale` provides human-readable justification for every decision — supports explainability audits |
+| **SEC / FINRA** (Algorithmic Accountability) | SHA-256 audit seal enables exact reproduction of any past routing decision — supports audit trail requirements |
+| **HIPAA** (Audit Controls) | No prompt text leaves the local process — supports data locality controls; full compliance requires broader system assessment |
+| **Basel III** (Model Risk) | Fixed heuristic formula has no model drift — supports model stability requirements; regulatory applicability depends on deployment context |
 
 ---
 
