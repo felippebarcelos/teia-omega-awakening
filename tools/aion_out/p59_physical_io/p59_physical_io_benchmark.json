@@ -1,0 +1,91 @@
+{
+  "benchmark": "aion_vs_delta_physical_io",
+  "methodology": "real_execution_file_size_accounting",
+  "protocol": "P59.0",
+  "pyarrow_version": "24.0.0",
+  "raw": {
+    "aion_delete": {
+      "application_layer_erasure": true,
+      "bytes_freed": 51,
+      "bytes_written": 0,
+      "files_deleted": [
+        "seed_000499.bin"
+      ],
+      "latency_us": 401.3,
+      "operation": "AION_DELETE",
+      "platform_caveat": "os.unlink removes the inode reference immediately. Physical byte destruction depends on platform: SSD GC lag on local storage; S3 requires Object Expiry + disabled versioning for true erasure.",
+      "seed_exists_after": false,
+      "seed_size_bytes": 51,
+      "target_seq": 499
+    },
+    "delta_delete": {
+      "application_layer_erasure": false,
+      "bytes_freed": 0,
+      "bytes_written": 31881,
+      "files_created": [
+        "_delta_log\\00000000000000000001.json",
+        "part-00000-6e20aa1b-59f1-4ded-8a8f-0afcf1faebcd-c000.zstd.parquet"
+      ],
+      "latency_us": 72200.2,
+      "note": "Deletion Vector written. Record is logically hidden but physically present in Parquet file(s). VACUUM required for physical removal.",
+      "operation": "DELTA_DELETE",
+      "parquet_bytes_after": 67635,
+      "parquet_bytes_before": 37326,
+      "parquet_data_unchanged": false,
+      "physical_bytes_on_disk": 67635,
+      "target_seq": 499
+    },
+    "delta_vacuum": {
+      "application_layer_erasure": true,
+      "bytes_freed": 37326,
+      "bytes_written": 580,
+      "files_created": [
+        "_delta_log\\00000000000000000002.json",
+        "_delta_log\\00000000000000000003.json"
+      ],
+      "files_deleted": [
+        "part-00000-6d571412-6cbc-497c-bca2-791ca8f4c08e-c000.snappy.parquet"
+      ],
+      "latency_us": 28992.0,
+      "note": "Physical row group rewritten without the deleted record. Old Parquet file removed. Erasure complete at application layer.",
+      "operation": "DELTA_VACUUM",
+      "parquet_bytes_after": 30309,
+      "vacuum_result": [
+        "part-00000-6d571412-6cbc-497c-bca2-791ca8f4c08e-c000.snappy.parquet"
+      ]
+    }
+  },
+  "sha256": "55c42e5afade1076b12a27bdfdcc58021afffafeca85ea473ae959bf22921ba0",
+  "summary": {
+    "aion": {
+      "application_erasure": true,
+      "bytes_freed": 51,
+      "bytes_written": 0,
+      "complexity": "O(1)",
+      "passes": 1,
+      "seed_size_bytes": 51,
+      "seed_size_human": "51 B",
+      "total_io_bytes": 51,
+      "waf": 1.0
+    },
+    "aion_advantage": "636×",
+    "compliance_caveat": "Important compliance caveat: The immediate isolation provided by AION is absolute at the application layer. However, the physical destruction of bytes on disk depends on underlying hardware/platform mechanisms (e.g., SSD garbage collection or S3 Object Versioning). AION drastically reduces the scope of what must be erased (one seed vs. an entire row group), rendering the physical erasure exponentially faster and cheaper, but true cryptoshredding still requires platform-level guarantees.",
+    "delta_compliance_gap": "Between DELTA_DELETE and DELTA_VACUUM, 66.05 KB of physical data remain on disk, logically hidden. Default Delta Lake retention = 7 days before VACUUM is permitted. AION has no such gap.",
+    "delta_lake": {
+      "application_erasure": true,
+      "complexity": "O(1) + O(N_rowgroup)",
+      "dv_delete_write_bytes": 31881,
+      "parquet_corpus_bytes": 37326,
+      "parquet_corpus_human": "36.45 KB",
+      "passes": 2,
+      "physical_bytes_pre_vacuum": 67635,
+      "total_io_bytes": 32461,
+      "total_io_human": "31.70 KB",
+      "vacuum_write_bytes": 580,
+      "waf": 636.5
+    },
+    "n_records": 1000,
+    "target_record": 499
+  },
+  "timestamp": "2026-06-03T22:21:38.833979+00:00"
+}

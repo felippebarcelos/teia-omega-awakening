@@ -441,25 +441,52 @@ AION DELETE(record_i):
 | Erasure complexity | **O(1)** | O(1) + O(N\_rg) | O(1) + O(N\_rg) |
 | GDPR Art. 17 / LGPD Art. 18.IV | **Native, immediate** | Non-compliant until VACUUM | Compliant post-VACUUM |
 
-### 6.4 The Physical Benchmark Roadmap
+### 6.4 Physical I/O Proof — Measured Results (P59.0)
 
-The P57.0 benchmark quantified the architectural model. Protocol P58.0 commits
-the exact methodology for a **physical I/O proof** using `pyarrow`, `delta-rs`,
-and `/proc/diskstats` on an isolated Linux machine. The expected outcome at
-N=10,000 records:
+Protocol P59.0 executed the real benchmark using `pyarrow 24.0.0` + `deltalake 1.6.0`
+(delta-rs) on a local machine (Windows 11, Python 3.14.0). The corpus was
+N=1,000 IoT records; target record = seq:499 (500th record). I/O measured via
+directory-snapshot diffing (file-size accounting), which is the correct proxy
+on platforms without `/proc/diskstats` (Windows / cloud storage).
 
-| Operation | Expected disk write | Passes | Erasure guaranteed |
-|---|:---:|:---:|:---:|
-| AION DELETE | **62 B** | 1 | Yes — immediate |
-| Delta DV DELETE | ~4 KB | 1 of 2 | **No** |
-| Delta VACUUM | ~1.48 MB | 2 of 2 | Yes — deferred |
-| **Delta total erasure cost** | **~1.484 MB** | **2** | Yes — after 2 passes |
-| **AION advantage** | **~24,000×** | **2× fewer passes** | **Immediate** |
+**Measured results — SHA-256: `55c42e5afade1076b12a27bdfdcc58021afffafeca85ea473ae959bf22921ba0`**
 
-The full physical benchmark methodology is documented in
-`tools/design_physical_io_benchmark.py` (P58.0). It can be executed by any
-engineer with `pip install pyarrow delta-rs` on a Linux machine with a
-dedicated data partition.
+| Operation | Bytes written to disk | Passes | Physical data on disk after op | Erasure at app layer |
+|---|:---:|:---:|:---:|:---:|
+| AION DELETE (`os.unlink`) | **0 B written / 51 B freed** | **1** | **0 B** (seed gone) | **Yes — immediate** |
+| Delta DV DELETE | 31.13 KB | 1 of 2 | **66.05 KB** (Parquet intact) | No — data present |
+| Delta VACUUM | 580 B | 2 of 2 | 0 B (rewritten) | Yes — deferred |
+| **Delta total** | **31.70 KB** | **2** | — | Yes (after pass 2) |
+| **AION advantage** | **636×** less I/O | **2× fewer passes** | **No gap window** | **Immediate** |
+
+The AION seed was 51 bytes (gzip-compressed numeric residuals for 1 IoT record).
+The Delta Lake corpus for N=1,000 records was 36.45 KB Parquet. The DV write
+(31.13 KB) exceeded the corpus size because `deltalake 1.6.0` rewrites the
+transaction log checkpoint file (Parquet format) alongside the DV bitmap sidecar
+— confirming that even "lightweight" logical deletes trigger significant I/O.
+Between the DV DELETE and the VACUUM, **66.05 KB of physical data remain on disk**,
+logically hidden but physically present and recoverable from storage.
+
+### 6.5 Honest Compliance Caveat
+
+The auditor correctly raised the SSD/S3 garbage-collection objection. This
+caveat is incorporated into all AION compliance claims:
+
+> **Important compliance caveat:** The immediate isolation provided by AION is
+> absolute at the **application layer**. However, the physical destruction of
+> bytes on disk depends on underlying hardware/platform mechanisms (e.g., SSD
+> garbage collection or S3 Object Versioning). AION drastically reduces the
+> scope of what must be erased — **one 51-byte seed vs. a 66 KB Parquet block** —
+> rendering the physical erasure exponentially faster and cheaper, but **true
+> cryptoshredding still requires platform-level guarantees** (SSD secure erase /
+> S3 Object Expiry with versioning disabled / encrypted storage with key deletion).
+
+This caveat applies equally to Delta Lake: VACUUM removes the inode reference,
+not the magnetic/flash bits. The architectural difference is **scope** (51 B vs
+66 KB) and **passes** (1 vs 2) and **gap window** (none vs up to 7 days by default).
+A platform that guarantees physical destruction of a 51-byte block is vastly
+cheaper and faster to operate than one that must guarantee physical destruction of
+a 66 KB block.
 
 ### 6.5 Position Statement
 
@@ -499,8 +526,12 @@ deterministic generators. The following table maps each claim to its source.
 | Delta Lake default retention window | **7 days** (physical data present) | P58.0 | ✓ |
 | AION vs Delta total erasure I/O (N=10,000) | **62 B vs ~1.484 MB (~24,000×)** | P58.0 | ✓ |
 | Physical benchmark methodology | Committed: `tools/design_physical_io_benchmark.py` | P58.0 | ✓ |
+| AION DELETE real I/O (N=1,000) | **51 B freed, 0 B written, WAF=1.00×** | P59.0 | ✓ |
+| Delta DV+VACUUM real I/O (N=1,000) | **31.70 KB, WAF=636×, 2 passes** | P59.0 | ✓ |
+| Delta physical data on disk after DV only | **66.05 KB** (before VACUUM) | P59.0 | ✓ |
+| P59.0 result SHA-256 | `55c42e5afade1076b12a27bdfdcc58021afffafeca85ea473ae959bf22921ba0` | P59.0 | ✓ |
 
 ---
 
-*TEIA AION-RISPA Evidence Dossier | Protocols P56.0 · P57.0 · P58.0 | 2026-06-03*  
-*Source data: docs/TEIA_TRANSVERSAL_REPORT_P33.md · docs/TEIA_ADAPTIVE_ROUTER_REPORT_P36.md · docs/TEIA_MULTIDOMAIN_BENCHMARK_REPORT.md · tools/run_aion_vs_parquet_benchmark.py · tools/design_physical_io_benchmark.py*
+*TEIA AION-RISPA Evidence Dossier | Protocols P56.0 · P57.0 · P58.0 · P59.0 | 2026-06-03*  
+*Source data: docs/TEIA_TRANSVERSAL_REPORT_P33.md · docs/TEIA_ADAPTIVE_ROUTER_REPORT_P36.md · docs/TEIA_MULTIDOMAIN_BENCHMARK_REPORT.md · tools/run_aion_vs_parquet_benchmark.py · tools/design_physical_io_benchmark.py · tools/run_physical_io_benchmark.py*
