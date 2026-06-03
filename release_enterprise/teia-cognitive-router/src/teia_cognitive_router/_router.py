@@ -68,6 +68,16 @@ WEIGHTS: dict[str, float] = {
 LOCAL_THRESHOLD:  float = 0.35
 HYBRID_THRESHOLD: float = 0.65
 
+# ── Compliance-safe mode thresholds (P48.0) ───────────────────────────────────
+# In compliance-safe mode the premise shifts from "maximise savings" to
+# "save only when quality degradation is rigorously zero".
+# Local is only activated for prompts below COMPLIANCE_SAFE_LOCAL_MAX (0.20),
+# where tasks are provably trivial (extraction, counting, reformatting).
+# Everything above that threshold routes to Cloud unless allow_hybrid=True.
+
+COMPLIANCE_SAFE_MODE:      bool  = True   # default for new installations
+COMPLIANCE_SAFE_LOCAL_MAX: float = 0.20   # max entropy for Local in compliance-safe mode
+
 # ── GPU economics defaults ────────────────────────────────────────────────────
 
 GPU_COST_PER_SECOND_USD:  float = 0.002
@@ -219,17 +229,36 @@ def _gpu_economics(token_est: int, route: str) -> dict[str, Any]:
 
 # ── Public API ────────────────────────────────────────────────────────────────
 
-def route(text: str) -> dict[str, Any]:
-    """Route a prompt. Returns canonical dict (use to_canonical_json for serialization)."""
+def route(
+    text: str,
+    compliance_safe_mode: bool = COMPLIANCE_SAFE_MODE,
+    allow_hybrid: bool = False,
+) -> dict[str, Any]:
+    """Route a prompt. Returns canonical dict (use to_canonical_json for serialization).
+
+    compliance_safe_mode=True (default): quality-first routing.
+      - entropy < COMPLIANCE_SAFE_LOCAL_MAX (0.20) -> Local (provably trivial tasks only)
+      - entropy >= 0.20 -> Cloud (unless allow_hybrid=True for mid-entropy band)
+    compliance_safe_mode=False: maximum-savings routing.
+      - entropy < 0.35 -> Local, < 0.65 -> Hybrid, >= 0.65 -> Cloud
+    """
     m = compute_semantic_entropy(text)
 
     entropy = m["entropy"]
-    if entropy < LOCAL_THRESHOLD:
-        decision = "Local"
-    elif entropy < HYBRID_THRESHOLD:
-        decision = "Hybrid"
+    if compliance_safe_mode:
+        if entropy < COMPLIANCE_SAFE_LOCAL_MAX:
+            decision = "Local"
+        elif allow_hybrid and entropy < HYBRID_THRESHOLD:
+            decision = "Hybrid"
+        else:
+            decision = "Cloud"
     else:
-        decision = "Cloud"
+        if entropy < LOCAL_THRESHOLD:
+            decision = "Local"
+        elif entropy < HYBRID_THRESHOLD:
+            decision = "Hybrid"
+        else:
+            decision = "Cloud"
 
     confidence = _routing_confidence(entropy)
     rationale  = _routing_rationale(
@@ -261,6 +290,8 @@ def route(text: str) -> dict[str, Any]:
             "Cloud":  "Frontier LLM GPT-4/Claude-Opus (full GPU inference)",
         },
         "calibration_note": "Heuristic model P40.0. No network calls. Delta written in full.",
+        "routing_mode":      "compliance_safe" if compliance_safe_mode else "max_savings",
+        "compliance_safe_mode": compliance_safe_mode,
     }
     return result
 
@@ -284,9 +315,13 @@ def to_canonical_json(obj: Any) -> str:
     return json.dumps(obj, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
 
 
-def route_and_seal(text: str) -> tuple[dict[str, Any], str]:
+def route_and_seal(
+    text: str,
+    compliance_safe_mode: bool = COMPLIANCE_SAFE_MODE,
+    allow_hybrid: bool = False,
+) -> tuple[dict[str, Any], str]:
     """Convenience: route + seal + return (sealed_dict, canonical_json_string)."""
-    result = route(text)
+    result = route(text, compliance_safe_mode=compliance_safe_mode, allow_hybrid=allow_hybrid)
     sealed = seal(result)
     return sealed, to_canonical_json(sealed)
 

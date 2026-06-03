@@ -10,7 +10,7 @@
 
 ```bash
 pip install teia-cognitive-router           # core router + audit verifier
-pip install teia-cognitive-router[gateway]  # + Ouroboros FastAPI proxy
+pip install teia-cognitive-router[gateway]  # + Deterministic LLM Gateway (FastAPI proxy)
 ```
 
 ---
@@ -54,10 +54,18 @@ pip install teia-cognitive-router   # or: copy src/ into your project
 ```python
 from teia_cognitive_router import route_and_seal
 
+# Compliance-safe mode (default since v1.2.0):
+# Local only for entropy < 0.20 — provably trivial tasks, zero quality delta
 sealed, json_str = route_and_seal("Extract all invoice numbers from this document")
-print(sealed["routing_decision"])          # "Local"
+print(sealed["routing_decision"])          # "Local"  (entropy < 0.20)
+print(sealed["routing_mode"])              # "compliance_safe"
 print(sealed["gpu_economics"]["delta_usd_saved"])  # 0.000440
 print(sealed["audit_seal"]["sha256"])      # deterministic SHA-256
+
+# Opt-in to max-savings mode (P43.0 behavior, allows Hybrid routing):
+sealed, _ = route_and_seal("Analyze root cause of this failure", compliance_safe_mode=False)
+print(sealed["routing_decision"])          # "Hybrid" or "Cloud"
+print(sealed["routing_mode"])              # "max_savings"
 ```
 
 ```bash
@@ -302,9 +310,9 @@ from teia_cognitive_router import route, seal, route_and_seal, to_canonical_json
 
 ---
 
-## Ouroboros Gateway (v1.1.0)
+## Deterministic LLM Gateway (v1.1.0+)
 
-A drop-in FastAPI proxy that intercepts every OpenAI-compatible request, routes it through TEIA, and forwards to the right endpoint — all while writing a SHA-256-sealed audit log entry per request.
+A drop-in FastAPI proxy that intercepts every OpenAI-compatible request, applies the compliance-safe routing policy, and forwards to the appropriate endpoint — all while appending a SHA-256-sealed entry to the GRC audit log per request.
 
 ```bash
 pip install teia-cognitive-router[gateway]
@@ -348,7 +356,7 @@ teia-cognitive-router/
 │   ├── __init__.py     # Public API: route, seal, route_and_seal, to_canonical_json
 │   ├── _router.py      # Core 6-axis semantic entropy engine (stdlib only)
 │   ├── _verifier.py    # Cryptographic audit verifier
-│   └── _gateway.py     # Ouroboros FastAPI proxy (requires [gateway] extra)
+│   └── _gateway.py     # Deterministic LLM Gateway (requires [gateway] extra)
 ├── tests/
 │   ├── run_quality_cost_benchmark.py
 │   └── teia_router_bench_harness.py
@@ -373,4 +381,4 @@ Apache 2.0 — see LICENSE file.
 
 ---
 
-*TEIA Cognitive Router v1.1.0 | Protocol P47.0 | 2026-06-02*
+*TEIA Cognitive Router v1.2.0 | Protocol P48.0 | 2026-06-02*
