@@ -20,6 +20,7 @@ import json
 import math
 import re
 import sys
+from datetime import datetime, timezone
 from typing import Any
 
 # ── Feature vocabulary ────────────────────────────────────────────────────────
@@ -296,16 +297,33 @@ def route(
     return result
 
 
-def seal(result: dict[str, Any]) -> dict[str, Any]:
-    """Attach SHA-256 audit seal to a routing result dict (non-destructive copy)."""
-    canonical = to_canonical_json(result)
-    digest    = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
-    sealed    = dict(result)
+def seal(result: dict[str, Any], prev_anchor: str = "") -> dict[str, Any]:
+    """Attach SHA-256 audit seal with temporal chain to a routing result dict (non-destructive copy).
+
+    prev_anchor: SHA-256 hex of the previous seal's time_anchor_hash (or "" for chain genesis).
+    The time_anchor_hash = SHA-256(prev_anchor_or_GENESIS + ":" + body_sha256) forms an
+    append-only Merkle ledger — modifying any past entry breaks all subsequent chain hashes.
+    Foundation for RFC 3161 trusted timestamping integration.
+    """
+    canonical     = to_canonical_json(result)
+    body_sha      = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+    timestamp_utc = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%f") + "Z"
+    anchor_input  = (prev_anchor if prev_anchor else "GENESIS") + ":" + body_sha
+    time_anchor   = hashlib.sha256(anchor_input.encode("utf-8")).hexdigest()
+    sealed        = dict(result)
     sealed["audit_seal"] = {
-        "sha256":    digest,
-        "algorithm": "SHA-256",
-        "scope":     "canonical_json_utf8",
-        "note":      "Deterministic seal. Identical input produces identical digest. Suitable for compliance audit trails.",
+        "sha256":             body_sha,
+        "algorithm":          "SHA-256",
+        "scope":              "canonical_json_utf8",
+        "timestamp_utc":      timestamp_utc,
+        "time_anchor_hash":   time_anchor,
+        "prev_anchor_sha256": prev_anchor if prev_anchor else "GENESIS",
+        "note": (
+            "sha256 is deterministic (body hash — identical input always produces identical digest). "
+            "timestamp_utc is per-invocation and is NOT deterministic. "
+            "time_anchor_hash chains entries: SHA-256(prev_anchor:sha256). "
+            "Foundation for RFC 3161 integration."
+        ),
     }
     return sealed
 
@@ -319,10 +337,14 @@ def route_and_seal(
     text: str,
     compliance_safe_mode: bool = COMPLIANCE_SAFE_MODE,
     allow_hybrid: bool = False,
+    prev_anchor: str = "",
 ) -> tuple[dict[str, Any], str]:
-    """Convenience: route + seal + return (sealed_dict, canonical_json_string)."""
+    """Convenience: route + seal + return (sealed_dict, canonical_json_string).
+
+    prev_anchor: pass last time_anchor_hash from the audit log to continue the chain.
+    """
     result = route(text, compliance_safe_mode=compliance_safe_mode, allow_hybrid=allow_hybrid)
-    sealed = seal(result)
+    sealed = seal(result, prev_anchor=prev_anchor)
     return sealed, to_canonical_json(sealed)
 
 

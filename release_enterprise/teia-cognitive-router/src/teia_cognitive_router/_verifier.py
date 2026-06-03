@@ -1,8 +1,8 @@
 """
-_verifier.py — TEIA Cryptographic Audit Verifier P44.0
+_verifier.py — TEIA Cryptographic Audit Verifier P49.0
 Proves that a routing decision is mathematically reproducible and unmodified.
 
-Two verification modes:
+Three verification modes:
 
   1. DOCUMENT SEAL VERIFICATION
      Given any TEIA-sealed JSON file, strips the audit_seal, recomputes
@@ -20,6 +20,12 @@ Two verification modes:
      This is the proof that the routing decision could not have been
      manipulated after the fact.
 
+  3. TEMPORAL CHAIN VERIFICATION (P49.0 — for JSONL audit logs)
+     Given a JSONL audit log file produced by the gateway, walks every
+     entry in sequence and re-derives each time_anchor_hash from
+     SHA-256(prev_anchor:sha256). Any gap, deletion, or modification
+     in the ledger breaks the chain at that position.
+
 Usage:
   # Verify document seal only
   teia-verify --file quality_cost_results.json
@@ -30,6 +36,9 @@ Usage:
 
   # Verify from stored prompt (if routing result contains input text)
   teia-verify --file routing_result.json --from-stored
+
+  # Verify temporal chain in a gateway audit JSONL log
+  teia-verify --verify-chain --chain-file teia_gateway_audit.jsonl
 
 Output: AUDIT PASS or AUDIT FAIL with full diagnostic detail.
 Write==Read invariant. Delta always written in full.
@@ -138,6 +147,76 @@ def verify_routing_decision(data: dict[str, Any], prompt_text: str) -> dict[str,
     }
 
 
+def verify_temporal_chain(entries: list[dict[str, Any]]) -> dict[str, Any]:
+    """
+    Walks a list of JSONL audit log entries (each must have audit_seal.sha256
+    and audit_seal.time_anchor_hash) and re-derives every time_anchor_hash
+    from SHA-256(prev_anchor:sha256). Returns a result dict with per-entry
+    check results and overall pass/fail.
+    """
+    if not entries:
+        return {
+            "pass":   False,
+            "mode":   "temporal_chain",
+            "reason": "Empty entry list — nothing to verify.",
+            "checks": [],
+            "total":  0,
+            "failed": 0,
+        }
+
+    checks: list[dict[str, Any]] = []
+    prev_anchor = "GENESIS"
+    failed = 0
+
+    for idx, entry in enumerate(entries):
+        seal = entry.get("audit_seal", {})
+        stored_sha    = seal.get("sha256", "")
+        stored_anchor = seal.get("time_anchor_hash", "")
+        stored_prev   = seal.get("prev_anchor_sha256", "")
+
+        if not stored_sha or not stored_anchor:
+            checks.append({
+                "index":  idx,
+                "pass":   False,
+                "reason": "Missing audit_seal.sha256 or audit_seal.time_anchor_hash",
+            })
+            failed += 1
+            continue
+
+        expected_anchor = hashlib.sha256(
+            (prev_anchor + ":" + stored_sha).encode("utf-8")
+        ).hexdigest()
+
+        ok = (stored_anchor == expected_anchor)
+        checks.append({
+            "index":            idx,
+            "pass":             ok,
+            "stored_sha256":    stored_sha,
+            "expected_anchor":  expected_anchor,
+            "stored_anchor":    stored_anchor,
+            "prev_anchor_used": prev_anchor,
+            "reason":           "OK" if ok else "time_anchor_hash mismatch — chain broken at this entry",
+        })
+        if not ok:
+            failed += 1
+
+        prev_anchor = stored_anchor
+
+    all_pass = failed == 0
+    return {
+        "pass":   all_pass,
+        "mode":   "temporal_chain",
+        "total":  len(entries),
+        "failed": failed,
+        "checks": checks,
+        "reason": (
+            f"All {len(entries)} entries form a valid chain"
+            if all_pass else
+            f"{failed} of {len(entries)} entries failed chain verification"
+        ),
+    }
+
+
 def _find_stored_prompt(data: dict[str, Any]) -> str | None:
     for key in ("input_text", "prompt", "text", "query"):
         if key in data and isinstance(data[key], str) and data[key].strip():
@@ -150,7 +229,7 @@ def _find_stored_prompt(data: dict[str, Any]) -> str | None:
 def print_result(result: dict[str, Any], file_path: str) -> bool:
     print()
     print(_c("=" * 64, "cyan"))
-    print(_c("  TEIA Audit Verifier — P44.0", "cyan"))
+    print(_c("  TEIA Audit Verifier — P49.0", "cyan"))
     print("  File: {}".format(file_path))
     print(_c("=" * 64, "cyan"))
 
@@ -209,17 +288,69 @@ def print_result(result: dict[str, Any], file_path: str) -> bool:
 
 # ── Entry point ───────────────────────────────────────────────────────────────
 
+def _print_chain_result(result: dict[str, Any], chain_file: str) -> bool:
+    print()
+    print(_c("=" * 64, "cyan"))
+    print(_c("  TEIA Audit Verifier — P49.0", "cyan"))
+    print("  Mode: Temporal Chain Verification")
+    print("  File: {}".format(chain_file))
+    print(_c("=" * 64, "cyan"))
+    print()
+    passed = result["pass"]
+    print("  Entries  : {}".format(result["total"]))
+    print("  Failed   : {}".format(result["failed"]))
+    print()
+    for chk in result["checks"]:
+        status = _c("PASS", "green") if chk["pass"] else _c("FAIL", "red")
+        print("  [{}] entry #{:04d}  {}".format(status, chk["index"], chk.get("reason", "")))
+    print()
+    if passed:
+        print(_c("  AUDIT PASS: Temporal chain is intact and unbroken.", "bold"))
+        print(_c("  Every entry links to its predecessor — no deletions or modifications.", "green"))
+    else:
+        print(_c("  AUDIT FAIL: {}".format(result["reason"]), "red"))
+    print(_c("=" * 64, "cyan"))
+    print()
+    return passed
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         description="TEIA Audit Verifier — cryptographically prove a routing decision is unmodified"
     )
-    parser.add_argument("--file",        "-f", required=True, help="Path to sealed TEIA JSON file")
-    parser.add_argument("--text",        "-t", default="",    help="Original prompt text (for full verification)")
-    parser.add_argument("--prompt-file", "-p", default="",    help="Path to file containing original prompt")
-    parser.add_argument("--from-stored",       action="store_true",
+    parser.add_argument("--file",         "-f", default="",  help="Path to sealed TEIA JSON file")
+    parser.add_argument("--text",         "-t", default="",  help="Original prompt text (for full verification)")
+    parser.add_argument("--prompt-file",  "-p", default="",  help="Path to file containing original prompt")
+    parser.add_argument("--from-stored",        action="store_true",
                         help="Use prompt stored inside the routing result (if present)")
-    parser.add_argument("--output",      "-o", default="",    help="Write verification result JSON to this path")
+    parser.add_argument("--output",       "-o", default="",  help="Write verification result JSON to this path")
+    parser.add_argument("--verify-chain",       action="store_true",
+                        help="Verify temporal chain in a gateway JSONL audit log")
+    parser.add_argument("--chain-file",   "-c", default="",  help="Path to JSONL audit log for --verify-chain")
     args = parser.parse_args()
+
+    # ── Temporal chain mode ───────────────────────────────────────────────────
+    if args.verify_chain:
+        chain_path = Path(args.chain_file or args.file)
+        if not chain_path.exists():
+            print("ERROR: chain file not found: {}".format(chain_path))
+            sys.exit(1)
+        entries: list[dict[str, Any]] = []
+        for line in chain_path.read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if line:
+                entries.append(json.loads(line))
+        result = verify_temporal_chain(entries)
+        passed = _print_chain_result(result, str(chain_path))
+        if args.output:
+            Path(args.output).write_text(router.to_canonical_json(result), encoding="utf-8")
+            print("  Verification result written to: {}".format(args.output))
+            print()
+        sys.exit(0 if passed else 1)
+
+    # ── Document / routing verification mode ─────────────────────────────────
+    if not args.file:
+        parser.error("--file is required unless --verify-chain is used")
 
     file_path = Path(args.file)
     if not file_path.exists():

@@ -310,9 +310,49 @@ from teia_cognitive_router import route, seal, route_and_seal, to_canonical_json
 
 ---
 
-## Deterministic LLM Gateway (v1.1.0+)
+## Cryptographic Time Chain (v1.2.0+)
 
-A drop-in FastAPI proxy that intercepts every OpenAI-compatible request, applies the compliance-safe routing policy, and forwards to the appropriate endpoint — all while appending a SHA-256-sealed entry to the GRC audit log per request.
+Every routing decision now carries a `time_anchor_hash` — a Merkle-style chain link that ties each audit entry to the one before it:
+
+```
+time_anchor_hash = SHA-256(prev_anchor + ":" + body_sha256)
+```
+
+The first entry in a new log uses `"GENESIS"` as `prev_anchor`. Modifying, deleting, or reordering any past entry breaks the chain at that position — mathematically detectable by any auditor.
+
+```python
+from teia_cognitive_router import route_and_seal
+
+# First decision — genesis entry
+sealed, _ = route_and_seal("Extract invoice numbers", prev_anchor="")
+print(sealed["audit_seal"]["time_anchor_hash"])   # chain starts here
+print(sealed["audit_seal"]["prev_anchor_sha256"]) # "GENESIS"
+
+# Second decision — chained to first
+sealed2, _ = route_and_seal(
+    "Analyze root cause of the distributed failure",
+    prev_anchor=sealed["audit_seal"]["time_anchor_hash"],
+)
+print(sealed2["audit_seal"]["prev_anchor_sha256"]) # == first time_anchor_hash
+```
+
+Verify any JSONL audit log from the gateway:
+
+```bash
+teia-verify --verify-chain --chain-file teia_gateway_audit.jsonl
+# → AUDIT PASS: Temporal chain is intact and unbroken.
+# → Every entry links to its predecessor — no deletions or modifications.
+```
+
+The `body sha256` field remains fully deterministic (same input → same hash). The `timestamp_utc` is per-invocation and is **not** deterministic by design — it is the observable event time. The `time_anchor_hash` is deterministic given the sequence: `SHA-256(prev:sha256)` is fixed.
+
+This architecture is the foundation for [RFC 3161](https://www.rfc-editor.org/rfc/rfc3161) trusted timestamping integration — you can submit any `time_anchor_hash` to a TSA to obtain a legally-binding timestamp.
+
+---
+
+## Deterministic LLM Gateway (v1.2.0+)
+
+A drop-in FastAPI proxy that intercepts every OpenAI-compatible request, applies the compliance-safe routing policy, and forwards to the appropriate endpoint — appending a SHA-256-sealed, time-chained entry to the GRC audit log per request.
 
 ```bash
 pip install teia-cognitive-router[gateway]
@@ -328,12 +368,12 @@ teia-gateway                          # starts on http://127.0.0.1:8080
 # Environment variables
 export TEIA_LOCAL_ENDPOINT="http://localhost:11434/v1/chat/completions"
 export OPENAI_API_KEY="sk-..."          # only needed for Cloud-tier requests
-export TEIA_AUDIT_LOG="./audit.jsonl"  # SHA-256 sealed JSONL log
+export TEIA_AUDIT_LOG="./audit.jsonl"  # SHA-256 sealed, time-chained JSONL log
 
 teia-gateway --host 127.0.0.1 --port 8080
 ```
 
-Every response includes a `teia_routing` field:
+Every response includes a `teia_routing` field with the temporal chain anchor:
 
 ```json
 {
@@ -341,7 +381,8 @@ Every response includes a `teia_routing` field:
     "decision": "Local",
     "entropy": 0.21,
     "delta_usd_saved": 0.000440,
-    "audit_seal_sha256": "a3f8c1..."
+    "audit_seal_sha256": "a3f8c1...",
+    "time_anchor_hash": "b7e4d2..."
   }
 }
 ```
@@ -381,4 +422,4 @@ Apache 2.0 — see LICENSE file.
 
 ---
 
-*TEIA Cognitive Router v1.2.0 | Protocol P48.0 | 2026-06-02*
+*TEIA Cognitive Router v1.2.0 | Protocol P49.0 | 2026-06-02*

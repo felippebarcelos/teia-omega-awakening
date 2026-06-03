@@ -5,7 +5,7 @@
 > *"TEIA is not always the best format.*
 > *TEIA is the system that discovers which format must win."*
 
-**Latest release:** [v14.0.0-compliance](https://github.com/felippebarcelos/teia-omega-awakening/releases/tag/v14.0.0-compliance) — Compliance-Safe Mode · MT-Bench 99.6% quality · GRC branding · P48.0
+**Latest release:** [v15.0.0-temporal-chain](https://github.com/felippebarcelos/teia-omega-awakening/releases/tag/v15.0.0-temporal-chain) — Cryptographic Time Chain · Merkle audit ledger · RFC 3161 foundation · P49.0
 
 ---
 
@@ -331,7 +331,8 @@ Calibration accuracy:
 | v11.0.0 | Cryptographic Audit Verifier | SHA-256 routing proofs · public benchmark harness · compliance-grade determinism |
 | v12.0.0 | Enterprise Spin-Off | Clean Python package · zero philosophy · vLLM/LiteLLM drop-in · compliance-first README · P45.0 |
 | v13.0.0 | PyPI + Deterministic Gateway | `pip install teia-cognitive-router` · FastAPI proxy · SHA-256 audit JSONL · P46.0–P47.0 |
-| **v14.0.0** | **Compliance-Safe Mode** | **MT-Bench 99.6% quality retention · compliance_safe default · GRC-ready branding · P48.0** |
+| v14.0.0 | Compliance-Safe Mode | MT-Bench 99.6% quality retention · compliance_safe default · GRC-ready branding · P48.0 |
+| **v15.0.0** | **Cryptographic Time Chain** | **Merkle-chained audit ledger · time_anchor_hash per decision · RFC 3161 foundation · teia-verify --verify-chain · P49.0** |
 
 ---
 
@@ -354,6 +355,6 @@ See individual files for usage instructions.
 
 ---
 
-*TEIA Information Economics Engine v14.0.0 | Protocol P48.0 | 2026-06-02*
+*TEIA Information Economics Engine v15.0.0 | Protocol P49.0 | 2026-06-02*
 *Built on hardware: i3-10100F · 16 GB RAM · PowerShell 7+ · Python 3.8+ · WinFsp*
 *"Ferrari di papelão — using code efficiency to overcome silicon constraints."*
