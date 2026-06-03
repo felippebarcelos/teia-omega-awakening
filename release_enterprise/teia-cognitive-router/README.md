@@ -1,6 +1,6 @@
 # TEIA Cognitive Router
 
-[![PyPI](https://img.shields.io/pypi/v/teia-cognitive-router)](https://pypi.org/project/teia-cognitive-router/)
+[![PyPI](https://img.shields.io/pypi/v/teia-cognitive-router)](https://pypi.org/project/teia-cognitive-router/1.3.0/)
 [![Python](https://img.shields.io/pypi/pyversions/teia-cognitive-router)](https://pypi.org/project/teia-cognitive-router/)
 [![License](https://img.shields.io/pypi/l/teia-cognitive-router)](https://pypi.org/project/teia-cognitive-router/)
 
@@ -389,6 +389,37 @@ Every response includes a `teia_routing` field with the temporal chain anchor:
 
 ---
 
+## RFC 3161 Legal Notarization (v1.3.0+)
+
+Close the retroactive forgery window by submitting any `time_anchor_hash` to a public Trusted Timestamp Authority (TSA). The TSA returns a signed `TimeStampResponse (.tsr)` — an externally-witnessed cryptographic proof that the hash existed at or before the certified time.
+
+```bash
+pip install teia-cognitive-router   # teia-notarize included
+
+# Notarize the last anchor in your gateway audit log
+teia-notarize --chain teia_gateway_audit.jsonl
+
+# Or notarize any explicit SHA-256 hex
+teia-notarize --hash <64-char-hex> --out notarized/
+
+# Verify the TSR offline with OpenSSL (no internet required)
+openssl ts -verify -in <file.tsr> -queryfile <file.tsq> -CAfile freetsa_ca.crt
+```
+
+Output files saved to `notarized/`:
+
+| File | Contents |
+|---|---|
+| `<ts>_<hash16>.tsq` | Binary TimeStampRequest (sent to TSA) |
+| `<ts>_<hash16>.tsr` | Binary TimeStampResponse — the legal proof |
+| `<ts>_<hash16>.json` | Metadata: hash, TSA URL, SHA-256 of both files, compliance note |
+
+**Three-layer proof**: SHA-256 body seal + Merkle chain + RFC 3161 TSR = an adversary must compromise both the audit log *and* a trusted third-party TSA to forge history.
+
+Foundation for [RFC 3161](https://www.rfc-editor.org/rfc/rfc3161) / eIDAS Art. 41 qualified timestamps. Default TSA: FreeTSA.org (free, no account required). Override with `--tsa <url>`.
+
+---
+
 ## Repository Structure
 
 ```
@@ -396,8 +427,9 @@ teia-cognitive-router/
 ├── src/teia_cognitive_router/
 │   ├── __init__.py     # Public API: route, seal, route_and_seal, to_canonical_json
 │   ├── _router.py      # Core 6-axis semantic entropy engine (stdlib only)
-│   ├── _verifier.py    # Cryptographic audit verifier
-│   └── _gateway.py     # Deterministic LLM Gateway (requires [gateway] extra)
+│   ├── _verifier.py    # Cryptographic audit verifier + temporal chain verification
+│   ├── _gateway.py     # Deterministic LLM Gateway (requires [gateway] extra)
+│   └── _notary.py      # RFC 3161 TSA client — legal notarization (stdlib only)
 ├── tests/
 │   ├── run_quality_cost_benchmark.py
 │   └── teia_router_bench_harness.py
@@ -422,4 +454,4 @@ Apache 2.0 — see LICENSE file.
 
 ---
 
-*TEIA Cognitive Router v1.2.0 | Protocol P49.0 | 2026-06-02*
+*TEIA Cognitive Router v1.3.0 | Protocol P50.0 | 2026-06-02*

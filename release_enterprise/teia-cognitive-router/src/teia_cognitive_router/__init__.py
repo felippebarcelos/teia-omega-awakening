@@ -31,7 +31,7 @@ from teia_cognitive_router._router import (
     COMPLIANCE_SAFE_LOCAL_MAX,
 )
 
-__version__ = "1.2.0"
+__version__ = "1.3.0"
 
 __all__ = [
     "route",
