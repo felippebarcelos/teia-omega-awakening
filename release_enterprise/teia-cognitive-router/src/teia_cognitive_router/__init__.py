@@ -30,14 +30,16 @@ from teia_cognitive_router._router import (
     COMPLIANCE_SAFE_MODE,
     COMPLIANCE_SAFE_LOCAL_MAX,
 )
+from teia_cognitive_router._reporter import generate_html_report
 
-__version__ = "1.3.0"
+__version__ = "1.4.0"
 
 __all__ = [
     "route",
     "seal",
     "route_and_seal",
     "to_canonical_json",
+    "generate_html_report",
     "GPU_COST_PER_SECOND_USD",
     "CLOUD_TOKENS_PER_SECOND",
     "LOCAL_TOKENS_PER_SECOND",

@@ -1,6 +1,6 @@
 # TEIA Cognitive Router
 
-[![PyPI](https://img.shields.io/pypi/v/teia-cognitive-router)](https://pypi.org/project/teia-cognitive-router/1.3.0/)
+[![PyPI](https://img.shields.io/pypi/v/teia-cognitive-router)](https://pypi.org/project/teia-cognitive-router/1.4.0/)
 [![Python](https://img.shields.io/pypi/pyversions/teia-cognitive-router)](https://pypi.org/project/teia-cognitive-router/)
 [![License](https://img.shields.io/pypi/l/teia-cognitive-router)](https://pypi.org/project/teia-cognitive-router/)
 
@@ -272,7 +272,7 @@ Quality retention reflects the honest trade-off: routing High-complexity prompts
 ## API Reference
 
 ```python
-from teia_cognitive_router import route, seal, route_and_seal, to_canonical_json
+from teia_cognitive_router import route, seal, route_and_seal, to_canonical_json, generate_html_report
 ```
 
 | Function | Returns | Description |
@@ -281,6 +281,7 @@ from teia_cognitive_router import route, seal, route_and_seal, to_canonical_json
 | `seal(result)` | `dict` | Attaches SHA-256 audit seal to any routing dict |
 | `route_and_seal(text)` | `(dict, str)` | Route + seal + canonical JSON string |
 | `to_canonical_json(obj)` | `str` | Deterministic JSON (`sort_keys=True`, no whitespace) |
+| `generate_html_report(chain_file, org)` | `str` | Self-contained HTML compliance report from JSONL chain |
 
 ### Output Fields
 
@@ -420,16 +421,52 @@ Foundation for [RFC 3161](https://www.rfc-editor.org/rfc/rfc3161) / eIDAS Art. 4
 
 ---
 
+## Compliance Report Generator (v1.4.0+)
+
+Turn any TEIA JSONL audit chain into a self-contained HTML compliance report — no server, no install, printable to PDF directly from the browser.
+
+```bash
+teia-report audit_chain.jsonl
+# → audit_chain.report.html (SHA-256 printed)
+# Open in any browser, print to PDF for the auditor
+
+teia-report audit_chain.jsonl --output quarterly_q2_2026.html --org "ACME Financial"
+```
+
+The report covers:
+
+| Section | Content |
+|---|---|
+| **Chain integrity verdict** | CHAIN INTACT / CHAIN BROKEN banner with entry count |
+| **Metrics grid** | Total decisions · Local/Cloud/Hybrid counts · avg entropy · tokens saved · seal coverage |
+| **EU AI Act checklist** | Art. 12 (record-keeping, immutability) · Art. 13 (transparency, human oversight) · Annex IV §2/§5 |
+| **GDPR Art. 22 checklist** | Automated decision-making · right to explanation · integrity · Art. 30 records |
+| **SOC 2 CC7 checklist** | CC7.2 monitoring · CC7.3 incident detection · CC6.1 logical access |
+| **Audit hash trail** | SHA-256 prefix · time anchor · prev anchor · timestamp per entry |
+
+All checklist items show `PASS` when the audit seal is present and chain is intact. The HTML is fully self-contained — works from `file://` in all browsers.
+
+```python
+from teia_cognitive_router import generate_html_report
+from pathlib import Path
+
+html = generate_html_report(Path("audit_chain.jsonl"), organization="ACME Corp")
+Path("report.html").write_text(html, encoding="utf-8")
+```
+
+---
+
 ## Repository Structure
 
 ```
 teia-cognitive-router/
 ├── src/teia_cognitive_router/
-│   ├── __init__.py     # Public API: route, seal, route_and_seal, to_canonical_json
+│   ├── __init__.py     # Public API: route, seal, route_and_seal, generate_html_report
 │   ├── _router.py      # Core 6-axis semantic entropy engine (stdlib only)
 │   ├── _verifier.py    # Cryptographic audit verifier + temporal chain verification
 │   ├── _gateway.py     # Deterministic LLM Gateway (requires [gateway] extra)
-│   └── _notary.py      # RFC 3161 TSA client — legal notarization (stdlib only)
+│   ├── _notary.py      # RFC 3161 TSA client — legal notarization (stdlib only)
+│   └── _reporter.py    # Compliance Report Generator — HTML/EU AI Act/GDPR/SOC 2 (stdlib only)
 ├── tests/
 │   ├── run_quality_cost_benchmark.py
 │   └── teia_router_bench_harness.py
@@ -454,4 +491,4 @@ Apache 2.0 — see LICENSE file.
 
 ---
 
-*TEIA Cognitive Router v1.3.0 | Protocol P50.0 | 2026-06-02*
+*TEIA Cognitive Router v1.4.0 | Protocol P53.0 | 2026-06-03*
